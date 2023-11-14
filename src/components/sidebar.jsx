@@ -13,7 +13,7 @@ const Sidebar = () => {
 
                     </div>
                 </div>
-                <div className="sidebar-content mx-2 mt-3">
+                <div className="sidebar-content mx-3 mt-3">
                     <h5 className="border-bottom border-black pb-1">Menu</h5>
                     <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
                         <Link className="flex my-2 nav-link" to={"/dashboard"}>
@@ -39,7 +39,7 @@ const Sidebar = () => {
                     </div>
                 </div>
 
-                 <div className="sidebar-content mx-2 mt-3">
+                 <div className="sidebar-content mx-3 mt-3">
                     <h5 className="border-bottom border-black pb-1">Admin Tools</h5>
                     <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
                         <li className="flex my-2">

@@ -1,6 +1,8 @@
 $theme-colors: (
    'primary': #5CD000,
-  'info': tomato,
+   'secondary': #E9E9E9,
+  'info': #00F0FF,
+  "warning": #EDFF1C,
   'danger': red
 );
 
@@ -14,7 +16,7 @@ $theme-colors: (
 }
 
 .sidebar{
-    width: 250px;
+    width: 270px;
 }
 
 .sidebar .navigation p {
