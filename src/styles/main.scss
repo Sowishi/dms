@@ -27,6 +27,14 @@ $theme-colors: (
   color: black !important;
 }
 
+.sidebar-content .navigation a:hover{
+  background-color: #00F0FF;
+}
+.sidebar-content .navigation a.active{
+    background-color: #00F0FF;
+
+}
+
 
 
 

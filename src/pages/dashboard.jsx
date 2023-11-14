@@ -16,21 +16,21 @@ const Dashboard = () => {
                     <img src="./assets/images/ri_home-office-line.png" alt="" />
                     <div className="wrapper flex flex-column">
                         <p className="mb-0">Offices</p>
-                        <p className="mb-0">15</p>
+                       <Badge bg="primary">9</Badge>
                     </div>
                 </div>
                  <div className="wrapper flex mx-3">
                     <img src="./assets/images/heroicons_users-20-solid.png" alt="" />
                     <div className="wrapper flex flex-column">
                         <p className="mb-0">Members</p>
-                        <p className="mb-0">15</p>
+                       <Badge bg="primary">9</Badge>
                     </div>
                 </div>
                  <div className="wrapper flex mx-3">
                     <img src="./assets/images/solar_documents-bold.png" alt="" />
                     <div className="wrapper flex flex-column">
                         <p className="mb-0">Documents</p>
-                        <p className="mb-0">15</p>
+                       <Badge bg="primary">9</Badge>
                     </div>
                 </div>
                
@@ -50,7 +50,7 @@ const Dashboard = () => {
                 <ListGroup.Item>Rejected</ListGroup.Item>
             </ListGroup>
             <Table bordered hover variant="primary">
-            <thead>
+            <thead >
                 <tr>
                 <th>DocID</th>
                 <th>File Name</th>
