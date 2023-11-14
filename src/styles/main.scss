@@ -1,0 +1,31 @@
+$theme-colors: (
+   'primary': #5CD000,
+  'info': tomato,
+  'danger': red
+);
+
+
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
+.flex{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar{
+    width: 250px;
+}
+
+.sidebar .navigation p {
+  font-size: 12px;
+}
+
+.sidebar-content a{
+  color: black !important;
+}
+
+
+
+
+
