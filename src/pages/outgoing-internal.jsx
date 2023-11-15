@@ -8,7 +8,7 @@ import Form from "react-bootstrap/Form";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const userCollectionRef = collection(db, "users");
 
@@ -16,9 +16,17 @@ const OutgoingInternal = () => {
   const [modalShow, setModalShow] = useState(false);
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
-  const [code, setCode] = useState(null);
+
+  const codeRef = useRef();
 
   function MyVerticallyCenteredModal(props) {
+    const [code, setCode] = useState(null);
+    const generateRandomCode = () => {
+      const min = 1000;
+      const max = 99999;
+      const code = Math.floor(Math.random() * (max - min + 1)) + min;
+      setCode(code.toString());
+    };
     return (
       <Modal
         {...props}
@@ -38,14 +46,12 @@ const OutgoingInternal = () => {
             controlId="exampleForm.ControlInput1"
           >
             <Form.Control
+              value={code}
+              ref={codeRef}
               type="text"
-              onChange={(e) => {
-                setCode(e.target.value);
-                e.preventDefault();
-              }}
               placeholder="QR CODE"
             />
-            <Button onClick={generateCode}>Generate</Button>
+            <Button onClick={generateRandomCode}>Generate</Button>
           </Form.Group>
           <Form.Label>Sender</Form.Label>
 
@@ -168,12 +174,13 @@ const OutgoingInternal = () => {
   }
 
   const handleSubmit = () => {
-    addDoc(userCollectionRef, {
-      fullName: "Micaela Serrano",
-      role: "admin",
-      username: "jmmolina",
-      password: "123456",
-    });
+    // addDoc(userCollectionRef, {
+    //   fullName: "Micaela Serrano",
+    //   role: "admin",
+    //   username: "jmmolina",
+    //   password: "123456",
+    // });
+    console.log(codeRef.current.value);
   };
 
   const fetchData = async () => {
@@ -194,8 +201,6 @@ const OutgoingInternal = () => {
     setAllSender(sender);
     setAllReciever(reciever);
   };
-
-  const generateCode = () => {};
 
   useEffect(() => {
     fetchData();
