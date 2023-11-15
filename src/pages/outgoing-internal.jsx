@@ -5,146 +5,201 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function MyVerticallyCenteredModal(props) {
-  return (
-    <Modal
-      {...props}
-      size="xl"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Compose</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="title bg-primary w-100">
-          <h5 className="text-white mx-3 p-2 my-3">Details</h5>
-        </div>
-        <Form.Group className="mb-3 flex" controlId="exampleForm.ControlInput1">
-          <Form.Control type="email" placeholder="QR CODE" />
-          <Button onClick={props.onHide}>Generate</Button>
-        </Form.Group>
-        <Form.Select className="mb-3" aria-label="Default select example">
-          <option>Sender</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-        </Form.Select>
-        <Form.Select className="mb-3" aria-label="Default select example">
-          <option>Reciever</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
-        </Form.Select>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-          <Form.Label>Subject</Form.Label>
-          <Form.Control type="email" />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-          <Form.Label>Example textarea</Form.Label>
-          <Form.Control as="textarea" rows={3} />
-        </Form.Group>
-        <div className="row">
-          <div className="col-lg-6">
-            <Form.Label>Prioritization</Form.Label>
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Date</Form.Label>
-            <Form.Control type="date" />
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Classification</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Sub Classification</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Action</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Due Date</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Deliver Type</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-          <div className="col-lg-6">
-            <Form.Label>Document Flow</Form.Label>
-
-            <Form.Select className="mb-3" aria-label="Default select example">
-              <option>Reciever</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-            </Form.Select>
-          </div>
-        </div>
-        <div className="title bg-primary w-100">
-          <h5 className="text-white mx-3 p-2 my-3">Attachments</h5>
-        </div>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-          <Form.Label>Details</Form.Label>
-          <Form.Control type="text" />
-          <Form.Group controlId="formFile" className="mb-3">
-            <Form.Label>Choose File</Form.Label>
-            <Form.Control type="file" />
-          </Form.Group>
-        </Form.Group>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button className="px-5" onClick={props.onHide}>
-          Send
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
+const userCollectionRef = collection(db, "users");
 
 const OutgoingInternal = () => {
   const [modalShow, setModalShow] = useState(false);
+  const [allSender, setAllSender] = useState([]);
+  const [allReciever, setAllReciever] = useState([]);
+  const [code, setCode] = useState(null);
+
+  function MyVerticallyCenteredModal(props) {
+    return (
+      <Modal
+        {...props}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">Compose</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="title bg-primary w-100">
+            <h5 className="text-white mx-3 p-2 my-3">Details</h5>
+          </div>
+          <Form.Group
+            className="mb-3 flex"
+            controlId="exampleForm.ControlInput1"
+          >
+            <Form.Control
+              type="text"
+              onChange={(e) => {
+                setCode(e.target.value);
+                e.preventDefault();
+              }}
+              placeholder="QR CODE"
+            />
+            <Button onClick={generateCode}>Generate</Button>
+          </Form.Group>
+          <Form.Label>Sender</Form.Label>
+
+          <Form.Select className="mb-3" aria-label="Default select example">
+            {allSender &&
+              allSender.map((sender) => {
+                return <option value="1">{sender.fullName}</option>;
+              })}
+          </Form.Select>
+          <Form.Label>Reciever</Form.Label>
+
+          <Form.Select className="mb-3" aria-label="Default select example">
+            {allReciever &&
+              allReciever.map((sender) => {
+                return <option value="1">{sender.fullName}</option>;
+              })}
+          </Form.Select>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label>Subject</Form.Label>
+            <Form.Control type="email" />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+            <Form.Label>Example textarea</Form.Label>
+            <Form.Control as="textarea" rows={3} />
+          </Form.Group>
+          <div className="row">
+            <div className="col-lg-6">
+              <Form.Label>Prioritization</Form.Label>
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Date</Form.Label>
+              <Form.Control type="date" />
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Classification</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Sub Classification</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Action</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Due Date</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Deliver Type</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+            <div className="col-lg-6">
+              <Form.Label>Document Flow</Form.Label>
+
+              <Form.Select className="mb-3" aria-label="Default select example">
+                <option>Reciever</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </Form.Select>
+            </div>
+          </div>
+          <div className="title bg-primary w-100">
+            <h5 className="text-white mx-3 p-2 my-3">Attachments</h5>
+          </div>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label>Details</Form.Label>
+            <Form.Control type="text" />
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Label>Choose File</Form.Label>
+              <Form.Control type="file" />
+            </Form.Group>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button className="px-5" onClick={handleSubmit}>
+            Send
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
+  const handleSubmit = () => {
+    addDoc(userCollectionRef, {
+      fullName: "Micaela Serrano",
+      role: "admin",
+      username: "jmmolina",
+      password: "123456",
+    });
+  };
+
+  const fetchData = async () => {
+    const snapshot = await getDocs(userCollectionRef);
+    const output = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    const sender = output.filter((user) => {
+      if (user.role == "admin") {
+        return user;
+      }
+    });
+    const reciever = output.filter((user) => {
+      if (user.role == "user") {
+        return user;
+      }
+    });
+    setAllSender(sender);
+    setAllReciever(reciever);
+  };
+
+  const generateCode = () => {};
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="dashboard">
