@@ -20,13 +20,48 @@ const OutgoingInternal = () => {
   const codeRef = useRef();
 
   function MyVerticallyCenteredModal(props) {
-    const [code, setCode] = useState(null);
+    const [code, setCode] = useState("");
+    const [sender, setSender] = useState("");
+    const [reciever, setReciever] = useState("");
+    const [subject, setSubject] = useState("");
+    const [description, setDescription] = useState("");
+    const [prioritization, setPrioritization] = useState("");
+    const [date, setDate] = useState(null);
+    const [classification, setClassification] = useState("");
+    const [subClassification, setSubClassification] = useState("");
+    const [action, setAction] = useState("");
+    const [dueDate, setDueDate] = useState("");
+    const [deliverType, setDeliverType] = useState("");
+    const [documentFlow, setDocumentFlow] = useState("");
+    const [attachmentDetail, setAttachmentDetail] = useState("");
+    cont[(file, setFile)] = useState("");
+
     const generateRandomCode = () => {
       const min = 1000;
       const max = 99999;
       const code = Math.floor(Math.random() * (max - min + 1)) + min;
       setCode(code.toString());
     };
+
+    const handleSubmit = () => {
+      console.log(
+        codeRef.current.value,
+        sender,
+        reciever,
+        subject,
+        description,
+        prioritization,
+        date,
+        classification,
+        subClassification,
+        action,
+        dueDate,
+        deliverType,
+        documentFlow,
+        attachmentDetail
+      );
+    };
+
     return (
       <Modal
         {...props}
@@ -41,6 +76,8 @@ const OutgoingInternal = () => {
           <div className="title bg-primary w-100">
             <h5 className="text-white mx-3 p-2 my-3">Details</h5>
           </div>
+          <Form.Label>Document Code</Form.Label>
+
           <Form.Group
             className="mb-3 flex"
             controlId="exampleForm.ControlInput1"
@@ -55,100 +92,158 @@ const OutgoingInternal = () => {
           </Form.Group>
           <Form.Label>Sender</Form.Label>
 
-          <Form.Select className="mb-3" aria-label="Default select example">
+          <Form.Select
+            onChange={(e) => setSender(e.target.value)}
+            className="mb-3"
+          >
+            <option key={0} value={0}>
+              Please select a sender
+            </option>
             {allSender &&
               allSender.map((sender) => {
-                return <option value="1">{sender.fullName}</option>;
+                return (
+                  <option key={sender.userID} value={sender.userID}>
+                    {sender.fullName}
+                  </option>
+                );
               })}
           </Form.Select>
           <Form.Label>Reciever</Form.Label>
 
-          <Form.Select className="mb-3" aria-label="Default select example">
+          <Form.Select
+            onChange={(e) => setReciever(e.target.value)}
+            className="mb-3"
+          >
+            <option key={0} value={0}>
+              Please select a reciever
+            </option>
             {allReciever &&
-              allReciever.map((sender) => {
-                return <option value="1">{sender.fullName}</option>;
+              allReciever.map((reciever) => {
+                return (
+                  <option key={reciever.userID} value={reciever.userID}>
+                    {reciever.fullName}
+                  </option>
+                );
               })}
           </Form.Select>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+          <Form.Group
+            onChange={(e) => setSubject(e.target.value)}
+            className="mb-3"
+            controlId="exampleForm.ControlInput1"
+          >
             <Form.Label>Subject</Form.Label>
             <Form.Control type="email" />
           </Form.Group>
           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-            <Form.Label>Example textarea</Form.Label>
-            <Form.Control as="textarea" rows={3} />
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              onChange={(e) => setDescription(e.target.value)}
+              as="textarea"
+              rows={3}
+            />
           </Form.Group>
           <div className="row">
             <div className="col-lg-6">
               <Form.Label>Prioritization</Form.Label>
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setPrioritization(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="urgent">Urgent</option>
+                <option value="usual">Usual</option>
               </Form.Select>
             </div>
             <div className="col-lg-6">
               <Form.Label>Date</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control
+                onChange={(e) => setDate(e.target.value)}
+                type="date"
+              />
             </div>
             <div className="col-lg-6">
               <Form.Label>Classification</Form.Label>
 
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setClassification(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="memorandum">Memorandum</option>
+                <option value="letter">Letter</option>
+                <option value="indorsement/transmittal">
+                  Indorsement/Transmittal
+                </option>
               </Form.Select>
             </div>
             <div className="col-lg-6">
               <Form.Label>Sub Classification</Form.Label>
 
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setSubClassification(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="compliance">For Compliance</option>
+                <option value="information">For Information</option>
+                <option value="inquiry">Inquiry</option>
+                <option value="invitation">Invitation</option>
+                <option value="request">Request</option>
+                <option value="others">Others</option>
               </Form.Select>
             </div>
             <div className="col-lg-6">
               <Form.Label>Action</Form.Label>
 
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setAction(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="For Submission of Documents">
+                  For Submission of Documents
+                </option>
+                <option value="For Approval/Signature">
+                  For Approval/Signature
+                </option>
+                <option value="For Monitoring">For Monitoring</option>
+                <option value="For Comment/Justification">
+                  For Comment/Justification
+                </option>
+                <option value="For Considilation">For Considilation</option>
+                <option value="For Printing">For Printing</option>
               </Form.Select>
             </div>
             <div className="col-lg-6">
               <Form.Label>Due Date</Form.Label>
-
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </Form.Select>
+              <Form.Control
+                onChange={(e) => setDueDate(e.target.value)}
+                type="date"
+              />
             </div>
             <div className="col-lg-6">
               <Form.Label>Deliver Type</Form.Label>
 
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setDeliverType(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="Through DMS">Through DMS</option>
+                <option value="Hand-over">Hand-over</option>
+                <option value="Combination">Combination</option>
               </Form.Select>
             </div>
             <div className="col-lg-6">
               <Form.Label>Document Flow</Form.Label>
 
-              <Form.Select className="mb-3" aria-label="Default select example">
-                <option>Reciever</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <Form.Select
+                onChange={(e) => setDocumentFlow(e.target.value)}
+                className="mb-3"
+              >
+                <option>Please select an option</option>
+                <option value="Internal">Internal</option>
+                <option value="External">External</option>
               </Form.Select>
             </div>
           </div>
@@ -157,7 +252,10 @@ const OutgoingInternal = () => {
           </div>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>Details</Form.Label>
-            <Form.Control type="text" />
+            <Form.Control
+              onChange={(e) => setAttachmentDetail(e.target.value)}
+              type="text"
+            />
             <Form.Group controlId="formFile" className="mb-3">
               <Form.Label>Choose File</Form.Label>
               <Form.Control type="file" />
@@ -172,16 +270,6 @@ const OutgoingInternal = () => {
       </Modal>
     );
   }
-
-  const handleSubmit = () => {
-    // addDoc(userCollectionRef, {
-    //   fullName: "Micaela Serrano",
-    //   role: "admin",
-    //   username: "jmmolina",
-    //   password: "123456",
-    // });
-    console.log(codeRef.current.value);
-  };
 
   const fetchData = async () => {
     const snapshot = await getDocs(userCollectionRef);
