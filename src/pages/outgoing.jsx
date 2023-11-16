@@ -5,7 +5,7 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
 
@@ -14,11 +14,13 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 
 const userCollectionRef = collection(db, "users");
+const outgoingCollectionRef = collection(db, "outgoing");
 
-const OutgoingInternal = () => {
+const Outgoing = () => {
   const [modalShow, setModalShow] = useState(false);
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
+  const [outgoingMesssages, setOutgoingMessages] = useState([]);
 
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
@@ -144,7 +146,11 @@ const OutgoingInternal = () => {
         documentFlow: documentFlow || null,
         attachmentDetail: attachmentDetail || null,
         fileUrl: fileUrl || null,
+        fileName: file.name,
+        status: "Pending",
       };
+
+      console.log(file);
 
       const messagesRef = collection(db, "outgoing");
       addDoc(messagesRef, dataObject).then((snapshot) => {
@@ -409,8 +415,32 @@ const OutgoingInternal = () => {
         return user;
       }
     });
+
+    onSnapshot(
+      outgoingCollectionRef,
+      (querySnapshot) => {
+        const messages = [];
+        querySnapshot.forEach((doc) => {
+          messages.push(doc.data());
+        });
+        setOutgoingMessages(messages);
+      },
+      (error) => {
+        console.error("Error listening to collection:", error);
+      }
+    );
+
     setAllSender(sender);
     setAllReciever(reciever);
+  };
+
+  const getUser = (id) => {
+    const user = allReciever.filter((user) => {
+      if (user.userID == id) {
+        return user;
+      }
+    });
+    return user[0];
   };
 
   useEffect(() => {
@@ -465,68 +495,39 @@ const OutgoingInternal = () => {
             <tr>
               <th>DocID</th>
               <th>File Name</th>
-              <th>From</th>
+              <th>Reciever</th>
               <th>Required Action</th>
-              <th>Date Received</th>
+              <th>Date of letter</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="flex">
-                <FaFile />
-                00001
-              </td>
-              <td>test.pdf</td>
-              <td>Ms.Personnel - Office, Position</td>
-              <td>For Submission</td>
-              <td>Oct. 27, 2023</td>
-              <td>
-                <Badge bg="warning" className="text-black">
-                  Pending
-                </Badge>
-              </td>
-              <td className="flex">
-                <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td className="flex">
-                <FaFile />
-                00001
-              </td>
-              <td>test.pdf</td>
-              <td>Ms.Personnel - Office, Position</td>
-              <td>For Submission</td>
-              <td>Oct. 27, 2023</td>
-              <td>
-                <Badge bg="warning" className="text-black">
-                  Pending
-                </Badge>
-              </td>
-              <td className="flex">
-                <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
-              </td>
-            </tr>
-            <tr>
-              <td className="flex">
-                <FaFile />
-                00001
-              </td>
-              <td>test.pdf</td>
-              <td>Ms.Personnel - Office, Position</td>
-              <td>For Submission</td>
-              <td>Oct. 27, 2023</td>
-              <td>
-                <Badge bg="warning" className="text-black">
-                  Pending
-                </Badge>
-              </td>
-              <td className="flex">
-                <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
-              </td>
-            </tr>
+            {outgoingMesssages.map((message) => {
+              return (
+                <tr key={message.code}>
+                  <td className="flex">
+                    <FaFile />
+                    {message.code}
+                  </td>
+                  <td>{message.fileName}</td>
+                  <td>{getUser(message.reciever).fullName}</td>
+                  <td>{message.action}</td>
+                  <td>{message.date}</td>
+                  <td>
+                    <Badge bg="warning" className="text-black">
+                      {message.status}
+                    </Badge>
+                  </td>
+                  <td className="flex">
+                    <img
+                      src="./assets/images/pepicons-pencil_dots-y.png"
+                      alt=""
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </Table>
       </div>
@@ -538,4 +539,4 @@ const OutgoingInternal = () => {
   );
 };
 
-export default OutgoingInternal;
+export default Outgoing;
