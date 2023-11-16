@@ -146,7 +146,7 @@ const OutgoingInternal = () => {
         fileUrl: fileUrl || null,
       };
 
-      const messagesRef = collection(db, "messages");
+      const messagesRef = collection(db, "outgoing");
       addDoc(messagesRef, dataObject).then((snapshot) => {
         toast.success("Your message is succesfully sent!");
         setModalShow(false);
@@ -203,7 +203,7 @@ const OutgoingInternal = () => {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 type="text"
-                placeholder="QR CODE"
+                placeholder="Document Code"
               />
               <Button onClick={generateRandomCode}>Generate</Button>
             </Form.Group>
