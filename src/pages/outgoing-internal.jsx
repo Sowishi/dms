@@ -7,9 +7,11 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db, storage } from "../../firebase";
+import BounceLoader from "react-spinners/BounceLoader";
 
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { toast } from "react-toastify";
 
 const userCollectionRef = collection(db, "users");
 
@@ -46,24 +48,58 @@ const OutgoingInternal = () => {
       setCode(code.toString());
     };
 
+    const validateForm = () => {
+      if (
+        code &&
+        sender &&
+        reciever &&
+        subject &&
+        description &&
+        prioritization &&
+        date &&
+        classification &&
+        subClassification &&
+        action &&
+        dueDate &&
+        deliverType &&
+        documentFlow &&
+        attachmentDetail &&
+        file
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     function ConfirmationModal() {
       const [show, setShow] = useState(false);
 
       const handleClose = () => setShow(false);
-      const handleShow = () => setShow(true);
 
       return (
         <>
-          <Button variant="primary" onClick={handleShow}>
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (validateForm()) {
+                setShow(true);
+                console.log(dflkjsdj);
+              } else {
+                toast.error("Pleae fill up the form completely");
+              }
+            }}
+          >
             Send Message
           </Button>
 
           <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Modal heading</Modal.Title>
+              <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-              Woohoo, you are reading this text in a modal!
+            <Modal.Body className="flex flex-column">
+              <img src="./assets/images/game-icons_confirmed.png" alt="" />
+              Proceed to send document?
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
@@ -79,26 +115,30 @@ const OutgoingInternal = () => {
     }
 
     const handleSubmit = (fileUrl) => {
-      console.log(
-        code,
-        sender,
-        reciever,
-        subject,
-        description,
-        prioritization,
-        date,
-        classification,
-        subClassification,
-        action,
-        dueDate,
-        deliverType,
-        documentFlow,
-        attachmentDetail,
-        file,
+      if (
+        code &&
+        sender &&
+        reciever &&
+        subject &&
+        description &&
+        prioritization &&
+        date &&
+        classification &&
+        subClassification &&
+        action &&
+        dueDate &&
+        deliverType &&
+        documentFlow &&
+        attachmentDetail &&
+        file &&
         fileUrl
-      );
-      setLoading(false);
-      setModalShow(false);
+      ) {
+        toast.error("Please fill up the form completely!");
+      } else {
+        setLoading(false);
+        setModalShow(false);
+        toast.success("Your message is successfully sent!");
+      }
     };
 
     const handleUpload = async () => {
@@ -132,7 +172,10 @@ const OutgoingInternal = () => {
           <Modal.Title id="contained-modal-title-vcenter">Compose</Modal.Title>
         </Modal.Header>
         {loading ? (
-          <h1>Loading...</h1>
+          <div className="flex flex-column my-5">
+            <BounceLoader size={150} color="#36d7b7" />
+            <h5>Sending message, please wait...</h5>
+          </div>
         ) : (
           <Modal.Body>
             <div className="title bg-primary w-100">
