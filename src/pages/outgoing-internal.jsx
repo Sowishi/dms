@@ -6,9 +6,10 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { collection, addDoc, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, storage } from "../../firebase";
 
 import { useEffect, useRef, useState } from "react";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const userCollectionRef = collection(db, "users");
 
@@ -34,7 +35,8 @@ const OutgoingInternal = () => {
     const [deliverType, setDeliverType] = useState("");
     const [documentFlow, setDocumentFlow] = useState("");
     const [attachmentDetail, setAttachmentDetail] = useState("");
-    cont[(file, setFile)] = useState("");
+    const [file, setFile] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const generateRandomCode = () => {
       const min = 1000;
@@ -43,7 +45,7 @@ const OutgoingInternal = () => {
       setCode(code.toString());
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (fileUrl) => {
       console.log(
         codeRef.current.value,
         sender,
@@ -58,8 +60,31 @@ const OutgoingInternal = () => {
         dueDate,
         deliverType,
         documentFlow,
-        attachmentDetail
+        attachmentDetail,
+        file,
+        fileUrl
       );
+      setLoading(false);
+    };
+
+    const handleUpload = async () => {
+      setLoading(true);
+      if (file) {
+        const storageRef = ref(storage, `uploads/${file.name}`);
+        uploadBytes(storageRef, file).then((snapshot) => {
+          getDownloadURL(storageRef)
+            .then((url) => {
+              if (url) {
+                handleSubmit(url);
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+            });
+        });
+      } else {
+        console.warn("No file selected for upload");
+      }
     };
 
     return (
@@ -69,6 +94,8 @@ const OutgoingInternal = () => {
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
+        {loading && <h1>Loading...</h1>}
+
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">Compose</Modal.Title>
         </Modal.Header>
@@ -258,12 +285,15 @@ const OutgoingInternal = () => {
             />
             <Form.Group controlId="formFile" className="mb-3">
               <Form.Label>Choose File</Form.Label>
-              <Form.Control type="file" />
+              <Form.Control
+                onChange={(e) => setFile(e.target.files[0])}
+                type="file"
+              />
             </Form.Group>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button className="px-5" onClick={handleSubmit}>
+          <Button className="px-5" onClick={handleUpload}>
             Send
           </Button>
         </Modal.Footer>
