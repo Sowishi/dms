@@ -9,6 +9,7 @@ import Outgoing from "./pages/outgoing";
 import Incoming from "./pages/incoming";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import OutgoingView from "./pages/outgoing-view";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/reports" element={<Reports />} />
             <Route path="/files" element={<Files />} />
             <Route path="/outgoing" element={<Outgoing />} />
+            <Route path="/outgoing/:docID" element={<OutgoingView />} />
             <Route path="/incoming" element={<Incoming />} />
           </Routes>
         </Layout>

@@ -1,13 +1,21 @@
-import { FaSearch, FaFile } from "react-icons/fa";
+import { FaSearch, FaFile, FaTrash, FaEye, FaDownload } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
+import Dropdown from "react-bootstrap/Dropdown";
 
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -44,7 +52,6 @@ const Outgoing = () => {
       const min = 1000;
       const max = 99999;
       const code = Math.floor(Math.random() * (max - min + 1)) + min;
-      console.log(code);
       setCode(code.toString());
     };
 
@@ -149,8 +156,6 @@ const Outgoing = () => {
         fileName: file.name,
         status: "Pending",
       };
-
-      console.log(file);
 
       const messagesRef = collection(db, "outgoing");
       addDoc(messagesRef, dataObject).then((snapshot) => {
@@ -400,6 +405,44 @@ const Outgoing = () => {
     );
   }
 
+  function DropdownAction({ message }) {
+    const downloadFIle = () => {
+      const fileUrl = message.fileUrl;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank";
+      link.download = "downloaded_file";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const handleDelete = () => {
+      const docRef = doc(db, "outgoing", message.id);
+      deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+    };
+
+    return (
+      <Dropdown>
+        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+          <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item href={`/outgoing/${message.code}`}>
+            View Detail <FaEye />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={downloadFIle}>
+            Download <FaDownload />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={handleDelete}>
+            Delete <FaTrash />
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
+
   const fetchData = async () => {
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
@@ -421,7 +464,7 @@ const Outgoing = () => {
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
-          messages.push(doc.data());
+          messages.push({ ...doc.data(), id: doc.id });
         });
         setOutgoingMessages(messages);
       },
@@ -520,10 +563,7 @@ const Outgoing = () => {
                     </Badge>
                   </td>
                   <td className="flex">
-                    <img
-                      src="./assets/images/pepicons-pencil_dots-y.png"
-                      alt=""
-                    />
+                    <DropdownAction message={message} />
                   </td>
                 </tr>
               );
