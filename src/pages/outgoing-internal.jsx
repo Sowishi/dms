@@ -20,8 +20,6 @@ const OutgoingInternal = () => {
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
 
-  const codeRef = useRef();
-
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
     const [sender, setSender] = useState("");
@@ -84,7 +82,6 @@ const OutgoingInternal = () => {
             onClick={() => {
               if (validateForm()) {
                 setShow(true);
-                console.log(dflkjsdj);
               } else {
                 toast.error("Pleae fill up the form completely");
               }
@@ -115,30 +112,45 @@ const OutgoingInternal = () => {
     }
 
     const handleSubmit = (fileUrl) => {
-      if (
-        code &&
-        sender &&
-        reciever &&
-        subject &&
-        description &&
-        prioritization &&
-        date &&
-        classification &&
-        subClassification &&
-        action &&
-        dueDate &&
-        deliverType &&
-        documentFlow &&
-        attachmentDetail &&
-        file &&
-        fileUrl
-      ) {
-        toast.error("Please fill up the form completely!");
-      } else {
-        setLoading(false);
+      // console.log("Code:", code);
+      // console.log("Sender:", sender);
+      // console.log("Receiver:", reciever);
+      // console.log("Subject:", subject);
+      // console.log("Description:", description);
+      // console.log("Prioritization:", prioritization);
+      // console.log("Date:", date);
+      // console.log("Classification:", classification);
+      // console.log("Subclassification:", subClassification);
+      // console.log("Action:", action);
+      // console.log("Due Date:", dueDate);
+      // console.log("Deliver Type:", deliverType);
+      // console.log("Document Flow:", documentFlow);
+      // console.log("Attachment Detail:", attachmentDetail);
+      // console.log("File:", file);
+
+      const dataObject = {
+        code: code || null,
+        sender: sender || null,
+        reciever: reciever || null,
+        subject: subject || null,
+        description: description || null,
+        prioritization: prioritization || null,
+        date: date || null,
+        classification: classification || null,
+        subClassification: subClassification || null,
+        action: action || null,
+        dueDate: dueDate || null,
+        deliverType: deliverType || null,
+        documentFlow: documentFlow || null,
+        attachmentDetail: attachmentDetail || null,
+        fileUrl: fileUrl || null,
+      };
+
+      const messagesRef = collection(db, "messages");
+      addDoc(messagesRef, dataObject).then((snapshot) => {
+        toast.success("Your message is succesfully sent!");
         setModalShow(false);
-        toast.success("Your message is successfully sent!");
-      }
+      });
     };
 
     const handleUpload = async () => {
