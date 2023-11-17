@@ -12,14 +12,16 @@ import {
   onSnapshot,
   deleteDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
-import { db, storage } from "../../firebase";
+import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
 import Dropdown from "react-bootstrap/Dropdown";
 
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "outgoing");
@@ -230,7 +232,7 @@ const Outgoing = () => {
               {allSender &&
                 allSender.map((sender) => {
                   return (
-                    <option key={sender.userID} value={sender.userID}>
+                    <option key={sender.userID} value={sender.id}>
                       {sender.fullName}
                     </option>
                   );
@@ -248,7 +250,7 @@ const Outgoing = () => {
               {allReciever &&
                 allReciever.map((reciever) => {
                   return (
-                    <option key={reciever.userID} value={reciever.userID}>
+                    <option key={reciever.userID} value={reciever.id}>
                       {reciever.fullName}
                     </option>
                   );
@@ -479,7 +481,7 @@ const Outgoing = () => {
 
   const getUser = (id) => {
     const user = allReciever.filter((user) => {
-      if (user.userID == id) {
+      if (user.id === id) {
         return user;
       }
     });

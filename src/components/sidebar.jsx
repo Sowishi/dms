@@ -28,9 +28,9 @@ const Sidebar = () => {
           <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
             <Link
               className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                location == "/dashboard" ? "active" : ""
+                location == "/" ? "active" : ""
               }`}
-              to={"/dashboard"}
+              to={"/"}
             >
               <FaHome size={"20px"} />
               <p className="mb-0 mx-2">Dashboard</p>
@@ -77,10 +77,10 @@ const Sidebar = () => {
         <div className="sidebar-content mx-3 mt-3">
           <h5 className="border-bottom border-black pb-1">Admin Tools</h5>
           <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
-            <li className="flex my-2">
+            <Link to={"/create-user"} className="flex my-2">
               <FaUser size={"20px"} />
               <p className="mb-0 mx-2">User Management</p>
-            </li>
+            </Link>
             <li className="flex my-2">
               <FaPeopleCarry size={"20px"} />
               <p className="mb-0 mx-2">Office Management</p>
