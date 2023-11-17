@@ -1,7 +1,12 @@
 import { Container } from "react-bootstrap";
 import Sidebar from "./components/sidebar";
 import Layout from "./layout/layout";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import Reports from "./pages/reports";
 import Files from "./pages/files";
@@ -15,17 +20,24 @@ import LayoutUser from "./layout/layoutUser";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import BounceLoader from "react-spinners/BounceLoader";
 
 function App() {
   const [user, setUser] = useState(null);
 
   const LoginComponent = () => {
+    let navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleLogin = async () => {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log(result);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        navigate("/dashboard");
+      } catch (error) {
+        toast.error(error.message);
+      }
     };
 
     return (
@@ -48,42 +60,35 @@ function App() {
     });
   }, []);
 
-  console.log(user);
-
   return (
     <>
-      {user ? (
-        <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/files" element={<Files />} />
-              <Route path="/outgoing" element={<Outgoing />} />
-              <Route path="/outgoing/:docID" element={<OutgoingView />} />
-              <Route path="/incoming" element={<Incoming />} />
-              <Route path="/create-user" element={<CreateUser />} />
-            </Routes>
-          </Layout>
-          {/* User */}
-          <LayoutUser></LayoutUser>
+      <Router>
+        <>
+          <Routes>
+            <Route path="/" element={<LoginComponent />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/files" element={<Files />} />
+            <Route path="/outgoing" element={<Outgoing />} />
+            <Route path="/outgoing/:docID" element={<OutgoingView />} />
+            <Route path="/incoming" element={<Incoming />} />
+            <Route path="/create-user" element={<CreateUser />} />{" "}
+          </Routes>
+        </>
 
-          <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-        </Router>
-      ) : (
-        <> </>
-      )}
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </Router>
     </>
   );
 }

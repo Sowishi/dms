@@ -28,9 +28,9 @@ const Sidebar = () => {
           <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
             <Link
               className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                location == "/" ? "active" : ""
+                location == "/dashboard" ? "active" : ""
               }`}
-              to={"/"}
+              to={"/dashboard"}
             >
               <FaHome size={"20px"} />
               <p className="mb-0 mx-2">Dashboard</p>

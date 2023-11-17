@@ -1,7 +1,11 @@
+import Layout from "../layout/layout";
+
 const Files = () => {
-    return ( 
-        <h1>Files</h1>
-     );
-}
- 
+  return (
+    <Layout>
+      <h1>Files</h1>
+    </Layout>
+  );
+};
+
 export default Files;

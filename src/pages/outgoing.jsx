@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import Layout from "../layout/layout";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "outgoing");
@@ -493,91 +494,93 @@ const Outgoing = () => {
   }, []);
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header ">
-        <div className="row">
-          <div className="col-lg-6 flex justify-content-start">
-            <img
-              onClick={() => setModalShow(true)}
-              className="mx-3"
-              src="./assets/images/Group 8779.png"
-              alt=""
-            />
-          </div>
-          <div className="col-lg-6 flex">
-            <img src="./assets/images/Group 8829.png" alt="" />
-          </div>
-        </div>
-      </div>
-      <div className="dashboard-content mx-3 mt-3">
-        <div className="row">
-          <div className="col-lg-7">
-            <ListGroup horizontal>
-              <ListGroup.Item>
-                All <Badge bg="info">9</Badge>
-              </ListGroup.Item>
-              <ListGroup.Item>
-                Current <Badge bg="info">9</Badge>
-              </ListGroup.Item>
-              <ListGroup.Item>
-                Usual <Badge bg="info">9</Badge>
-              </ListGroup.Item>
-            </ListGroup>
-          </div>
-          <div className="col-lg-5">
-            <div className="search flex w-100 ">
-              <input
-                type="text"
-                placeholder="Search docID, name, etc..."
-                className="form form-control w-75 bg-secondary mx-2"
+    <Layout>
+      <div className="dashboard">
+        <div className="dashboard-header ">
+          <div className="row">
+            <div className="col-lg-6 flex justify-content-start">
+              <img
+                onClick={() => setModalShow(true)}
+                className="mx-3"
+                src="./assets/images/Group 8779.png"
+                alt=""
               />
-              <FaSearch />
+            </div>
+            <div className="col-lg-6 flex">
+              <img src="./assets/images/Group 8829.png" alt="" />
             </div>
           </div>
         </div>
-        <Table bordered hover variant="primary">
-          <thead>
-            <tr>
-              <th>DocID</th>
-              <th>File Name</th>
-              <th>Reciever</th>
-              <th>Required Action</th>
-              <th>Date of letter</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {outgoingMesssages.map((message) => {
-              return (
-                <tr key={message.code}>
-                  <td className="flex">
-                    <FaFile />
-                    {message.code}
-                  </td>
-                  <td>{message.fileName}</td>
-                  <td>{getUser(message.reciever).fullName}</td>
-                  <td>{message.action}</td>
-                  <td>{message.date}</td>
-                  <td>
-                    <Badge bg="warning" className="text-black">
-                      {message.status}
-                    </Badge>
-                  </td>
-                  <td className="flex">
-                    <DropdownAction message={message} />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
+        <div className="dashboard-content mx-3 mt-3">
+          <div className="row">
+            <div className="col-lg-7">
+              <ListGroup horizontal>
+                <ListGroup.Item>
+                  All <Badge bg="info">9</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Current <Badge bg="info">9</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Usual <Badge bg="info">9</Badge>
+                </ListGroup.Item>
+              </ListGroup>
+            </div>
+            <div className="col-lg-5">
+              <div className="search flex w-100 ">
+                <input
+                  type="text"
+                  placeholder="Search docID, name, etc..."
+                  className="form form-control w-75 bg-secondary mx-2"
+                />
+                <FaSearch />
+              </div>
+            </div>
+          </div>
+          <Table bordered hover variant="primary">
+            <thead>
+              <tr>
+                <th>DocID</th>
+                <th>File Name</th>
+                <th>Reciever</th>
+                <th>Required Action</th>
+                <th>Date of letter</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {outgoingMesssages.map((message) => {
+                return (
+                  <tr key={message.code}>
+                    <td className="flex">
+                      <FaFile />
+                      {message.code}
+                    </td>
+                    <td>{message.fileName}</td>
+                    <td>{getUser(message.reciever).fullName}</td>
+                    <td>{message.action}</td>
+                    <td>{message.date}</td>
+                    <td>
+                      <Badge bg="warning" className="text-black">
+                        {message.status}
+                      </Badge>
+                    </td>
+                    <td className="flex">
+                      <DropdownAction message={message} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </div>
+        <MyVerticallyCenteredModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        />
       </div>
-      <MyVerticallyCenteredModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-      />
-    </div>
+    </Layout>
   );
 };
 
