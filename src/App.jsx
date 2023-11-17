@@ -60,20 +60,27 @@ function App() {
     });
   }, []);
 
+  console.log(user);
+
   return (
     <>
       <Router>
         <>
-          <Routes>
-            <Route path="/" element={<LoginComponent />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/files" element={<Files />} />
-            <Route path="/outgoing" element={<Outgoing />} />
-            <Route path="/outgoing/:docID" element={<OutgoingView />} />
-            <Route path="/incoming" element={<Incoming />} />
-            <Route path="/create-user" element={<CreateUser />} />{" "}
-          </Routes>
+          {user ? (
+            <Routes>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/files" element={<Files />} />
+              <Route path="/outgoing" element={<Outgoing />} />
+              <Route path="/outgoing/:docID" element={<OutgoingView />} />
+              <Route path="/incoming" element={<Incoming />} />
+              <Route path="/create-user" element={<CreateUser />} />{" "}
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<LoginComponent />} />
+            </Routes>
+          )}
         </>
 
         <ToastContainer
