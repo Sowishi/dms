@@ -1,41 +1,46 @@
 $theme-colors: (
-   'primary': #5CD000,
-   'secondary': #E9E9E9,
-  'info': #00F0FF,
-  "warning": #EDFF1C,
-  'danger': red
+  "primary": #5cd000,
+  "secondary": #e9e9e9,
+  "info": #00f0ff,
+  "warning": #edff1c,
+  "danger": red,
 );
 
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
-@import '../../node_modules/bootstrap/scss/bootstrap.scss';
-
-.flex{
+.flex {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.sidebar{
-    width: 270px;
+.sidebar {
+  width: 270px;
 }
 
 .sidebar .navigation p {
   font-size: 12px;
 }
 
-.sidebar-content a{
+.sidebar-content a {
   color: black !important;
 }
 
-.sidebar-content .navigation a:hover{
-  background-color: #00F0FF;
+.sidebar-content .navigation a:hover {
+  background-color: #00f0ff;
 }
-.sidebar-content .navigation a.active{
-    background-color: #00F0FF;
-
+.sidebar-content .navigation a.active {
+  background-color: #00f0ff;
+}
+.login-wrapper {
+  height: 100vh;
+  background-image: url(../../public/assets/images/bg.png),
+    linear-gradient(to bottom, rgba(13, 206, 170, 0.5), rgba(36, 163, 140, 0.8));
 }
 
-
-
-
-
+.login-content {
+  height: 400px;
+  width: 360px;
+  background-color: white;
+  border-radius: 10px;
+}

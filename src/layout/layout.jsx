@@ -4,11 +4,14 @@ import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Dropdown from "react-bootstrap/Dropdown";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
-import { useNavigation } from "react-router";
+import { useNavigate } from "react-router";
 
 const Layout = ({ children }) => {
+  const navigation = useNavigate();
+
   const handleLogout = () => {
     signOut(auth);
+    navigation("/");
   };
 
   return (
