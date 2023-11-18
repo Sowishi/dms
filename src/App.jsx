@@ -18,13 +18,16 @@ import OutgoingView from "./pages/outgoing-view";
 import CreateUser from "./pages/createUser";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { FaUser, FaLock } from "react-icons/fa";
 import { BounceLoader } from "react-spinners";
+import { doc, getDoc } from "firebase/firestore";
+import UserDashboard from "./pages/user-dashboard";
 
 function App() {
   const [user, setUser] = useState(null);
   const [appLoading, setAppLoading] = useState(false);
+  const [admin, setAdmin] = useState(false);
 
   const LoginComponent = () => {
     let navigate = useNavigate();
@@ -33,11 +36,26 @@ function App() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const isAdmin = async () => {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const docSnapshot = await getDoc(userRef);
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+        if (data.role == "admin") {
+          setAdmin(true);
+          navigate("/dashboard");
+        }
+        if (data.role == "user") {
+          navigate("/user-dashboard");
+        }
+      }
+    };
+
     const handleLogin = async () => {
       setLoading(true);
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        navigate("/dashboard");
+        isAdmin();
       } catch (error) {
         toast.error(error.message);
       }
@@ -108,12 +126,11 @@ function App() {
                 <Route path="/outgoing/:docID" element={<OutgoingView />} />
                 <Route path="/incoming" element={<Incoming />} />
                 <Route path="/create-user" element={<CreateUser />} />{" "}
-                <Route path="/test" element={<Layout />} />{" "}
+                <Route path="/user-dashboard" element={<UserDashboard />} />
               </Routes>
             ) : (
               <Routes>
                 <Route path="/" element={<LoginComponent />} />
-                <Route path="/test" element={<Layout />} />{" "}
               </Routes>
             )}
           </>

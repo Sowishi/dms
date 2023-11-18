@@ -22,8 +22,9 @@ $theme-colors: (
   font-size: 12px;
 }
 
-.sidebar-content a {
+.sidebar-content .navigation a {
   color: black !important;
+  border-radius: 10px;
 }
 
 .sidebar-content .navigation a:hover {
