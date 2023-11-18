@@ -23,6 +23,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { BounceLoader } from "react-spinners";
 import { doc, getDoc } from "firebase/firestore";
 import UserDashboard from "./pages/user-dashboard";
+import UserIncoming from "./pages/user-incoming";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -127,6 +128,7 @@ function App() {
                 <Route path="/incoming" element={<Incoming />} />
                 <Route path="/create-user" element={<CreateUser />} />{" "}
                 <Route path="/user-dashboard" element={<UserDashboard />} />
+                <Route path="/user-incoming" element={<UserIncoming />} />
               </Routes>
             ) : (
               <Routes>
