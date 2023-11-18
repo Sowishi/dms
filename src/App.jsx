@@ -6,6 +6,7 @@ import {
   Routes,
   Route,
   useNavigate,
+  Link,
 } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
 import Reports from "./pages/reports";
@@ -17,7 +18,11 @@ import "react-toastify/dist/ReactToastify.css";
 import OutgoingView from "./pages/outgoing-view";
 import CreateUser from "./pages/createUser";
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../firebase";
 import { FaUser, FaLock } from "react-icons/fa";
 import { BounceLoader } from "react-spinners";
@@ -94,7 +99,54 @@ function App() {
                 <Spinner animation="border" variant="secondary" />
               )}
             </button>
-            <p>Forgot Password?</p>
+            <Link to={"/forgot"}>Forgot Password?</Link>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const ForgotComponent = () => {
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleForgot = async () => {
+      try {
+        setLoading(true);
+        await sendPasswordResetEmail(auth, email);
+        toast.success("Successfully sent an email for password reset");
+      } catch (error) {
+        toast.error(error.message);
+      }
+      setLoading(false);
+    };
+
+    return (
+      <>
+        <div className="login-wrapper d-flex justify-content-center align-items-center">
+          <div className="login-content d-flex justify-content-center align-items-center flex-column">
+            <img width={"80px"} src="./assets/images/logo.png" alt="" />
+            <h2 className="fw-bold">DMS-LGU</h2>
+            <p>Document Management System</p>
+            <div className="wrapper flex ">
+              <FaUser className="m-3" />
+              <input
+                className="form-control bg-secondary"
+                type="text"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <button
+              className="btn btn-primary my-3 px-5"
+              onClick={handleForgot}
+            >
+              {!loading ? (
+                "Send Email"
+              ) : (
+                <Spinner animation="border" variant="secondary" />
+              )}
+            </button>
           </div>
         </div>
       </>
@@ -133,6 +185,7 @@ function App() {
             ) : (
               <Routes>
                 <Route path="/" element={<LoginComponent />} />
+                <Route path="/forgot" element={<ForgotComponent />} />
               </Routes>
             )}
           </>
