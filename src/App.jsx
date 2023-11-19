@@ -29,6 +29,7 @@ import { BounceLoader } from "react-spinners";
 import { doc, getDoc } from "firebase/firestore";
 import UserDashboard from "./pages/user-dashboard";
 import UserIncoming from "./pages/user-incoming";
+import UserOutgoing from "./pages/user-outgoing";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -181,6 +182,7 @@ function App() {
                 <Route path="/create-user" element={<CreateUser />} />{" "}
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/user-incoming" element={<UserIncoming />} />
+                <Route path="/user-outgoing" element={<UserOutgoing />} />
               </Routes>
             ) : (
               <Routes>
