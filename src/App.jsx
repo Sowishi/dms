@@ -15,7 +15,7 @@ import Outgoing from "./pages/outgoing";
 import Incoming from "./pages/incoming";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import OutgoingView from "./pages/outgoing-view";
+import MessageView from "./pages/message-view";
 import CreateUser from "./pages/createUser";
 import { useEffect, useState } from "react";
 import {
@@ -173,11 +173,11 @@ function App() {
           <>
             {user ? (
               <Routes>
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/files" element={<Files />} />
                 <Route path="/outgoing" element={<Outgoing />} />
-                <Route path="/outgoing/:docID" element={<OutgoingView />} />
                 <Route path="/incoming" element={<Incoming />} />
                 <Route path="/create-user" element={<CreateUser />} />{" "}
                 <Route path="/user-dashboard" element={<UserDashboard />} />

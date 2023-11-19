@@ -23,6 +23,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
+import ViewModal from "../components/viewModal";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "incoming");
@@ -32,6 +33,7 @@ const incoming = () => {
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState(null);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -57,7 +59,12 @@ const incoming = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item href={`/outgoing/${message.code}`}>
+          <Dropdown.Item
+            onClick={() => {
+              setModalShow(true);
+              setCurrentMessage(message);
+            }}
+          >
             View Detail <FaEye />
           </Dropdown.Item>
           <Dropdown.Item onClick={downloadFIle}>
@@ -123,6 +130,15 @@ const incoming = () => {
 
   return (
     <Layout>
+      {currentMessage && (
+        <ViewModal
+          getUser={getUser}
+          currentMessage={currentMessage}
+          closeModal={() => setModalShow(false)}
+          showModal={modalShow}
+        />
+      )}
+
       <div className="dashboard">
         <div className="dashboard-header ">
           <div className="row">

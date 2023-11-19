@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import Layout from "../layout/layout";
 
-const OutgoingView = () => {
+const MessageView = () => {
   const { docID } = useParams();
 
   return (
@@ -13,4 +13,4 @@ const OutgoingView = () => {
   );
 };
 
-export default OutgoingView;
+export default MessageView;
