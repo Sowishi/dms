@@ -1,4 +1,11 @@
-import { FaSearch, FaFile, FaTrash, FaEye, FaDownload } from "react-icons/fa";
+import {
+  FaSearch,
+  FaFile,
+  FaTrash,
+  FaEye,
+  FaDownload,
+  FaMap,
+} from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import Table from "react-bootstrap/Table";
@@ -24,9 +31,30 @@ import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
 import ViewModal from "../components/viewModal";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "incoming");
+
+function OffCanvasExample(props) {
+  const { currentMessage } = props;
+  return (
+    <>
+      <Offcanvas
+        placement="end"
+        show={props.showRouting}
+        onHide={props.handleCloseRouting}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{currentMessage.id}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <h2>Document Routing..</h2>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+}
 
 const incoming = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -34,6 +62,7 @@ const incoming = () => {
   const [allReciever, setAllReciever] = useState([]);
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
+  const [showRouting, setShowRouting] = useState(false);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -72,6 +101,14 @@ const incoming = () => {
           </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -130,6 +167,16 @@ const incoming = () => {
 
   return (
     <Layout>
+      {currentMessage && (
+        <OffCanvasExample
+          currentMessage={currentMessage}
+          showRouting={showRouting}
+          handleCloseRouting={() => setShowRouting(false)}
+          placement={"end"}
+          name={"end"}
+        />
+      )}
+
       {currentMessage && (
         <ViewModal
           getUser={getUser}
