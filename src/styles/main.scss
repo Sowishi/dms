@@ -16,10 +16,15 @@ $theme-colors: (
 
 .sidebar {
   width: 270px;
+  transition: 0.5s;
 }
 
 .sidebar .navigation p {
   font-size: 12px;
+}
+
+.sidebar.inactive {
+  margin-left: -270px;
 }
 
 .sidebar-content .navigation a {
