@@ -16,13 +16,6 @@ const Sidebar = () => {
 
   const location = useLocation().pathname;
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  // Update window width when the window is resized
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
-
   return (
     <>
       <div className="flex flex-column relative">
