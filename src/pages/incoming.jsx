@@ -46,7 +46,7 @@ const incoming = () => {
     };
 
     const handleDelete = () => {
-      const docRef = doc(db, "outgoing", message.id);
+      const docRef = doc(db, "incoming", message.id);
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
