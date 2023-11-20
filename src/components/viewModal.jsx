@@ -4,7 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import { FaBook, FaEye, FaUser } from "react-icons/fa";
 import Badge from "react-bootstrap/Badge";
 import { ModalBody } from "react-bootstrap";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 
@@ -42,6 +42,7 @@ function ViewModal(props) {
 
   const [sender, setSender] = useState("");
   const [reciever, setReciever] = useState("");
+  const [remarks, setRemarks] = useState("");
 
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {
@@ -66,9 +67,14 @@ function ViewModal(props) {
         props.user ? "outgoing" : "incoming",
         currentMessage.id
       );
-      await updateDoc(messageRef, {
-        status: type,
-      });
+      await setDoc(
+        messageRef,
+        {
+          status: type,
+          remarks: remarks,
+        },
+        { merge: true }
+      );
       toast.success(`Successfully ${type}`);
     } catch (error) {
       toast.error(error.message);
@@ -204,16 +210,25 @@ function ViewModal(props) {
             </div>
           </div>
           <div className="action mt-3">
-            <div className="details-header w-100 bg-secondary p-2">
-              <h5>
-                {" "}
-                <FaBook /> Action
-              </h5>
-            </div>
+            {!props.outgoing && (
+              <div className="details-header w-100 bg-secondary p-2">
+                <h5>
+                  {" "}
+                  <FaBook /> Action
+                </h5>
+              </div>
+            )}
+
             <div className="content">
               <div className="form-wrapper">
                 <label htmlFor="">Remarks</label>
-                <textarea rows={5} type="text" className="form-control" />
+                <textarea
+                  value={currentMessage.remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  rows={5}
+                  type="text"
+                  className="form-control"
+                />
               </div>
             </div>
           </div>
