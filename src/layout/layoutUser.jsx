@@ -53,12 +53,8 @@ const LayoutUser = ({ children }) => {
             </Dropdown>
           </div>
         </div>
-        <Breadcrumb className="m-3">
-          <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-          <Breadcrumb.Item href="#">Library</Breadcrumb.Item>
-          <Breadcrumb.Item active>Data</Breadcrumb.Item>
-        </Breadcrumb>
-        <div className="main-content">{children}</div>
+
+        <div className="main-content my-4">{children}</div>
       </div>
     </div>
   );
