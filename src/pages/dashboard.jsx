@@ -240,7 +240,7 @@ const Dashboard = () => {
 
         <div className="dashboard-header ">
           <div className="row">
-            <div className="col-lg-6 my-3 my-lg-0">
+            <div className="col-lg-12 my-3 my-lg-0">
               <div className="stats flex">
                 <div className="wrapper flex mx-3">
                   <img src="./assets/images/ri_home-office-line.png" alt="" />
@@ -273,7 +273,28 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-6">
+          </div>
+        </div>
+        <div className="dashboard-content mx-3 mt-3">
+          <h4 className="my-3">Compliances & Completed Documents</h4>
+          <div className="row">
+            <div className="col-lg-6 d-flex my-2 my-lg-0">
+              <ListGroup horizontal>
+                <ListGroup.Item>
+                  All{" "}
+                  <Badge bg="primary">
+                    {outgoingMesssages.length + incomingMessages.length}
+                  </Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Approved <Badge bg="primary">{allApprove()}</Badge>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
+                </ListGroup.Item>
+              </ListGroup>
+            </div>
+            <div className="col-lg-6 flex my-2 my-lg-0">
               <div className="search flex w-100 ">
                 <input
                   type="text"
@@ -284,23 +305,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="dashboard-content mx-3 mt-3">
-          <h4 className="my-3">Compliances & Completed Documents</h4>
-          <ListGroup horizontal>
-            <ListGroup.Item>
-              All{" "}
-              <Badge bg="primary">
-                {outgoingMesssages.length + incomingMessages.length}
-              </Badge>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              Approved <Badge bg="primary">{allApprove()}</Badge>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
-            </ListGroup.Item>
-          </ListGroup>
+
           {incomingMessages && outgoingMesssages && (
             <Table responsive bordered hover variant="white">
               <thead>

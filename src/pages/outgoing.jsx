@@ -577,9 +577,7 @@ const Outgoing = () => {
                 alt=""
               />
             </div>
-            <div className="col-lg-6 flex">
-              <img src="./assets/images/Group 8829.png" alt="" />
-            </div>
+            <div className="col-lg-6 flex"></div>
           </div>
         </div>
         <div className="dashboard-content mx-3 mt-3">
