@@ -229,14 +229,19 @@ const Dashboard = () => {
                   />
                   <div className="wrapper flex flex-column">
                     <p className="mb-0">Members</p>
-                    <Badge bg="primary">9</Badge>
+                    <Badge bg="primary">{users.length}</Badge>
                   </div>
                 </div>
                 <div className="wrapper flex mx-3">
                   <img src="./assets/images/solar_documents-bold.png" alt="" />
                   <div className="wrapper flex flex-column">
                     <p className="mb-0">Documents</p>
-                    <Badge bg="primary">9</Badge>
+
+                    {outgoingMesssages && (
+                      <Badge bg="primary">
+                        {outgoingMesssages.length + incomingMessages.length}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>

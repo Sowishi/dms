@@ -192,7 +192,7 @@ const UserOutgoing = () => {
         status: "Pending",
       };
 
-      const messagesRef = collection(db, "outgoing");
+      const messagesRef = collection(db, "incoming");
       addDoc(messagesRef, dataObject).then((snapshot) => {
         toast.success("Your message is succesfully sent!");
         setModalShow(false);
