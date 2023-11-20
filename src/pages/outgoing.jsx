@@ -606,7 +606,7 @@ const Outgoing = () => {
               </div>
             </div>
           </div>
-          <Table bordered hover variant="white">
+          <Table responsive bordered hover variant="white">
             <thead>
               <tr>
                 <th>DocID</th>
