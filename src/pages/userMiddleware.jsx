@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
 import { useNavigate } from "react-router";
+import { doc, onSnapshot } from "firebase/firestore";
 
 const UserMiddleware = ({ children, admin }) => {
   const isLogin = auth;
@@ -8,7 +9,17 @@ const UserMiddleware = ({ children, admin }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (!isLogin.currentUser && admin) {
+      if (isLogin.currentUser) {
+        const docRef = doc(db, "users", isLogin.currentUser.uid);
+        onSnapshot(docRef, (snapshot) => {
+          const user = snapshot.data();
+          if (user.role == "admin") {
+            navigation("/");
+          }
+        });
+      }
+
+      if (!isLogin.currentUser) {
         navigation("/");
       }
     }, 1000);
