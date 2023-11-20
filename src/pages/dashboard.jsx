@@ -182,6 +182,34 @@ const Dashboard = () => {
     });
   }
 
+  const allApprove = () => {
+    const outgoing = outgoingMesssages.filter((message) => {
+      if (message.status == "Approved") {
+        return message;
+      }
+    });
+    const incoming = incomingMessages.filter((message) => {
+      if (message.status == "Approved") {
+        return message;
+      }
+    });
+    return outgoing.length + incoming.length;
+  };
+
+  const allRejected = () => {
+    const outgoing = outgoingMesssages.filter((message) => {
+      if (message.status == "Rejected") {
+        return message;
+      }
+    });
+    const incoming = incomingMessages.filter((message) => {
+      if (message.status == "Rejected") {
+        return message;
+      }
+    });
+    return outgoing.length + incoming.length;
+  };
+
   useEffect(() => {
     setModalShow(true);
     getUser();
@@ -212,7 +240,7 @@ const Dashboard = () => {
 
         <div className="dashboard-header ">
           <div className="row">
-            <div className="col-lg-6">
+            <div className="col-lg-6 my-3 my-lg-0">
               <div className="stats flex">
                 <div className="wrapper flex mx-3">
                   <img src="./assets/images/ri_home-office-line.png" alt="" />
@@ -261,19 +289,20 @@ const Dashboard = () => {
           <h4 className="my-3">Compliances & Completed Documents</h4>
           <ListGroup horizontal>
             <ListGroup.Item>
-              All <Badge bg="info">9</Badge>
+              All{" "}
+              <Badge bg="primary">
+                {outgoingMesssages.length + incomingMessages.length}
+              </Badge>
             </ListGroup.Item>
             <ListGroup.Item>
-              Pending <Badge bg="info">9</Badge>
+              Approved <Badge bg="primary">{allApprove()}</Badge>
             </ListGroup.Item>
             <ListGroup.Item>
-              Recieved <Badge bg="info">9</Badge>
+              Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
             </ListGroup.Item>
-            <ListGroup.Item>Approve</ListGroup.Item>
-            <ListGroup.Item>Rejected</ListGroup.Item>
           </ListGroup>
           {incomingMessages && outgoingMesssages && (
-            <Table bordered hover variant="white">
+            <Table responsive bordered hover variant="white">
               <thead>
                 <tr>
                   <th>DocID</th>
