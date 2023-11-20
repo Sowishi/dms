@@ -4,6 +4,8 @@ import Modal from "react-bootstrap/Modal";
 import { FaBook, FaEye, FaUser } from "react-icons/fa";
 import Badge from "react-bootstrap/Badge";
 import { ModalBody } from "react-bootstrap";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 function ViewFile(props) {
   const [show, setShow] = useState(false);
@@ -42,6 +44,13 @@ function ViewModal(props) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
+
+  const handleAction = (type) => {
+    const messageRef = doc(db, "incoming", currentMessage.id);
+    updateDoc(messageRef, {
+      status: type,
+    });
+  };
   return (
     <>
       <Modal
@@ -166,12 +175,20 @@ function ViewModal(props) {
         <Modal.Footer>
           <div className="row w-100">
             <div className="col-lg-6 flex">
-              <Button className="w-100 text-white" variant="danger">
+              <Button
+                onClick={() => handleAction("Rejected")}
+                className="w-100 text-white"
+                variant="danger"
+              >
                 Rejected
               </Button>
             </div>
             <div className="col-lg-6 flex">
-              <Button className="w-100" variant="primary">
+              <Button
+                onClick={() => handleAction("Approved")}
+                className="w-100"
+                variant="primary"
+              >
                 Approved
               </Button>
             </div>
