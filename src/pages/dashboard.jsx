@@ -274,14 +274,14 @@ const Dashboard = () => {
             <ListGroup.Item>Rejected</ListGroup.Item>
           </ListGroup>
           {incomingMessages && outgoingMesssages && (
-            <Table bordered hover variant="secondary">
+            <Table bordered hover variant="white">
               <thead>
                 <tr>
                   <th>DocID</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Reciever</th>
-                  <th>Date of letter</th>
+                  <th>Date </th>
                   <th>Prioritization</th>
                   <th>Status</th>
                   <th>Action</th>
@@ -302,7 +302,7 @@ const Dashboard = () => {
                       <td>{getUserData(message.sender).fullName}</td>
                       <td>{getUserData(message.reciever).fullName}</td>
                       <td>{message.date}</td>
-                      <td>
+                      <td className="flex">
                         {" "}
                         <Badge
                           bg={
@@ -342,7 +342,7 @@ const Dashboard = () => {
                       <td>{getUserData(message.sender).fullName}</td>
                       <td>{getUserData(message.reciever).fullName}</td>
                       <td>{message.date}</td>
-                      <td>
+                      <td className="flex">
                         <Badge
                           bg={
                             message.prioritization == "urgent"

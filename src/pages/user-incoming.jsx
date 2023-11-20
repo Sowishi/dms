@@ -162,6 +162,12 @@ const UserIncoming = () => {
     return user[0];
   };
 
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -222,14 +228,15 @@ const UserIncoming = () => {
               </div>
             </div>
           </div>
-          <Table bordered hover variant="primary">
+          <Table bordered hover variant="white">
             <thead>
               <tr>
                 <th>DocID</th>
                 <th>File Name</th>
                 <th>Sender</th>
                 <th>Required Action</th>
-                <th>Date of letter</th>
+                <th>Date </th>
+                <th>Prioritization</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -238,16 +245,33 @@ const UserIncoming = () => {
               {outgoingMesssages.map((message) => {
                 return (
                   <tr key={message.code}>
-                    <td className="flex">
-                      <FaFile />
-                      {message.code}
+                    <td>
+                      <div className="flex">
+                        <FaFile />
+                        {message.code}
+                      </div>
                     </td>
                     <td>{message.fileName}</td>
+
                     <td>{getUser(message.sender).fullName}</td>
                     <td>{message.action}</td>
                     <td>{message.date}</td>
+                    <td className="flex">
+                      {" "}
+                      <Badge
+                        bg={
+                          message.prioritization == "urgent" ? "danger" : "info"
+                        }
+                        className="text-white p-2"
+                      >
+                        {toTitleCase(message.prioritization)}
+                      </Badge>{" "}
+                    </td>
                     <td>
-                      <Badge bg="warning" className="text-black">
+                      <Badge
+                        bg={message.status == "Approved" ? "primary" : "danger"}
+                        className="text-white p-2"
+                      >
                         {message.status}
                       </Badge>
                     </td>
