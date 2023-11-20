@@ -40,6 +40,8 @@ const UserSidebar = () => {
             </div>
           </div>
           <div className="sidebar-content mx-3 mt-3">
+            <h5 className="fw-bold b-1">Menu</h5>
+
             <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
               <Link
                 to={"/user-files"}
