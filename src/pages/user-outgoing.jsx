@@ -1,4 +1,11 @@
-import { FaSearch, FaFile, FaTrash, FaEye, FaDownload } from "react-icons/fa";
+import {
+  FaSearch,
+  FaFile,
+  FaTrash,
+  FaEye,
+  FaDownload,
+  FaMap,
+} from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import Table from "react-bootstrap/Table";
@@ -23,15 +30,40 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import LayoutUser from "../layout/layoutUser";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import ViewModal from "../components/viewModal";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "incoming");
+
+function OffCanvasExample(props) {
+  const { currentMessage } = props;
+  return (
+    <>
+      <Offcanvas
+        placement="end"
+        show={props.showRouting}
+        onHide={props.handleCloseRouting}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{currentMessage.id}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <h2>Document Routing..</h2>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+}
 
 const UserOutgoing = () => {
   const [modalShow, setModalShow] = useState(false);
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState(null);
+  const [showRouting, setShowRouting] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
@@ -160,7 +192,7 @@ const UserOutgoing = () => {
         status: "Pending",
       };
 
-      const messagesRef = collection(db, "incoming");
+      const messagesRef = collection(db, "outgoing");
       addDoc(messagesRef, dataObject).then((snapshot) => {
         toast.success("Your message is succesfully sent!");
         setModalShow(false);
@@ -421,7 +453,7 @@ const UserOutgoing = () => {
     };
 
     const handleDelete = () => {
-      const docRef = doc(db, "outgoing", message.id);
+      const docRef = doc(db, "incoming", message.id);
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
@@ -432,7 +464,12 @@ const UserOutgoing = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item href={`/outgoing/${message.code}`}>
+          <Dropdown.Item
+            onClick={() => {
+              setShowViewModal(true);
+              setCurrentMessage(message);
+            }}
+          >
             View Detail <FaEye />
           </Dropdown.Item>
           <Dropdown.Item onClick={downloadFIle}>
@@ -440,6 +477,14 @@ const UserOutgoing = () => {
           </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -467,8 +512,7 @@ const UserOutgoing = () => {
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
-          const message = { ...doc.data(), id: doc.id };
-          messages.push(message);
+          messages.push({ ...doc.data(), id: doc.id });
         });
         setOutgoingMessages(messages);
       },
@@ -496,6 +540,26 @@ const UserOutgoing = () => {
 
   return (
     <LayoutUser>
+      {currentMessage && (
+        <OffCanvasExample
+          currentMessage={currentMessage}
+          showRouting={showRouting}
+          handleCloseRouting={() => setShowRouting(false)}
+          placement={"end"}
+          name={"end"}
+        />
+      )}
+
+      {currentMessage && (
+        <ViewModal
+          getUser={getUser}
+          outgoing={true}
+          currentMessage={currentMessage}
+          closeModal={() => setShowViewModal(false)}
+          showModal={showViewModal}
+        />
+      )}
+
       <div className="dashboard">
         <div className="dashboard-header ">
           <div className="row">

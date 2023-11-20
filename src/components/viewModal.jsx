@@ -6,6 +6,7 @@ import Badge from "react-bootstrap/Badge";
 import { ModalBody } from "react-bootstrap";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
+import { toast } from "react-toastify";
 
 function ViewFile(props) {
   const [show, setShow] = useState(false);
@@ -45,11 +46,20 @@ function ViewModal(props) {
     });
   }
 
-  const handleAction = (type) => {
-    const messageRef = doc(db, "incoming", currentMessage.id);
-    updateDoc(messageRef, {
-      status: type,
-    });
+  const handleAction = async (type) => {
+    try {
+      const messageRef = doc(
+        db,
+        props.user ? "outgoing" : "incoming",
+        currentMessage.id
+      );
+      await updateDoc(messageRef, {
+        status: type,
+      });
+      toast.success(`Successfully ${type}`);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   return (
     <>
@@ -67,8 +77,14 @@ function ViewModal(props) {
           <div className="row">
             <div className="col-lg-6">
               <h5 className="fw-bold">
-                <FaUser /> Username -{" "}
-                {props.getUser(currentMessage.sender).fullName}
+                <FaUser /> {props.outgoing ? "Reciever" : "Sender"} -{" "}
+                {
+                  props.getUser(
+                    props.outgoing
+                      ? currentMessage.reciever
+                      : currentMessage.sender
+                  ).fullName
+                }
               </h5>
             </div>
             <div className="col-lg-6 d-flex justify-content-end align-items-center">
@@ -172,28 +188,30 @@ function ViewModal(props) {
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <div className="row w-100">
-            <div className="col-lg-6 flex">
-              <Button
-                onClick={() => handleAction("Rejected")}
-                className="w-100 text-white"
-                variant="danger"
-              >
-                Rejected
-              </Button>
+        {!props.outgoing && (
+          <Modal.Footer>
+            <div className="row w-100">
+              <div className="col-lg-6 flex">
+                <Button
+                  onClick={() => handleAction("Rejected")}
+                  className="w-100 text-white"
+                  variant="danger"
+                >
+                  Rejected
+                </Button>
+              </div>
+              <div className="col-lg-6 flex">
+                <Button
+                  onClick={() => handleAction("Approved")}
+                  className="w-100"
+                  variant="primary"
+                >
+                  Approved
+                </Button>
+              </div>
             </div>
-            <div className="col-lg-6 flex">
-              <Button
-                onClick={() => handleAction("Approved")}
-                className="w-100"
-                variant="primary"
-              >
-                Approved
-              </Button>
-            </div>
-          </div>
-        </Modal.Footer>
+          </Modal.Footer>
+        )}
       </Modal>
     </>
   );

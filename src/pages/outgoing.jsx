@@ -1,4 +1,11 @@
-import { FaSearch, FaFile, FaTrash, FaEye, FaDownload } from "react-icons/fa";
+import {
+  FaSearch,
+  FaFile,
+  FaTrash,
+  FaEye,
+  FaDownload,
+  FaMap,
+} from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import Table from "react-bootstrap/Table";
@@ -23,15 +30,40 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import ViewModal from "../components/viewModal";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "outgoing");
+
+function OffCanvasExample(props) {
+  const { currentMessage } = props;
+  return (
+    <>
+      <Offcanvas
+        placement="end"
+        show={props.showRouting}
+        onHide={props.handleCloseRouting}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{currentMessage.id}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <h2>Document Routing..</h2>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+}
 
 const Outgoing = () => {
   const [modalShow, setModalShow] = useState(false);
   const [allSender, setAllSender] = useState([]);
   const [allReciever, setAllReciever] = useState([]);
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState(null);
+  const [showRouting, setShowRouting] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
@@ -432,7 +464,12 @@ const Outgoing = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item href={`/outgoing/${message.code}`}>
+          <Dropdown.Item
+            onClick={() => {
+              setShowViewModal(true);
+              setCurrentMessage(message);
+            }}
+          >
             View Detail <FaEye />
           </Dropdown.Item>
           <Dropdown.Item onClick={downloadFIle}>
@@ -440,6 +477,14 @@ const Outgoing = () => {
           </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -495,6 +540,26 @@ const Outgoing = () => {
 
   return (
     <Layout>
+      {currentMessage && (
+        <OffCanvasExample
+          currentMessage={currentMessage}
+          showRouting={showRouting}
+          handleCloseRouting={() => setShowRouting(false)}
+          placement={"end"}
+          name={"end"}
+        />
+      )}
+
+      {currentMessage && (
+        <ViewModal
+          getUser={getUser}
+          outgoing={true}
+          currentMessage={currentMessage}
+          closeModal={() => setShowViewModal(false)}
+          showModal={showViewModal}
+        />
+      )}
+
       <div className="dashboard">
         <div className="dashboard-header ">
           <div className="row">
