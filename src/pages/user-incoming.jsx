@@ -58,7 +58,7 @@ function OffCanvasExample(props) {
   );
 }
 
-function MyVerticallyCenteredModal(props) {
+function UrgentModal(props) {
   const urgentFiles = props.urgentFiles;
   return (
     <Modal
@@ -96,7 +96,7 @@ function MyVerticallyCenteredModal(props) {
                         {message.code}
                       </div>
                     </td>
-                    <td>{message.fileName}</td>
+                    <td>{message.fileName.substring(0, 20) + ".pdf"}</td>
                     <td>{message.dueDate}</td>
                   </tr>
                 );
@@ -263,7 +263,7 @@ const UserIncoming = () => {
       )}
 
       {outgoingMesssages && (
-        <MyVerticallyCenteredModal
+        <UrgentModal
           show={urgent}
           onHide={() => setUrgent(false)}
           urgentFiles={urgentFiles}

@@ -5,6 +5,7 @@ import {
   FaEye,
   FaDownload,
   FaMap,
+  FaBell,
 } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
@@ -36,6 +37,59 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "incoming");
 
+function UrgentModal(props) {
+  const urgentFiles = props.urgentFiles;
+  return (
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton className="bg-danger">
+        <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
+      </Modal.Header>
+      <Modal.Body className="text-center">
+        <FaBell size={50} color={"gray"} />
+        <h3 className="fw-bold">You have an urgent message!</h3>
+        <p className="fw-italic">
+          The documents below needs your imediate response, please send a
+          response before the deadline
+        </p>
+        {urgentFiles && (
+          <Table bordered hover variant="white">
+            <thead>
+              <tr>
+                <th>DocID</th>
+                <th>File Name</th>
+                <th>Deadline</th>
+              </tr>
+            </thead>
+            <tbody>
+              {urgentFiles.map((message) => {
+                return (
+                  <tr key={message.code}>
+                    <td>
+                      <div className="flex">
+                        <FaFile />
+                        {message.code}
+                      </div>
+                    </td>
+                    <td>{message.fileName.substring(0, 20) + ".pdf"}</td>
+                    <td>{message.dueDate}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 function OffCanvasExample(props) {
   const { currentMessage } = props;
   return (
@@ -63,6 +117,8 @@ const incoming = () => {
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
+  const [urgent, setUrgent] = useState(false);
+  const [urgentFiles, setUrgentFiles] = useState([]);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -135,12 +191,23 @@ const incoming = () => {
       outgoingCollectionRef,
       (querySnapshot) => {
         const messages = [];
+        const urgents = [];
         querySnapshot.forEach((doc) => {
           const message = { ...doc.data(), id: doc.id };
           if (message.reciever == auth.currentUser.uid) {
             messages.push(message);
+            if (
+              message.prioritization == "urgent" &&
+              message.status == "Pending"
+            ) {
+              urgents.push(message);
+            }
           }
         });
+        if (urgents.length >= 1) {
+          setUrgent(true);
+        }
+        setUrgentFiles(urgents);
         setOutgoingMessages(messages);
       },
       (error) => {
@@ -189,6 +256,14 @@ const incoming = () => {
           currentMessage={currentMessage}
           closeModal={() => setModalShow(false)}
           showModal={modalShow}
+        />
+      )}
+
+      {outgoingMesssages && (
+        <UrgentModal
+          show={urgent}
+          onHide={() => setUrgent(false)}
+          urgentFiles={urgentFiles}
         />
       )}
 
