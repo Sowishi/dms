@@ -172,7 +172,6 @@ const Dashboard = () => {
         return user;
       }
     });
-    console.log(user[0]);
 
     return user[0];
   };

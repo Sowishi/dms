@@ -26,10 +26,12 @@ import {
 import { auth, db } from "../firebase";
 import { FaUser, FaLock } from "react-icons/fa";
 import { BounceLoader } from "react-spinners";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import UserDashboard from "./pages/user-dashboard";
 import UserIncoming from "./pages/user-incoming";
 import UserOutgoing from "./pages/user-outgoing";
+import Middleware from "./pages/middleware";
+import UserMiddleware from "./pages/userMiddleware";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -45,17 +47,19 @@ function App() {
 
     const isAdmin = async () => {
       const userRef = doc(db, "users", auth.currentUser.uid);
-      const docSnapshot = await getDoc(userRef);
-      if (docSnapshot.exists()) {
-        const data = docSnapshot.data();
-        if (data.role == "admin") {
-          setAdmin(true);
-          navigate("/dashboard");
+      onSnapshot(userRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          if (data.role == "admin") {
+            setAdmin(true);
+            navigate("/dashboard");
+          }
+          if (data.role == "user") {
+            setAdmin(false);
+            navigate("/user-incoming");
+          }
         }
-        if (data.role == "user") {
-          navigate("/user-dashboard");
-        }
-      }
+      });
     };
 
     const handleLogin = async () => {
@@ -170,27 +174,74 @@ function App() {
     <>
       {!appLoading ? (
         <Router>
-          <>
-            {user ? (
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/files" element={<Files />} />
-                <Route path="/outgoing" element={<Outgoing />} />
-                <Route path="/incoming" element={<Incoming />} />
-                <Route path="/create-user" element={<CreateUser />} />{" "}
-                <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/user-incoming" element={<UserIncoming />} />
-                <Route path="/user-outgoing" element={<UserOutgoing />} />
-              </Routes>
-            ) : (
-              <Routes>
-                <Route path="/" element={<LoginComponent />} />
-                <Route path="/forgot" element={<ForgotComponent />} />
-              </Routes>
-            )}
-          </>
+          <Routes>
+            <Route path="/" element={<LoginComponent />} />
+            <Route path="/forgot" element={<ForgotComponent />} />
+            <Route
+              path="/dashboard"
+              element={
+                <Middleware admin={admin}>
+                  <Dashboard />
+                </Middleware>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <Middleware admin={admin}>
+                  <Reports />
+                </Middleware>
+              }
+            />
+            <Route
+              path="/files"
+              element={
+                <Middleware admin={admin}>
+                  <Files />
+                </Middleware>
+              }
+            />
+            <Route
+              path="/outgoing"
+              element={
+                <Middleware admin={admin}>
+                  <Outgoing />
+                </Middleware>
+              }
+            />
+            <Route
+              path="/incoming"
+              element={
+                <Middleware admin={admin}>
+                  <Incoming />
+                </Middleware>
+              }
+            />
+            <Route
+              path="/create-user"
+              element={
+                <Middleware admin={admin}>
+                  <CreateUser />
+                </Middleware>
+              }
+            />{" "}
+            <Route
+              path="/user-incoming"
+              element={
+                <UserMiddleware admin={admin}>
+                  <UserIncoming />
+                </UserMiddleware>
+              }
+            />
+            <Route
+              path="/user-outgoing"
+              element={
+                <UserMiddleware admin={admin}>
+                  <UserOutgoing />
+                </UserMiddleware>
+              }
+            />
+          </Routes>
 
           <ToastContainer
             position="top-center"
