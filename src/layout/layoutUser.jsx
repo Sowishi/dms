@@ -9,9 +9,25 @@ import UserSidebar from "../components/userSidebar";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 
+import Button from "react-bootstrap/Button";
+import Offcanvas from "react-bootstrap/Offcanvas";
+
+function SidebarWrapper(props) {
+  return (
+    <>
+      <Offcanvas show={props.show} onHide={props.handleClose}>
+        <Offcanvas.Body>
+          <UserSidebar />
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+}
+
 const LayoutUser = ({ children }) => {
   const navigation = useNavigate();
   const [user, setUser] = useState(null);
+  const [show, setShow] = useState(false);
 
   const getUser = async () => {
     const userRef = doc(db, "users", auth.currentUser.uid);
@@ -29,9 +45,17 @@ const LayoutUser = ({ children }) => {
 
   return (
     <div className="container-fluid d-flex p-0">
-      <UserSidebar />
+      <SidebarWrapper show={show} handleClose={() => setShow(false)} />
       <div className="main w-100">
-        <div className="main-header bg-primary py-2 w-100 d-flex justify-content-end align-items-center">
+        <div className="main-header bg-primary py-2 w-100 d-flex justify-content-between align-items-center">
+          <div className="flex mx-3">
+            <img
+              style={{ cursor: "pointer" }}
+              onClick={() => setShow(true)}
+              src="./assets/images/Vector.png"
+              alt=""
+            />
+          </div>
           <div className="wrapper mx-3 flex">
             <FaUserCircle size={"20px"} />
             {user && (

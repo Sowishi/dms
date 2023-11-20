@@ -26,15 +26,8 @@ const UserSidebar = () => {
             className="mt-3 mx-2"
           />
         )}
-        <div
-          className={`sidebar vh-100 shadow ${sidebarShow ? "" : "inactive"}`}
-        >
+        <div className={`sidebar vh-100 ${sidebarShow ? "" : "inactive"}`}>
           <div className="sidebar-header d-flex justify-content-center align-items-center flex-column">
-            <FaBars
-              onClick={() => setSidebarShow(false)}
-              size={"20px"}
-              className="align-self-end m-2"
-            />
             <div className="brand w-100 flex">
               <img width={"80px"} src="./assets/images/logo.png" alt="" />
             </div>
