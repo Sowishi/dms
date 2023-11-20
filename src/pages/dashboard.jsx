@@ -1,4 +1,11 @@
-import { FaSearch, FaFile } from "react-icons/fa";
+import {
+  FaSearch,
+  FaFile,
+  FaTrash,
+  FaEye,
+  FaDownload,
+  FaMap,
+} from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 import Table from "react-bootstrap/Table";
@@ -6,8 +13,18 @@ import Layout from "../layout/layout";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+} from "firebase/firestore";
 import { auth, db } from "../../firebase";
+import { Dropdown } from "react-bootstrap";
+import ViewModal from "../components/viewModal";
+import { toast } from "react-toastify";
 
 function MyVerticallyCenteredModal(props) {
   return (
@@ -36,6 +53,76 @@ function MyVerticallyCenteredModal(props) {
 const Dashboard = () => {
   const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState(null);
+  const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [incomingMessages, setIncomingMessages] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState(null);
+
+  const outgoingCollectionRef = collection(db, "outgoing");
+  const incomingCollectionRef = collection(db, "incoming");
+  const userCollectionRef = collection(db, "users");
+
+  function DropdownAction({ message }) {
+    const downloadFIle = () => {
+      const fileUrl = message.fileUrl;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank";
+      link.download = "downloaded_file";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const handleDelete = async () => {
+      const docRefIncoming = doc(db, "incoming", message.id);
+      const docRefOutgoing = doc(db, "outgoing", message.id);
+      const snapshot = await getDoc(docRefIncoming);
+      if (snapshot.exists()) {
+        deleteDoc(docRefIncoming).then(() =>
+          toast.success("Successfully Deleted!")
+        );
+      } else {
+        deleteDoc(docRefOutgoing).then(() =>
+          toast.success("Successfully Deleted!")
+        );
+      }
+    };
+
+    return (
+      <Dropdown>
+        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+          <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item
+            onClick={() => {
+              setShowViewModal(true);
+              setCurrentMessage(message);
+            }}
+          >
+            View Detail <FaEye />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={downloadFIle}>
+            Download <FaDownload />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={handleDelete}>
+            Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
 
   const getUser = async () => {
     const userRef = doc(db, "users", auth.currentUser.uid);
@@ -43,12 +130,64 @@ const Dashboard = () => {
     setUser(snapshot.data());
   };
 
+  const fetchData = async () => {
+    const snapshot = await getDocs(userCollectionRef);
+    const output = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+
+    setUsers(output);
+
+    onSnapshot(
+      outgoingCollectionRef,
+      (querySnapshot) => {
+        const messages = [];
+        querySnapshot.forEach((doc) => {
+          messages.push({ ...doc.data(), id: doc.id });
+        });
+        setOutgoingMessages(messages);
+      },
+      (error) => {
+        console.error("Error listening to collection:", error);
+      }
+    );
+    onSnapshot(
+      incomingCollectionRef,
+      (querySnapshot) => {
+        const messages = [];
+        querySnapshot.forEach((doc) => {
+          messages.push({ ...doc.data(), id: doc.id });
+        });
+        setIncomingMessages(messages);
+      },
+      (error) => {
+        console.error("Error listening to collection:", error);
+      }
+    );
+  };
+
+  const getUserData = (id) => {
+    const user = users.filter((user) => {
+      if (user.id === id) {
+        return user;
+      }
+    });
+    console.log(user[0]);
+
+    return user[0];
+  };
+
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
   useEffect(() => {
     setModalShow(true);
     getUser();
+    fetchData();
   }, []);
-
-  console.log(user);
 
   return (
     <Layout>
@@ -58,6 +197,17 @@ const Dashboard = () => {
             show={modalShow}
             onHide={() => setModalShow(false)}
             user={user}
+          />
+        )}
+
+        {currentMessage && (
+          <ViewModal
+            getUser={getUserData}
+            outgoing={true}
+            dashboard={true}
+            currentMessage={currentMessage}
+            closeModal={() => setShowViewModal(false)}
+            showModal={showViewModal}
           />
         )}
 
@@ -118,84 +268,106 @@ const Dashboard = () => {
             <ListGroup.Item>Approve</ListGroup.Item>
             <ListGroup.Item>Rejected</ListGroup.Item>
           </ListGroup>
-          <Table bordered hover variant="primary">
-            <thead>
-              <tr>
-                <th>DocID</th>
-                <th>File Name</th>
-                <th>From</th>
-                <th>Required Action</th>
-                <th>Date Received</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="flex">
-                  <FaFile />
-                  00001
-                </td>
-                <td>test.pdf</td>
-                <td>Ms.Personnel - Office, Position</td>
-                <td>For Submission</td>
-                <td>Oct. 27, 2023</td>
-                <td>
-                  <Badge bg="warning" className="text-black">
-                    Pending
-                  </Badge>
-                </td>
-                <td className="flex">
-                  <img
-                    src="./assets/images/pepicons-pencil_dots-y.png"
-                    alt=""
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="flex">
-                  <FaFile />
-                  00001
-                </td>
-                <td>test.pdf</td>
-                <td>Ms.Personnel - Office, Position</td>
-                <td>For Submission</td>
-                <td>Oct. 27, 2023</td>
-                <td>
-                  <Badge bg="warning" className="text-black">
-                    Pending
-                  </Badge>
-                </td>
-                <td className="flex">
-                  <img
-                    src="./assets/images/pepicons-pencil_dots-y.png"
-                    alt=""
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="flex">
-                  <FaFile />
-                  00001
-                </td>
-                <td>test.pdf</td>
-                <td>Ms.Personnel - Office, Position</td>
-                <td>For Submission</td>
-                <td>Oct. 27, 2023</td>
-                <td>
-                  <Badge bg="warning" className="text-black">
-                    Pending
-                  </Badge>
-                </td>
-                <td className="flex">
-                  <img
-                    src="./assets/images/pepicons-pencil_dots-y.png"
-                    alt=""
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
+          {incomingMessages && outgoingMesssages && (
+            <Table bordered hover variant="secondary">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>File Name</th>
+                  <th>Sender</th>
+                  <th>Reciever</th>
+                  <th>Date of letter</th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {incomingMessages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.fileName}</td>
+
+                      <td>{getUserData(message.sender).fullName}</td>
+                      <td>{getUserData(message.reciever).fullName}</td>
+                      <td>{message.date}</td>
+                      <td>
+                        {" "}
+                        <Badge
+                          bg={
+                            message.prioritization == "urgent"
+                              ? "danger"
+                              : "info"
+                          }
+                          className="text-white p-2"
+                        >
+                          {toTitleCase(message.prioritization)}
+                        </Badge>{" "}
+                      </td>
+                      <td>
+                        <Badge
+                          bg={
+                            message.status == "Approved" ? "primary" : "danger"
+                          }
+                          className="text-white p-2"
+                        >
+                          {message.status}
+                        </Badge>
+                      </td>
+                      <td className="flex">
+                        <DropdownAction message={message} />
+                      </td>
+                    </tr>
+                  );
+                })}
+                {outgoingMesssages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <FaFile />
+                        {message.code}
+                      </td>
+                      <td>{message.fileName}</td>
+                      <td>{getUserData(message.sender).fullName}</td>
+                      <td>{getUserData(message.reciever).fullName}</td>
+                      <td>{message.date}</td>
+                      <td>
+                        <Badge
+                          bg={
+                            message.prioritization == "urgent"
+                              ? "danger"
+                              : "info"
+                          }
+                          className="text-white p-2"
+                        >
+                          {toTitleCase(message.prioritization)}
+                        </Badge>{" "}
+                      </td>
+                      <td>
+                        <Badge
+                          bg={
+                            message.status == "Approved" ? "primary" : "danger"
+                          }
+                          className="text-white p-2"
+                        >
+                          {message.status}
+                        </Badge>
+                      </td>
+                      <td className="flex">
+                        <DropdownAction message={message} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          )}
         </div>
       </div>
     </Layout>

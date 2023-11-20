@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaBook, FaEye, FaUser } from "react-icons/fa";
@@ -40,11 +40,24 @@ function ViewFile(props) {
 function ViewModal(props) {
   const { currentMessage } = props;
 
+  const [sender, setSender] = useState("");
+  const [reciever, setReciever] = useState("");
+
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
+
+  useEffect(() => {
+    if (props.dashboard) {
+      const senderUser = props.getUser(currentMessage.sender);
+      const recieverUser = props.getUser(currentMessage.reciever);
+
+      setSender(senderUser);
+      setReciever(recieverUser);
+    }
+  }, []);
 
   const handleAction = async (type) => {
     try {
@@ -61,6 +74,7 @@ function ViewModal(props) {
       toast.error(error.message);
     }
   };
+
   return (
     <>
       <Modal
@@ -76,16 +90,32 @@ function ViewModal(props) {
         <Modal.Body>
           <div className="row">
             <div className="col-lg-6">
-              <h5 className="fw-bold">
-                <FaUser /> {props.outgoing ? "Reciever" : "Sender"} -{" "}
-                {
-                  props.getUser(
-                    props.outgoing
-                      ? currentMessage.reciever
-                      : currentMessage.sender
-                  ).fullName
-                }
-              </h5>
+              {!props.dashboard && (
+                <h5 className="fw-bold">
+                  <FaUser /> {props.outgoing ? "Reciever" : "Sender"} -{" "}
+                  {
+                    props.getUser(
+                      props.outgoing
+                        ? currentMessage.reciever
+                        : currentMessage.sender
+                    ).fullName
+                  }
+                </h5>
+              )}
+              {props.dashboard && sender && reciever && (
+                <>
+                  <h5 className="fw-bold">
+                    {" "}
+                    <FaUser />
+                    Sender - {sender.fullName}
+                  </h5>
+                  <h5 className="fw-bold">
+                    {" "}
+                    <FaUser />
+                    Reciever - {reciever.fullName}
+                  </h5>
+                </>
+              )}
             </div>
             <div className="col-lg-6 d-flex justify-content-end align-items-center">
               Date: {currentMessage.date}
