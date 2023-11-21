@@ -15,6 +15,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { toast } from "react-toastify";
@@ -29,9 +30,7 @@ function DropdownAction({ message }) {
     try {
       // const docRef = doc(db, "users", message.id);
       // deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
-      toast.info(
-        "You can't delete this user as of now, the user have messages in the database"
-      );
+      toast.info("You can't delete this user as of now, temporary unavailable");
     } catch (error) {
       toast.error(error.message);
     }
@@ -70,7 +69,7 @@ const CreateUser = () => {
     const [position, setPosition] = useState("");
     const [office, setOffice] = useState("");
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       try {
         const data = {
           fullName: fullName,
@@ -82,14 +81,19 @@ const CreateUser = () => {
           role: "user",
         };
 
-        createUserWithEmailAndPassword(auth, email, password).then((res) => {
-          const userDoc = doc(db, "users", res.user.uid);
-          addDoc(userDoc, data).then(() => {
+        const result = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        if (result) {
+          const userDoc = doc(db, "users", result.user.uid);
+          setDoc(userDoc, data).then(() => {
             toast.success("Successfully Created User!");
           });
-        });
+        }
       } catch (error) {
-        toast.success(error.message);
+        toast.error(error.message);
       }
     };
 
@@ -199,6 +203,15 @@ const CreateUser = () => {
     });
   };
 
+  const getOffice = (id) => {
+    const office = offices.filter((office) => {
+      if (office.id == id) {
+        return office;
+      }
+    });
+    return office[0];
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -250,7 +263,11 @@ const CreateUser = () => {
 
                 <td>{message.email}</td>
                 <td>{message.position ? message.position : "N/A"}</td>
-                <td>{message.office ? message.position : "N/A"}</td>
+                <td>
+                  {message.office
+                    ? getOffice(message.office).officeName
+                    : "N/A"}
+                </td>
                 <td>{message.gender ? message.gender : "N/A"}</td>
 
                 <td className="flex">

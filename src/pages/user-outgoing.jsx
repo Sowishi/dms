@@ -520,7 +520,10 @@ const UserOutgoing = () => {
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
-          messages.push({ ...doc.data(), id: doc.id });
+          const message = { ...doc.data(), id: doc.id };
+          if (message.reciever == auth.currentUser.uid) {
+            messages.push(message);
+          }
         });
         setOutgoingMessages(messages);
       },
