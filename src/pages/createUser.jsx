@@ -240,46 +240,48 @@ const CreateUser = () => {
         </div>
       </div>
 
-      <Table responsive="md" bordered hover variant="info">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Gender</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((message) => {
-            return (
-              <tr key={message.id}>
-                <td>
-                  <div>{message.id}</div>
-                </td>
-                <td>{message.fullName}</td>
+      {users && (
+        <Table responsive="md" bordered hover variant="info">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Position</th>
+              <th>Office</th>
+              <th>Gender</th>
+              <th>Role</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((message) => {
+              return (
+                <tr key={message.id}>
+                  <td>
+                    <div>{message.id}</div>
+                  </td>
+                  <td>{message.fullName}</td>
 
-                <td>{message.email}</td>
-                <td>{message.position ? message.position : "N/A"}</td>
-                <td>
-                  {message.office
-                    ? getOffice(message.office).officeName
-                    : "N/A"}
-                </td>
-                <td>{message.gender ? message.gender : "N/A"}</td>
-                <td>{message.role}</td>
+                  <td>{message.email}</td>
+                  <td>{message.position ? message.position : "N/A"}</td>
+                  <td>
+                    {message.office
+                      ? getOffice(message.office).officeName
+                      : "N/A"}
+                  </td>
+                  <td>{message.gender ? message.gender : "N/A"}</td>
+                  <td>{message.role}</td>
 
-                <td className="flex">
-                  <DropdownAction message={message} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+                  <td className="flex">
+                    <DropdownAction message={message} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      )}
     </Layout>
   );
 };

@@ -265,7 +265,7 @@ const Layout = ({ children }) => {
 
       <SidebarWrapper show={show} handleClose={() => setShow(false)} />
       <div className="main w-100">
-        <div className="main-header bg-primary py-2 w-100 d-flex justify-content-between align-items-center">
+        <div className="main-header fixed-top bg-primary py-2 w-100 d-flex justify-content-between align-items-center">
           <div className="flex mx-3">
             <img
               style={{ cursor: "pointer" }}
@@ -298,7 +298,9 @@ const Layout = ({ children }) => {
           </div>
         </div>
 
-        <div className="main-content my-4 px-3">{children}</div>
+        <div className="main-content px-3" style={{ marginTop: "100px" }}>
+          {children}
+        </div>
       </div>
     </div>
   );
