@@ -114,7 +114,6 @@ const CreateUser = () => {
               type="text"
               id="fullName"
               className="form-control bg-secondary"
-              value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
           </div>
@@ -124,7 +123,6 @@ const CreateUser = () => {
               type="text"
               id="email"
               className="form-control bg-secondary"
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -134,7 +132,6 @@ const CreateUser = () => {
               type="text"
               id="contactNumber"
               className="form-control bg-secondary"
-              value={contactNumber}
               onChange={(e) => setContactNumber(e.target.value)}
             />
           </div>
@@ -144,7 +141,6 @@ const CreateUser = () => {
               type="password"
               id="password"
               className="form-control bg-secondary"
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -154,7 +150,6 @@ const CreateUser = () => {
               type="text"
               id="position"
               className="form-control bg-secondary"
-              value={position}
               onChange={(e) => setPosition(e.target.value)}
             />
           </div>
@@ -219,7 +214,6 @@ const CreateUser = () => {
   return (
     <Layout>
       <OfficeModal show={officeModal} onHide={() => setOfficeModal(false)} />
-      {loading && <PlaceHolder />}
 
       <div className="row">
         <div className="col-8">
