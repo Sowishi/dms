@@ -31,7 +31,7 @@ const Sidebar = () => {
         <div className={`sidebar vh-100  ${sidebarShow ? "" : "inactive"}`}>
           <div className="sidebar-header d-flex justify-content-center align-items-center flex-column">
             <div className="brand w-100 flex">
-              <img width={"80px"} src="./assets/images/logo.png" alt="" />
+              <img width={"100px"} src="./assets/images/logo.png" alt="" />
             </div>
           </div>
           <div className="sidebar-content mx-3 mt-3">
