@@ -176,7 +176,7 @@ const CreateUser = () => {
         </div>
       </div>
 
-      <Table responsive bordered hover variant="info">
+      <Table responsive="md" bordered hover variant="info">
         <thead>
           <tr>
             <th>User ID</th>

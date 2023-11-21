@@ -625,7 +625,7 @@ const Outgoing = () => {
           </div>
           {loading && <PlaceHolder />}
 
-          <Table responsive bordered hover variant="white">
+          <Table responsive="md" bordered hover variant="white">
             <thead>
               <tr>
                 <th>DocID</th>
