@@ -18,7 +18,11 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { toast } from "react-toastify";
-import { deleteUser } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 function DropdownAction({ message }) {
   const handleDelete = () => {
@@ -50,35 +54,39 @@ function DropdownAction({ message }) {
 
 const CreateUser = () => {
   const userCollection = collection(db, "users");
+  const officeCollection = collection(db, "offices");
 
   const [loading, setLoading] = useState();
+  const [users, setUsers] = useState([]);
   const [offices, setOffices] = useState([]);
+
   const [officeModal, setOfficeModal] = useState(false);
 
   function OfficeModal(props) {
-    const [officeName, setOfficeName] = useState("");
-    const [officeCode, setOfficeCode] = useState("");
-    const [status, setStatus] = useState("");
-
-    const generateRandomCode = () => {
-      const min = 1000;
-      const max = 99999;
-      const code = Math.floor(Math.random() * (max - min + 1)) + min;
-      return code;
-    };
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [contactNumber, setContactNumber] = useState("");
+    const [password, setPassword] = useState("");
+    const [position, setPosition] = useState("");
+    const [office, setOffice] = useState("");
 
     const handleSubmit = () => {
       try {
         const data = {
-          officeID: generateRandomCode(),
-          officeName: officeName,
-          officeCode: officeCode,
-          status: status,
+          fullName: fullName,
+          email: email,
+          phone: contactNumber,
+          password: password,
+          position: position,
+          office: office,
+          role: "user",
         };
 
-        addDoc(officeCollection, data).then(() => {
-          toast.success("Successfully add office!");
-          setOfficeModal(false);
+        createUserWithEmailAndPassword(auth, email, password).then((res) => {
+          const userDoc = doc(db, "users", res.user.uid);
+          addDoc(userDoc, data).then(() => {
+            toast.success("Successfully Created User!");
+          });
         });
       } catch (error) {
         toast.success(error.message);
@@ -93,40 +101,75 @@ const CreateUser = () => {
         centered
       >
         <Modal.Header className="bg-primary">
-          <h5 className="fw-bold text-white">Add Office</h5>
+          <h5 className="fw-bold text-white">Add User</h5>
         </Modal.Header>
         <Modal.Body>
           <div className="wrapper">
-            <label htmlFor="officeName">Office Name</label>
+            <label htmlFor="fullName">Full Name</label>
             <Form.Control
               type="text"
-              id="officeName"
+              id="fullName"
               className="form-control bg-secondary"
-              value={officeName}
-              onChange={(e) => setOfficeName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           </div>
           <div className="wrapper">
-            <label htmlFor="officeCode">Office Code</label>
+            <label htmlFor="email">Email</label>
             <Form.Control
               type="text"
-              id="officeCode"
+              id="email"
               className="form-control bg-secondary"
-              value={officeCode}
-              onChange={(e) => setOfficeCode(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="wrapper">
-            <label htmlFor="status">Status</label>
+            <label htmlFor="contactNumber">Contact Number</label>
+            <Form.Control
+              type="text"
+              id="contactNumber"
+              className="form-control bg-secondary"
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value)}
+            />
+          </div>
+          <div className="wrapper">
+            <label htmlFor="password">Password</label>
+            <Form.Control
+              type="password"
+              id="password"
+              className="form-control bg-secondary"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="wrapper">
+            <label htmlFor="position">Position</label>
+            <Form.Control
+              type="text"
+              id="position"
+              className="form-control bg-secondary"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            />
+          </div>
+
+          <div className="wrapper">
+            <label htmlFor="officeStatus">Office</label>
             <Form.Select
-              id="status"
+              id="officeStatus"
               className="bg-secondary"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setOffice(e.target.value)}
             >
               <option>Please select an option</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              {offices.map((office) => {
+                return (
+                  <option key={office.id} value={office.id}>
+                    {office.officeName}
+                  </option>
+                );
+              })}
             </Form.Select>{" "}
           </div>
         </Modal.Body>
@@ -140,6 +183,14 @@ const CreateUser = () => {
 
   const fetchData = () => {
     onSnapshot(userCollection, (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        output.push({ ...doc.data(), id: doc.id });
+      });
+      setUsers(output);
+    });
+
+    onSnapshot(officeCollection, (snapshot) => {
       const output = [];
       snapshot.docs.forEach((doc) => {
         output.push({ ...doc.data(), id: doc.id });
@@ -189,7 +240,7 @@ const CreateUser = () => {
           </tr>
         </thead>
         <tbody>
-          {offices.map((message) => {
+          {users.map((message) => {
             return (
               <tr key={message.id}>
                 <td>
