@@ -106,6 +106,14 @@ function ViewModal(props) {
                         : currentMessage.sender
                     ).fullName
                   }
+                  {" - "}
+                  {
+                    props.getUser(
+                      props.outgoing
+                        ? currentMessage.reciever
+                        : currentMessage.sender
+                    ).position
+                  }
                 </h5>
               )}
               {props.dashboard && sender && reciever && (
@@ -113,12 +121,14 @@ function ViewModal(props) {
                   <h5 className="fw-bold">
                     {" "}
                     <FaUser />
-                    Sender - {sender.fullName}
+                    Sender - {sender.fullName} {" - "}
+                    {sender.position}
                   </h5>
                   <h5 className="fw-bold">
                     {" "}
                     <FaUser />
-                    Reciever - {reciever.fullName}
+                    Reciever - {reciever.fullName} {" - "}
+                    {reciever.position}
                   </h5>
                 </>
               )}

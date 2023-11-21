@@ -332,7 +332,10 @@ const UserIncoming = () => {
                     </td>
                     <td>{message.fileName}</td>
 
-                    <td>{getUser(message.sender).fullName}</td>
+                    <td>
+                      {getUser(message.sender).fullName} -{" "}
+                      <b> {getUser(message.sender).position}</b>
+                    </td>
                     <td>{message.action}</td>
                     <td>{message.date}</td>
                     <td className="flex">

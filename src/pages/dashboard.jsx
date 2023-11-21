@@ -340,8 +340,14 @@ const Dashboard = () => {
                       </td>
                       <td>{message.fileName}</td>
 
-                      <td>{getUserData(message.sender).fullName}</td>
-                      <td>{getUserData(message.reciever).fullName}</td>
+                      <td>
+                        {getUserData(message.sender).fullName} -{" "}
+                        <b> {getUserData(message.sender).position}</b>
+                      </td>
+                      <td>
+                        {getUserData(message.reciever).fullName} -{" "}
+                        <b> {getUserData(message.reciever).position}</b>
+                      </td>
                       <td>{message.date}</td>
                       <td className="flex">
                         {" "}

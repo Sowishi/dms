@@ -637,7 +637,10 @@ const UserOutgoing = () => {
                     </td>
                     <td>{message.fileName}</td>
 
-                    <td>{getUser(message.reciever).fullName}</td>
+                    <td>
+                      {getUser(message.reciever).fullName} -{" "}
+                      <b> {getUser(message.reciever).position}</b>
+                    </td>
                     <td>{message.action}</td>
                     <td>{message.date}</td>
                     <td className="flex">
