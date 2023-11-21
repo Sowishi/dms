@@ -32,6 +32,7 @@ import UserIncoming from "./pages/user-incoming";
 import UserOutgoing from "./pages/user-outgoing";
 import Middleware from "./pages/middleware";
 import UserMiddleware from "./pages/userMiddleware";
+import Office from "./pages/office";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -222,6 +223,14 @@ function App() {
               element={
                 <Middleware admin={admin}>
                   <CreateUser />
+                </Middleware>
+              }
+            />{" "}
+            <Route
+              path="/office-management"
+              element={
+                <Middleware admin={admin}>
+                  <Office />
                 </Middleware>
               }
             />{" "}

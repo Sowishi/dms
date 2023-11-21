@@ -6,6 +6,11 @@ import {
   FaDownload,
   FaMap,
   FaBell,
+  FaSuitcase,
+  FaIntercom,
+  FaInbox,
+  FaCaretRight,
+  FaFacebookMessenger,
 } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
@@ -278,6 +283,16 @@ const incoming = () => {
           </div>
         </div>
         <div className="dashboard-content mx-3 mt-3">
+          <div className="wrapper">
+            <h2 className="fw-bold my-3 mx-2">
+              Incoming Messages
+              <FaFacebookMessenger className="mx-2" />
+            </h2>
+            <div
+              className="bg-info mx-2 mb-3"
+              style={{ width: "200px", height: "10px", borderRadius: 20 }}
+            ></div>
+          </div>
           <div className="row">
             <div className="col-lg-7">
               <ListGroup horizontal>

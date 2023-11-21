@@ -5,6 +5,7 @@ import {
   FaEye,
   FaDownload,
   FaMap,
+  FaInbox,
 } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
@@ -571,17 +572,26 @@ const Outgoing = () => {
       )}
 
       <div className="dashboard">
-        <div className="dashboard-header ">
-          <div className="row">
-            <div className="col-lg-6 flex justify-content-start">
-              <img
-                onClick={() => setModalShow(true)}
-                className="mx-3"
-                src="./assets/images/Group 8779.png"
-                alt=""
-              />
+        <div className="row">
+          <div className="col-lg-8">
+            <div className="wrapper">
+              <h2 className="fw-bold my-3 mx-2">
+                Outgoing Messages
+                <FaInbox className="mx-2" />
+              </h2>
+              <div
+                className="bg-info mx-2 mb-3"
+                style={{ width: "200px", height: "10px", borderRadius: 20 }}
+              ></div>
             </div>
-            <div className="col-lg-6 flex"></div>
+          </div>
+          <div className="col-lg-4 flex justify-content-end">
+            <img
+              onClick={() => setModalShow(true)}
+              className="mx-3"
+              src="./assets/images/Group 8779.png"
+              alt=""
+            />
           </div>
         </div>
         <div className="dashboard-content mx-3 mt-3">

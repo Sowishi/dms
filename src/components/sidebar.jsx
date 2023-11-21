@@ -90,19 +90,31 @@ const Sidebar = () => {
             <div className="navigation mt-3 d-flex flex-column justify-content-start align-items-start">
               <Link
                 to={"/create-user"}
-                className="flex my-2 nav-link w-100 justify-content-start p-1 py-2"
+                className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
+                  location == "/create-use" ? "active" : ""
+                }`}
               >
                 <FaUser size={"20px"} />
                 <p className="mb-0 mx-2">User Management</p>
               </Link>
-              <li className="flex my-2 nav-link w-100 justify-content-start p-1 py-2">
+              <Link
+                to={"/office-management"}
+                className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
+                  location == "/office-management" ? "active" : ""
+                }`}
+              >
                 <FaPeopleCarry size={"20px"} />
                 <p className="mb-0 mx-2">Office Management</p>
-              </li>
-              <li className="flex my-2 nav-link w-100 justify-content-start p-1 py-2">
+              </Link>
+              <Link
+                to={"/recycle-bin"}
+                className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
+                  location == "/recycle-bin" ? "active" : ""
+                }`}
+              >
                 <FaTrash size={"20px"} />
                 <p className="mb-0 mx-2">Recycle BIn</p>
-              </li>
+              </Link>
             </div>
           </div>
         </div>
