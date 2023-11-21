@@ -34,6 +34,7 @@ import Layout from "../layout/layout";
 import LayoutUser from "../layout/layoutUser";
 import ViewModal from "../components/viewModal";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "outgoing");
@@ -121,6 +122,7 @@ const UserIncoming = () => {
   const [showRouting, setShowRouting] = useState(false);
   const [urgent, setUrgent] = useState(false);
   const [urgentFiles, setUrgentFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -174,6 +176,7 @@ const UserIncoming = () => {
   }
 
   const fetchData = async () => {
+    setLoading(true);
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
@@ -219,6 +222,7 @@ const UserIncoming = () => {
 
     setAllSender(sender);
     setAllReciever(reciever);
+    setLoading(false);
   };
 
   const getUser = (id) => {
@@ -302,6 +306,7 @@ const UserIncoming = () => {
               </div>
             </div>
           </div>
+          {loading && <PlaceHolder />}
           <Table responsive bordered hover variant="white">
             <thead>
               <tr>

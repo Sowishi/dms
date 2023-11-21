@@ -32,6 +32,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
+import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "outgoing");
@@ -64,6 +65,7 @@ const Outgoing = () => {
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
@@ -492,6 +494,7 @@ const Outgoing = () => {
   }
 
   const fetchData = async () => {
+    setLoading(true);
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
@@ -523,6 +526,7 @@ const Outgoing = () => {
 
     setAllSender(sender);
     setAllReciever(reciever);
+    setLoading(false);
   };
 
   const getUser = (id) => {
@@ -606,6 +610,8 @@ const Outgoing = () => {
               </div>
             </div>
           </div>
+          {loading && <PlaceHolder />}
+
           <Table responsive bordered hover variant="white">
             <thead>
               <tr>

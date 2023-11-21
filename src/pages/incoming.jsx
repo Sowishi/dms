@@ -33,6 +33,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
 import ViewModal from "../components/viewModal";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
 const outgoingCollectionRef = collection(db, "incoming");
@@ -119,6 +120,7 @@ const incoming = () => {
   const [showRouting, setShowRouting] = useState(false);
   const [urgent, setUrgent] = useState(false);
   const [urgentFiles, setUrgentFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -172,6 +174,7 @@ const incoming = () => {
   }
 
   const fetchData = async () => {
+    setLoading(true);
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
@@ -217,6 +220,7 @@ const incoming = () => {
 
     setAllSender(sender);
     setAllReciever(reciever);
+    setLoading(false);
   };
 
   const getUser = (id) => {
@@ -299,6 +303,8 @@ const incoming = () => {
               </div>
             </div>
           </div>
+          {loading && <PlaceHolder />}
+
           <Table responsive bordered hover variant="white">
             <thead>
               <tr>

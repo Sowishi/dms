@@ -60,6 +60,7 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const outgoingCollectionRef = collection(db, "outgoing");
   const incomingCollectionRef = collection(db, "incoming");
@@ -133,6 +134,7 @@ const Dashboard = () => {
   };
 
   const fetchData = async () => {
+    setLoading(true);
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
@@ -166,6 +168,7 @@ const Dashboard = () => {
         console.error("Error listening to collection:", error);
       }
     );
+    setLoading(false);
   };
 
   const getUserData = (id) => {
@@ -309,7 +312,9 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {incomingMessages && outgoingMesssages ? (
+          {loading && <PlaceHolder />}
+
+          {incomingMessages && outgoingMesssages && (
             <Table responsive bordered hover variant="white">
               <thead>
                 <tr>
@@ -408,8 +413,6 @@ const Dashboard = () => {
                 })}
               </tbody>
             </Table>
-          ) : (
-            <PlaceHolder />
           )}
         </div>
       </div>
