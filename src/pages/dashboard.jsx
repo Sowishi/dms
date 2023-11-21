@@ -25,6 +25,8 @@ import { auth, db } from "../../firebase";
 import { Dropdown } from "react-bootstrap";
 import ViewModal from "../components/viewModal";
 import { toast } from "react-toastify";
+import Placeholder from "react-bootstrap/Placeholder";
+import PlaceHolder from "../components/placeholder";
 
 function MyVerticallyCenteredModal(props) {
   return (
@@ -277,6 +279,7 @@ const Dashboard = () => {
         </div>
         <div className="dashboard-content mx-3 mt-3">
           <h4 className="my-3">Compliances & Completed Documents</h4>
+
           <div className="row">
             <div className="col-lg-6 d-flex my-2 my-lg-0">
               <ListGroup horizontal>
@@ -306,7 +309,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {incomingMessages && outgoingMesssages && (
+          {incomingMessages && outgoingMesssages ? (
             <Table responsive bordered hover variant="white">
               <thead>
                 <tr>
@@ -405,6 +408,8 @@ const Dashboard = () => {
                 })}
               </tbody>
             </Table>
+          ) : (
+            <PlaceHolder />
           )}
         </div>
       </div>
