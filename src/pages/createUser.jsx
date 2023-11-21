@@ -249,6 +249,7 @@ const CreateUser = () => {
             <th>Position</th>
             <th>Office</th>
             <th>Gender</th>
+            <th>Role</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -269,6 +270,7 @@ const CreateUser = () => {
                     : "N/A"}
                 </td>
                 <td>{message.gender ? message.gender : "N/A"}</td>
+                <td>{message.role}</td>
 
                 <td className="flex">
                   <DropdownAction message={message} />
