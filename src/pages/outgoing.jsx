@@ -159,6 +159,35 @@ const Outgoing = () => {
     }
 
     const handleSubmit = (fileUrl) => {
+      try {
+        const dataObject = {
+          code: code || null,
+          sender: sender || null,
+          reciever: reciever || null,
+          subject: subject || null,
+          description: description || null,
+          prioritization: prioritization || null,
+          date: date || null,
+          classification: classification || null,
+          subClassification: subClassification || null,
+          action: action || null,
+          dueDate: dueDate || null,
+          deliverType: deliverType || null,
+          documentFlow: documentFlow || null,
+          attachmentDetail: attachmentDetail || null,
+          fileUrl: fileUrl || null,
+          fileName: file.name,
+          status: "Pending",
+        };
+
+        const messagesRef = collection(db, "outgoing");
+        addDoc(messagesRef, dataObject).then((snapshot) => {
+          toast.success("Your message is succesfully sent!");
+          setModalShow(false);
+        });
+      } catch (error) {
+        toast.error(error.message);
+      }
       // console.log("Code:", code);
       // console.log("Sender:", sender);
       // console.log("Receiver:", reciever);
@@ -174,32 +203,6 @@ const Outgoing = () => {
       // console.log("Document Flow:", documentFlow);
       // console.log("Attachment Detail:", attachmentDetail);
       // console.log("File:", file);
-
-      const dataObject = {
-        code: code || null,
-        sender: sender || null,
-        reciever: reciever || null,
-        subject: subject || null,
-        description: description || null,
-        prioritization: prioritization || null,
-        date: date || null,
-        classification: classification || null,
-        subClassification: subClassification || null,
-        action: action || null,
-        dueDate: dueDate || null,
-        deliverType: deliverType || null,
-        documentFlow: documentFlow || null,
-        attachmentDetail: attachmentDetail || null,
-        fileUrl: fileUrl || null,
-        fileName: file.name,
-        status: "Pending",
-      };
-
-      const messagesRef = collection(db, "outgoing");
-      addDoc(messagesRef, dataObject).then((snapshot) => {
-        toast.success("Your message is succesfully sent!");
-        setModalShow(false);
-      });
     };
 
     const handleUpload = async () => {
