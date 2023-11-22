@@ -174,7 +174,7 @@ const CreateUser = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button onClick={handleSubmit}>Add Office</Button>
+          <Button onClick={handleSubmit}>Create User</Button>
         </Modal.Footer>
       </Modal>
     );

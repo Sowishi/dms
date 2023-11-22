@@ -521,7 +521,7 @@ const UserOutgoing = () => {
         const messages = [];
         querySnapshot.forEach((doc) => {
           const message = { ...doc.data(), id: doc.id };
-          if (message.reciever == auth.currentUser.uid) {
+          if (message.sender == auth.currentUser.uid) {
             messages.push(message);
           }
         });
