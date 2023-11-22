@@ -259,11 +259,14 @@ const CreateUser = () => {
 
                   <td>{message.email}</td>
                   <td>{message.position ? message.position : "N/A"}</td>
-                  <td>
-                    {message.office
-                      ? getOffice(message.office).officeName
-                      : "N/A"}
-                  </td>
+                  {offices.length >= 1 && (
+                    <td>
+                      {message.office
+                        ? getOffice(message.office).officeName
+                        : "N/A"}
+                    </td>
+                  )}
+
                   <td>{message.gender ? message.gender : "N/A"}</td>
                   <td>{message.role}</td>
 
