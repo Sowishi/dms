@@ -68,6 +68,7 @@ const CreateUser = () => {
     const [password, setPassword] = useState("");
     const [position, setPosition] = useState("");
     const [office, setOffice] = useState("");
+    const [role, setRole] = useState("");
 
     const handleSubmit = async () => {
       try {
@@ -78,7 +79,7 @@ const CreateUser = () => {
           password: password,
           position: position,
           office: office,
-          role: "user",
+          role: role,
         };
 
         const result = await createUserWithEmailAndPassword(
@@ -143,6 +144,18 @@ const CreateUser = () => {
               className="form-control bg-secondary"
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+          <div className="wrapper">
+            <label htmlFor="officeStatus">Role</label>
+            <Form.Select
+              id="officeStatus"
+              className="bg-secondary"
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option>Please select an option</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </Form.Select>{" "}
           </div>
           <div className="wrapper">
             <label htmlFor="position">Position</label>
