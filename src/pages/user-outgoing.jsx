@@ -104,7 +104,6 @@ const UserOutgoing = () => {
         classification &&
         subClassification &&
         action &&
-        dueDate &&
         deliverType &&
         documentFlow &&
         attachmentDetail &&
@@ -388,7 +387,7 @@ const UserOutgoing = () => {
                 </Form.Select>
               </div>
               <div className="col-lg-6">
-                <Form.Label>Due Date</Form.Label>
+                <Form.Label>Due Date(Optional)</Form.Label>
                 <Form.Control
                   onChange={(e) => setDueDate(e.target.value)}
                   type="date"

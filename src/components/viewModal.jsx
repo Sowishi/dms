@@ -7,6 +7,7 @@ import { ModalBody } from "react-bootstrap";
 import { doc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 function ViewFile(props) {
   const [show, setShow] = useState(false);
@@ -130,7 +131,7 @@ function ViewModal(props) {
               )}
             </div>
             <div className="col-lg-6 d-flex justify-content-end align-items-center">
-              Date: {currentMessage.date}
+              Date: {moment(currentMessage.date.toDate()).format("LL")}
             </div>
           </div>
           <h3 className="text-center">
