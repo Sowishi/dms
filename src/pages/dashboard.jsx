@@ -28,6 +28,7 @@ import ViewModal from "../components/viewModal";
 import { toast } from "react-toastify";
 import Placeholder from "react-bootstrap/Placeholder";
 import PlaceHolder from "../components/placeholder";
+import moment from "moment";
 
 function MyVerticallyCenteredModal(props) {
   return (
@@ -308,7 +309,6 @@ const Dashboard = () => {
                         </div>
                       </td>
                       <td>{message.fileName}</td>
-
                       <td>
                         {getUserData(message.sender).fullName} -{" "}
                         <b> {getUserData(message.sender).position}</b>
@@ -323,7 +323,9 @@ const Dashboard = () => {
                           </>
                         )}
                       </td>
-                      <td>{message.date}</td>
+                      {message.date.toDate && (
+                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                      )}{" "}
                       <td className="flex">
                         {" "}
                         <Badge

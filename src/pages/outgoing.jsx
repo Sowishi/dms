@@ -35,7 +35,7 @@ import Layout from "../layout/layout";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
-
+import moment from "moment";
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 
@@ -74,7 +74,6 @@ const Outgoing = () => {
     const [subject, setSubject] = useState("");
     const [description, setDescription] = useState("");
     const [prioritization, setPrioritization] = useState("");
-    const [date, setDate] = useState(null);
     const [classification, setClassification] = useState("");
     const [subClassification, setSubClassification] = useState("");
     const [action, setAction] = useState("");
@@ -99,7 +98,6 @@ const Outgoing = () => {
         subject &&
         description &&
         prioritization &&
-        date &&
         classification &&
         subClassification &&
         action &&
@@ -165,7 +163,7 @@ const Outgoing = () => {
           subject: subject || null,
           description: description || null,
           prioritization: prioritization || null,
-          date: date || null,
+          date: serverTimestamp(),
           classification: classification || null,
           subClassification: subClassification || null,
           action: action || null,
@@ -336,13 +334,7 @@ const Outgoing = () => {
                   <option value="usual">Usual</option>
                 </Form.Select>
               </div>
-              <div className="col-lg-6">
-                <Form.Label>Date</Form.Label>
-                <Form.Control
-                  onChange={(e) => setDate(e.target.value)}
-                  type="date"
-                />
-              </div>
+
               <div className="col-lg-6">
                 <Form.Label>Classification</Form.Label>
 
@@ -581,6 +573,14 @@ const Outgoing = () => {
         />
       )}
 
+      {auth.currentUser && (
+        <MyVerticallyCenteredModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          currentUser={auth.currentUser}
+        />
+      )}
+
       <div className="dashboard">
         <div className="row">
           <div className="col-lg-8">
@@ -668,7 +668,10 @@ const Outgoing = () => {
                       )}
                     </td>
                     <td>{message.action}</td>
-                    <td>{message.date}</td>
+
+                    {message.date && (
+                      <td>{moment(message.date.toDate()).format("LL")}</td>
+                    )}
                     <td className="flex">
                       {" "}
                       <Badge
@@ -697,13 +700,6 @@ const Outgoing = () => {
             </tbody>
           </Table>
         </div>
-        {auth.currentUser && (
-          <MyVerticallyCenteredModal
-            show={modalShow}
-            onHide={() => setModalShow(false)}
-            currentUser={auth.currentUser}
-          />
-        )}
       </div>
     </Layout>
   );

@@ -39,6 +39,7 @@ import Layout from "../layout/layout";
 import ViewModal from "../components/viewModal";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PlaceHolder from "../components/placeholder";
+import moment from "moment";
 
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
@@ -342,7 +343,7 @@ const incoming = () => {
                       <b> {getUser(message.sender).position}</b>
                     </td>
                     <td>{message.action}</td>
-                    <td>{message.date}</td>
+                    <td>{moment(message.date.toDate()).format("LL")}</td>
                     <td className="flex">
                       {" "}
                       <Badge

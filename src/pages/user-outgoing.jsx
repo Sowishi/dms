@@ -35,6 +35,7 @@ import LayoutUser from "../layout/layoutUser";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
+import moment from "moment";
 
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
@@ -100,7 +101,6 @@ const UserOutgoing = () => {
         subject &&
         description &&
         prioritization &&
-        date &&
         classification &&
         subClassification &&
         action &&
@@ -166,7 +166,7 @@ const UserOutgoing = () => {
           subject: subject || null,
           description: description || null,
           prioritization: prioritization || null,
-          date: date || null,
+          date: serverTimestamp(),
           classification: classification || null,
           subClassification: subClassification || null,
           action: action || null,
@@ -333,13 +333,7 @@ const UserOutgoing = () => {
                   <option value="usual">Usual</option>
                 </Form.Select>
               </div>
-              <div className="col-lg-6">
-                <Form.Label>Date</Form.Label>
-                <Form.Control
-                  onChange={(e) => setDate(e.target.value)}
-                  type="date"
-                />
-              </div>
+
               <div className="col-lg-6">
                 <Form.Label>Classification</Form.Label>
 
@@ -648,13 +642,14 @@ const UserOutgoing = () => {
                       </div>
                     </td>
                     <td>{message.fileName}</td>
-
                     <td>
                       {getUser(message.reciever).fullName} -{" "}
                       <b> {getUser(message.reciever).position}</b>
                     </td>
                     <td>{message.action}</td>
-                    <td>{message.date}</td>
+                    {message.date && (
+                      <td>{moment(message.date.toDate()).format("LL")}</td>
+                    )}{" "}
                     <td className="flex">
                       {" "}
                       <Badge

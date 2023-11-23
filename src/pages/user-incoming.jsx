@@ -36,6 +36,7 @@ import LayoutUser from "../layout/layoutUser";
 import ViewModal from "../components/viewModal";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PlaceHolder from "../components/placeholder";
+import moment from "moment";
 
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
@@ -332,13 +333,14 @@ const UserIncoming = () => {
                       </div>
                     </td>
                     <td>{message.fileName}</td>
-
                     <td>
                       {getUser(message.sender).fullName} -{" "}
                       <b> {getUser(message.sender).position}</b>
                     </td>
                     <td>{message.action}</td>
-                    <td>{message.date}</td>
+                    {message.date.toDate && (
+                      <td>{moment(message.date.toDate()).format("LL")}</td>
+                    )}{" "}
                     <td className="flex">
                       {" "}
                       <Badge
