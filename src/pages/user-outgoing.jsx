@@ -21,6 +21,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -36,7 +37,7 @@ import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
-const outgoingCollectionRef = collection(db, "incoming");
+const messagesCollectionRef = collection(db, "messages");
 
 function OffCanvasExample(props) {
   const { currentMessage } = props;
@@ -60,9 +61,8 @@ function OffCanvasExample(props) {
 
 const UserOutgoing = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [allSender, setAllSender] = useState([]);
-  const [allReciever, setAllReciever] = useState([]);
-  const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -96,7 +96,6 @@ const UserOutgoing = () => {
     const validateForm = () => {
       if (
         code &&
-        sender &&
         reciever &&
         subject &&
         description &&
@@ -162,7 +161,7 @@ const UserOutgoing = () => {
       try {
         const dataObject = {
           code: code || null,
-          sender: sender || null,
+          sender: auth.currentUser.uid,
           reciever: reciever || null,
           subject: subject || null,
           description: description || null,
@@ -178,10 +177,10 @@ const UserOutgoing = () => {
           fileUrl: fileUrl || null,
           fileName: file.name,
           status: "Pending",
+          createdAt: serverTimestamp(),
         };
 
-        const messagesRef = collection(db, "incoming");
-        addDoc(messagesRef, dataObject).then((snapshot) => {
+        addDoc(messagesCollectionRef, dataObject).then((snapshot) => {
           toast.success("Your message is succesfully sent!");
           setModalShow(false);
         });
@@ -266,16 +265,15 @@ const UserOutgoing = () => {
               onChange={(e) => setSender(e.target.value)}
               className="mb-3"
             >
-              <option key={0} value={0}>
-                Please select a sender
-              </option>
-              {allSender &&
-                allSender.map((sender) => {
-                  return (
-                    <option key={sender.userID} value={sender.id}>
-                      {sender.fullName}
-                    </option>
-                  );
+              {users &&
+                users.map((user) => {
+                  if (user.id == auth.currentUser.uid) {
+                    return (
+                      <option key={user.userID} value={user.id}>
+                        {user.fullName}
+                      </option>
+                    );
+                  }
                 })}
             </Form.Select>
             <Form.Label>Reciever</Form.Label>
@@ -287,13 +285,15 @@ const UserOutgoing = () => {
               <option key={0} value={0}>
                 Please select a reciever
               </option>
-              {allReciever &&
-                allReciever.map((reciever) => {
-                  return (
-                    <option key={reciever.userID} value={reciever.id}>
-                      {reciever.fullName}
-                    </option>
-                  );
+              {users &&
+                users.map((user) => {
+                  if (user.id != auth.currentUser.uid) {
+                    return (
+                      <option key={user.userID} value={user.id}>
+                        {user.fullName}
+                      </option>
+                    );
+                  }
                 })}
             </Form.Select>
             <Form.Group
@@ -460,7 +460,7 @@ const UserOutgoing = () => {
     };
 
     const handleDelete = () => {
-      const docRef = doc(db, "incoming", message.id);
+      const docRef = doc(db, "messages", message.id);
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
@@ -504,19 +504,11 @@ const UserOutgoing = () => {
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
-    const sender = output.filter((user) => {
-      if (user.role == "user") {
-        return user;
-      }
-    });
-    const reciever = output.filter((user) => {
-      if (user.role == "admin") {
-        return user;
-      }
-    });
+
+    setUsers(output);
 
     onSnapshot(
-      outgoingCollectionRef,
+      messagesCollectionRef,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
@@ -525,20 +517,17 @@ const UserOutgoing = () => {
             messages.push(message);
           }
         });
-        setOutgoingMessages(messages);
+        setMessages(messages);
       },
       (error) => {
         console.error("Error listening to collection:", error);
       }
     );
-
-    setAllSender(sender);
-    setAllReciever(reciever);
     setLoading(false);
   };
 
   const getUser = (id) => {
-    const user = allReciever.filter((user) => {
+    const user = users.filter((user) => {
       if (user.id === id) {
         return user;
       }
@@ -643,7 +632,7 @@ const UserOutgoing = () => {
               </tr>
             </thead>
             <tbody>
-              {outgoingMesssages.map((message) => {
+              {messages.map((message) => {
                 return (
                   <tr key={message.code}>
                     <td>
