@@ -62,7 +62,7 @@ function OffCanvasExample(props) {
 const Outgoing = () => {
   const [modalShow, setModalShow] = useState(false);
   const [users, setUsers] = useState([]);
-  const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -517,7 +517,7 @@ const Outgoing = () => {
             messages.push(message);
           }
         });
-        setOutgoingMessages(messages);
+        setMessages(messages);
       },
       (error) => {
         console.error("Error listening to collection:", error);
@@ -633,7 +633,7 @@ const Outgoing = () => {
               </tr>
             </thead>
             <tbody>
-              {outgoingMesssages.map((message) => {
+              {messages.map((message) => {
                 return (
                   <tr key={message.code}>
                     <td>

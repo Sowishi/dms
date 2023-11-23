@@ -56,15 +56,13 @@ function MyVerticallyCenteredModal(props) {
 const Dashboard = () => {
   const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState(null);
-  const [outgoingMesssages, setOutgoingMessages] = useState([]);
-  const [incomingMessages, setIncomingMessages] = useState([]);
   const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const outgoingCollectionRef = collection(db, "outgoing");
-  const incomingCollectionRef = collection(db, "incoming");
+  const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
 
   function DropdownAction({ message }) {
@@ -144,31 +142,19 @@ const Dashboard = () => {
     setUsers(output);
 
     onSnapshot(
-      outgoingCollectionRef,
+      messagesCollectionRef,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
           messages.push({ ...doc.data(), id: doc.id });
         });
-        setOutgoingMessages(messages);
+        setMessages(messages);
       },
       (error) => {
         console.error("Error listening to collection:", error);
       }
     );
-    onSnapshot(
-      incomingCollectionRef,
-      (querySnapshot) => {
-        const messages = [];
-        querySnapshot.forEach((doc) => {
-          messages.push({ ...doc.data(), id: doc.id });
-        });
-        setIncomingMessages(messages);
-      },
-      (error) => {
-        console.error("Error listening to collection:", error);
-      }
-    );
+
     setLoading(false);
   };
 
@@ -189,31 +175,22 @@ const Dashboard = () => {
   }
 
   const allApprove = () => {
-    const outgoing = outgoingMesssages.filter((message) => {
+    const output = messages.filter((message) => {
       if (message.status == "Approved") {
         return message;
       }
     });
-    const incoming = incomingMessages.filter((message) => {
-      if (message.status == "Approved") {
-        return message;
-      }
-    });
-    return outgoing.length + incoming.length;
+
+    return output.length;
   };
 
   const allRejected = () => {
-    const outgoing = outgoingMesssages.filter((message) => {
+    const output = messages.filter((message) => {
       if (message.status == "Rejected") {
         return message;
       }
     });
-    const incoming = incomingMessages.filter((message) => {
-      if (message.status == "Rejected") {
-        return message;
-      }
-    });
-    return outgoing.length + incoming.length;
+    return output;
   };
 
   useEffect(() => {
@@ -270,11 +247,7 @@ const Dashboard = () => {
                   <div className="wrapper flex flex-column">
                     <p className="mb-0">Documents</p>
 
-                    {outgoingMesssages && (
-                      <Badge bg="primary">
-                        {outgoingMesssages.length + incomingMessages.length}
-                      </Badge>
-                    )}
+                    {messages && <Badge bg="primary">{messages.length}</Badge>}
                   </div>
                 </div>
               </div>
@@ -296,10 +269,7 @@ const Dashboard = () => {
             <div className="col-lg-6 d-flex my-2 my-lg-0">
               <ListGroup horizontal>
                 <ListGroup.Item>
-                  All{" "}
-                  <Badge bg="primary">
-                    {outgoingMesssages.length + incomingMessages.length}
-                  </Badge>
+                  All <Badge bg="primary">{messages.length}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Approved <Badge bg="primary">{allApprove()}</Badge>
@@ -323,7 +293,7 @@ const Dashboard = () => {
 
           {loading && <PlaceHolder />}
 
-          {incomingMessages && outgoingMesssages && (
+          {messages && (
             <Table responsive="md" bordered hover variant="white">
               <thead>
                 <tr>
@@ -338,56 +308,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {incomingMessages.map((message) => {
-                  return (
-                    <tr key={message.code}>
-                      <td>
-                        <div className="flex">
-                          <FaFile />
-                          {message.code}
-                        </div>
-                      </td>
-                      <td>{message.fileName}</td>
-
-                      <td>
-                        {getUserData(message.sender).fullName} -{" "}
-                        <b> {getUserData(message.sender).position}</b>
-                      </td>
-                      <td>
-                        {getUserData(message.reciever).fullName} -{" "}
-                        <b> {getUserData(message.reciever).position}</b>
-                      </td>
-                      <td>{message.date}</td>
-                      <td className="flex">
-                        {" "}
-                        <Badge
-                          bg={
-                            message.prioritization == "urgent"
-                              ? "danger"
-                              : "info"
-                          }
-                          className="text-white p-2"
-                        >
-                          {toTitleCase(message.prioritization)}
-                        </Badge>{" "}
-                      </td>
-                      <td>
-                        <Badge
-                          bg={
-                            message.status == "Approved" ? "primary" : "danger"
-                          }
-                          className="text-white p-2"
-                        >
-                          {message.status}
-                        </Badge>
-                      </td>
-                      <td className="flex">
-                        <DropdownAction message={message} />
-                      </td>
-                    </tr>
-                  );
-                })}
-                {outgoingMesssages.map((message) => {
+                {messages.map((message) => {
                   return (
                     <tr key={message.code}>
                       <td>
