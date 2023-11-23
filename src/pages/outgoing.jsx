@@ -179,7 +179,7 @@ const Outgoing = () => {
           createdAt: serverTimestamp(),
         };
 
-        addDoc(messagesCollectionRef, dataObject).then((snapshot) => {
+        addDoc(messagesCollectionRef, dataObject).then(() => {
           toast.success("Your message is succesfully sent!");
           setModalShow(false);
         });
@@ -262,7 +262,7 @@ const Outgoing = () => {
             <Form.Select className="mb-3">
               {users &&
                 users.map((user) => {
-                  if (user.id == auth.currentUser.uid) {
+                  if (user.id == props.currentUser.uid) {
                     return (
                       <option key={user.userID} value={user.id}>
                         {user.fullName}{" "}
@@ -283,13 +283,13 @@ const Outgoing = () => {
               <option
                 className="bg-primary text-white"
                 key={0}
-                value={auth.currentUser.uid}
+                value={props.currentUser.uid}
               >
                 Send to all
               </option>
               {users &&
                 users.map((user) => {
-                  if (user.id !== auth.currentUser.uid) {
+                  if (user.id !== props.currentUser.uid) {
                     return (
                       <option
                         className={`${
@@ -468,8 +468,12 @@ const Outgoing = () => {
     };
 
     const handleDelete = () => {
-      const docRef = doc(db, "outgoing", message.id);
-      deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+      try {
+        const docRef = doc(db, "messages", message.id);
+        deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+      } catch (error) {
+        toast.error(error.message);
+      }
     };
 
     return (
@@ -686,10 +690,13 @@ const Outgoing = () => {
             </tbody>
           </Table>
         </div>
-        <MyVerticallyCenteredModal
-          show={modalShow}
-          onHide={() => setModalShow(false)}
-        />
+        {auth.currentUser && (
+          <MyVerticallyCenteredModal
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+            currentUser={auth.currentUser}
+          />
+        )}
       </div>
     </Layout>
   );

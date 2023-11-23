@@ -78,18 +78,8 @@ const Dashboard = () => {
     };
 
     const handleDelete = async () => {
-      const docRefIncoming = doc(db, "incoming", message.id);
-      const docRefOutgoing = doc(db, "outgoing", message.id);
-      const snapshot = await getDoc(docRefIncoming);
-      if (snapshot.exists()) {
-        deleteDoc(docRefIncoming).then(() =>
-          toast.success("Successfully Deleted!")
-        );
-      } else {
-        deleteDoc(docRefOutgoing).then(() =>
-          toast.success("Successfully Deleted!")
-        );
-      }
+      const docMessage = doc(db, "messages", message.id);
+      deleteDoc(docMessage).then(() => toast.success("Successfully Deleted!"));
     };
 
     return (
@@ -324,8 +314,14 @@ const Dashboard = () => {
                         <b> {getUserData(message.sender).position}</b>
                       </td>
                       <td>
-                        {getUserData(message.reciever).fullName} -{" "}
-                        <b> {getUserData(message.reciever).position}</b>
+                        {message.reciever == message.sender ? (
+                          "Send to all"
+                        ) : (
+                          <>
+                            {getUserData(message.reciever).fullName} -{" "}
+                            <b> {getUserData(message.reciever).position}</b>
+                          </>
+                        )}
                       </td>
                       <td>{message.date}</td>
                       <td className="flex">
