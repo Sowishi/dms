@@ -193,7 +193,10 @@ const incoming = () => {
         const urgents = [];
         querySnapshot.forEach((doc) => {
           const message = { ...doc.data(), id: doc.id };
-          if (message.reciever == auth.currentUser.uid) {
+          if (
+            message.reciever == auth.currentUser.uid ||
+            message.reciever == message.sender
+          ) {
             messages.push(message);
             if (
               message.prioritization == "urgent" &&

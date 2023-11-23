@@ -280,17 +280,25 @@ const Outgoing = () => {
               <option key={0} value={0}>
                 Please select a reciever
               </option>
+              <option
+                className="bg-primary text-white"
+                key={0}
+                value={auth.currentUser.uid}
+              >
+                Send to all
+              </option>
               {users &&
                 users.map((user) => {
                   if (user.id !== auth.currentUser.uid) {
                     return (
-                      <option key={user.userID} value={user.id}>
+                      <option
+                        className={`${
+                          user.role == "admin" ? "bg-info text-white" : ""
+                        }`}
+                        key={user.userID}
+                        value={user.id}
+                      >
                         {user.fullName}
-
-                        <span className="fw-bold">
-                          {" "}
-                          {user.role == "admin" ? "Admin" : ""}
-                        </span>
                       </option>
                     );
                   }
