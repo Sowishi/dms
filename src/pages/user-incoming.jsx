@@ -6,6 +6,10 @@ import {
   FaDownload,
   FaMap,
   FaBell,
+  FaSuitcase,
+  FaIntercom,
+  FaInbox,
+  FaCaretRight,
   FaFacebookMessenger,
 } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -22,6 +26,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -32,7 +37,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import Layout from "../layout/layout";
-import LayoutUser from "../layout/layoutUser";
+import UserLayout from "../layout/layoutUser";
 import ViewModal from "../components/viewModal";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import PlaceHolder from "../components/placeholder";
@@ -40,26 +45,7 @@ import moment from "moment";
 
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
-
-function OffCanvasExample(props) {
-  const { currentMessage } = props;
-  return (
-    <>
-      <Offcanvas
-        placement="end"
-        show={props.showRouting}
-        onHide={props.handleCloseRouting}
-      >
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>{currentMessage.id}</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <h2>Document Routing..</h2>
-        </Offcanvas.Body>
-      </Offcanvas>
-    </>
-  );
-}
+const incomingExternalRef = collection(db, "incoming-external");
 
 function UrgentModal(props) {
   const urgentFiles = props.urgentFiles;
@@ -81,7 +67,7 @@ function UrgentModal(props) {
           response before the deadline
         </p>
         {urgentFiles && (
-          <Table bordered hover variant="white">
+          <Table bordered variant="white">
             <thead>
               <tr>
                 <th>DocID</th>
@@ -114,16 +100,377 @@ function UrgentModal(props) {
     </Modal>
   );
 }
+function OffCanvasExample(props) {
+  const { currentMessage } = props;
+  return (
+    <>
+      <Offcanvas
+        placement="end"
+        show={props.showRouting}
+        onHide={props.handleCloseRouting}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{currentMessage.id}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <h2>Document Routing..</h2>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
+  );
+}
 
 const UserIncoming = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [externalMessages, setExternalMessages] = useState([]);
+  const [users, setUsers] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
   const [urgent, setUrgent] = useState(false);
   const [urgentFiles, setUrgentFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState("internal");
+  const [composeModalOpen, setComposeModalOpen] = useState(false);
+
+  function ComposeModal(props) {
+    const [code, setCode] = useState("");
+    const [sender, setSender] = useState("");
+    const [reciever, setReciever] = useState(props.currentUser.uid);
+    const [subject, setSubject] = useState("");
+    const [description, setDescription] = useState("");
+    const [prioritization, setPrioritization] = useState("");
+    const [classification, setClassification] = useState("");
+    const [subClassification, setSubClassification] = useState("");
+    const [action, setAction] = useState("");
+    const [dueDate, setDueDate] = useState("");
+    const [deliverType, setDeliverType] = useState("");
+    const [documentFlow, setDocumentFlow] = useState("");
+    const [attachmentDetail, setAttachmentDetail] = useState("");
+    const [file, setFile] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const generateRandomCode = () => {
+      const min = 1000;
+      const max = 99999;
+      const code = Math.floor(Math.random() * (max - min + 1)) + min;
+      setCode(code.toString());
+    };
+
+    const validateForm = () => {
+      // console.log("Code:", code);
+      // console.log("Sender:", sender);
+      // console.log("Receiver:", reciever);
+      // console.log("Subject:", subject);
+      // console.log("Description:", description);
+      // console.log("Prioritization:", prioritization);
+      // console.log("Classification:", classification);
+      // console.log("Subclassification:", subClassification);
+      // console.log("Action:", action);
+      // console.log("Due Date:", dueDate);
+      // console.log("Deliver Type:", deliverType);
+      // console.log("Document Flow:", documentFlow);
+      // console.log("Attachment Detail:", attachmentDetail);
+      // console.log("File:", file);
+      if (
+        code &&
+        sender &&
+        reciever &&
+        subject &&
+        description &&
+        prioritization &&
+        classification &&
+        subClassification &&
+        action &&
+        deliverType &&
+        documentFlow &&
+        attachmentDetail &&
+        file
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    function ConfirmationModal() {
+      const [show, setShow] = useState(false);
+
+      const handleClose = () => setShow(false);
+
+      return (
+        <>
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (validateForm()) {
+                setShow(true);
+              } else {
+                toast.error("Pleae fill up the form completely");
+              }
+            }}
+          >
+            Send Message
+          </Button>
+
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="flex flex-column">
+              <img src="./assets/images/game-icons_confirmed.png" alt="" />
+              Proceed to send document?
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleUpload}>
+                Confirm
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      );
+    }
+
+    const handleSubmit = (fileUrl) => {
+      try {
+        const dataObject = {
+          code: code || null,
+          sender: sender || null,
+          reciever: props.currentUser.uid || null,
+          subject: subject || null,
+          description: description || null,
+          prioritization: prioritization || null,
+          date: serverTimestamp(),
+          classification: classification || null,
+          subClassification: subClassification || null,
+          action: action || null,
+          dueDate: dueDate || null,
+          deliverType: deliverType || null,
+          documentFlow: documentFlow || null,
+          attachmentDetail: attachmentDetail || null,
+          fileUrl: fileUrl || null,
+          fileName: file.name,
+          status: "Recieved",
+          createdAt: serverTimestamp(),
+          isSendToALl: props.currentUser.uid === reciever,
+        };
+        addDoc(incomingExternalRef, dataObject).then(() => {
+          setComposeModalOpen(false);
+          toast.success("Your message is succesfully sent!");
+        });
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
+    const handleUpload = async () => {
+      setLoading(true);
+      if (file) {
+        const storageRef = ref(storage, `uploads/${file.name}`);
+        uploadBytes(storageRef, file).then((snapshot) => {
+          getDownloadURL(storageRef)
+            .then((url) => {
+              if (url) {
+                handleSubmit(url);
+              }
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+            });
+        });
+      } else {
+        console.warn("No file selected for upload");
+      }
+    };
+
+    return (
+      <Modal
+        {...props}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">Compose</Modal.Title>
+        </Modal.Header>
+        {loading ? (
+          <div className="flex flex-column my-5">
+            <BounceLoader size={150} color="#36d7b7" />
+            <h5>Sending message, please wait...</h5>
+          </div>
+        ) : (
+          <Modal.Body>
+            <div className="title bg-primary w-100">
+              <h5 className="text-white mx-3 p-2 my-3">Details</h5>
+            </div>
+            <Form.Label>Document Code</Form.Label>
+
+            <Form.Group
+              className="mb-3 flex"
+              controlId="exampleForm.ControlInput1"
+            >
+              <Form.Control
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                type="text"
+                placeholder="Document Code"
+              />
+              <Button onClick={generateRandomCode}>Generate</Button>
+            </Form.Group>
+            <Form.Label>Sender</Form.Label>
+            <Form.Control
+              onChange={(e) => setSender(e.target.value)}
+              type="text"
+              placeholder="Sender"
+            />
+
+            <Form.Group
+              onChange={(e) => setSubject(e.target.value)}
+              className="mb-3"
+              controlId="exampleForm.ControlInput1"
+            >
+              <Form.Label>Subject</Form.Label>
+              <Form.Control type="email" />
+            </Form.Group>
+            <Form.Group
+              className="mb-3"
+              controlId="exampleForm.ControlTextarea1"
+            >
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                onChange={(e) => setDescription(e.target.value)}
+                as="textarea"
+                rows={3}
+              />
+            </Form.Group>
+            <div className="row">
+              <div className="col-lg-6">
+                <Form.Label>Prioritization</Form.Label>
+                <Form.Select
+                  onChange={(e) => setPrioritization(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="usual">Usual</option>
+                </Form.Select>
+              </div>
+
+              <div className="col-lg-6">
+                <Form.Label>Classification</Form.Label>
+
+                <Form.Select
+                  onChange={(e) => setClassification(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="memorandum">Memorandum</option>
+                  <option value="letter">Letter</option>
+                  <option value="indorsement/transmittal">
+                    Indorsement/Transmittal
+                  </option>
+                </Form.Select>
+              </div>
+              <div className="col-lg-6">
+                <Form.Label>Sub Classification</Form.Label>
+
+                <Form.Select
+                  onChange={(e) => setSubClassification(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="compliance">For Compliance</option>
+                  <option value="information">For Information</option>
+                  <option value="inquiry">Inquiry</option>
+                  <option value="invitation">Invitation</option>
+                  <option value="request">Request</option>
+                  <option value="others">Others</option>
+                </Form.Select>
+              </div>
+              <div className="col-lg-6">
+                <Form.Label>Action</Form.Label>
+
+                <Form.Select
+                  onChange={(e) => setAction(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="For Submission of Documents">
+                    For Submission of Documents
+                  </option>
+                  <option value="For Approval/Signature">
+                    For Approval/Signature
+                  </option>
+                  <option value="For Monitoring">For Monitoring</option>
+                  <option value="For Comment/Justification">
+                    For Comment/Justification
+                  </option>
+                  <option value="For Considilation">For Considilation</option>
+                  <option value="For Printing">For Printing</option>
+                </Form.Select>
+              </div>
+              <div className="col-lg-6">
+                <Form.Label>Due Date (Optional)</Form.Label>
+                <Form.Control
+                  onChange={(e) => setDueDate(e.target.value)}
+                  type="date"
+                />
+              </div>
+              <div className="col-lg-6">
+                <Form.Label>Deliver Type</Form.Label>
+
+                <Form.Select
+                  onChange={(e) => setDeliverType(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="Through DMS">Through DMS</option>
+                  <option value="Hand-over">Hand-over</option>
+                  <option value="Combination">Combination</option>
+                </Form.Select>
+              </div>
+              <div className="col-lg-6">
+                <Form.Label>Document Flow</Form.Label>
+
+                <Form.Select
+                  onChange={(e) => setDocumentFlow(e.target.value)}
+                  className="mb-3"
+                >
+                  <option>Please select an option</option>
+                  <option value="Internal">Internal</option>
+                  <option value="External">External</option>
+                </Form.Select>
+              </div>
+            </div>
+            <div className="title bg-primary w-100">
+              <h5 className="text-white mx-3 p-2 my-3">Attachments</h5>
+            </div>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Details</Form.Label>
+              <Form.Control
+                onChange={(e) => setAttachmentDetail(e.target.value)}
+                type="text"
+              />
+              <Form.Group controlId="formFile" className="mb-3">
+                <Form.Label>Choose File</Form.Label>
+                <Form.Control
+                  onChange={(e) => setFile(e.target.files[0])}
+                  type="file"
+                />
+              </Form.Group>
+            </Form.Group>
+          </Modal.Body>
+        )}
+
+        <Modal.Footer>
+          <ConfirmationModal />
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -174,6 +521,47 @@ const UserIncoming = () => {
     );
   }
 
+  function DropdownActionExternal({ message }) {
+    const downloadFIle = () => {
+      const fileUrl = message.fileUrl;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank";
+      link.download = "downloaded_file";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const handleDelete = () => {
+      const docRef = doc(db, "incoming", message.id);
+      deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+    };
+
+    return (
+      <Dropdown>
+        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+          <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={downloadFIle}>
+            Download <FaDownload />
+          </Dropdown.Item>
+
+          {/* <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
+          </Dropdown.Item> */}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
+
   const fetchData = async () => {
     setLoading(true);
     const snapshot = await getDocs(userCollectionRef);
@@ -213,6 +601,16 @@ const UserIncoming = () => {
         console.error("Error listening to collection:", error);
       }
     );
+    onSnapshot(incomingExternalRef, (snapshot) => {
+      const messages = [];
+      snapshot.docs.forEach((doc) => {
+        const message = { ...doc.data(), id: doc.id };
+        if (message.reciever === auth.currentUser.uid) {
+          messages.push(message);
+        }
+      });
+      setExternalMessages(messages);
+    });
 
     setLoading(false);
   };
@@ -237,7 +635,7 @@ const UserIncoming = () => {
   }, []);
 
   return (
-    <LayoutUser>
+    <UserLayout>
       {currentMessage && (
         <OffCanvasExample
           currentMessage={currentMessage}
@@ -254,7 +652,6 @@ const UserIncoming = () => {
           currentMessage={currentMessage}
           closeModal={() => setModalShow(false)}
           showModal={modalShow}
-          user={true}
         />
       )}
 
@@ -266,34 +663,57 @@ const UserIncoming = () => {
         />
       )}
 
+      {auth.currentUser && users && (
+        <ComposeModal
+          show={composeModalOpen}
+          onHide={() => setComposeModalOpen(false)}
+          currentUser={auth.currentUser}
+          users={users}
+        />
+      )}
+
       <div className="dashboard">
-        <div className="dashboard-header ">
-          <div className="row">
-            <div className="col-lg-6 flex"></div>
-          </div>
-        </div>
         <div className="dashboard-content mx-3 mt-3">
-          <div className="wrapper">
-            <h2 className="fw-bold my-3 mx-2">
-              Incoming Messages
-              <FaFacebookMessenger className="mx-2" />
-            </h2>
-            <div
-              className="bg-info mx-2 mb-3"
-              style={{ width: "200px", height: "10px", borderRadius: 20 }}
-            ></div>
+          <div className="row">
+            <div className="wrapper col-lg-8">
+              <h2 className="fw-bold my-3 mx-2">
+                Incoming Messages
+                <FaFacebookMessenger className="mx-2" />
+              </h2>
+              <div
+                className="bg-info mx-2 mb-3"
+                style={{ width: "200px", height: "10px", borderRadius: 20 }}
+              ></div>
+            </div>
+            {currentPage == "external" && (
+              <div className="col-lg-4 flex justify-content-end">
+                <img
+                  onClick={() => setComposeModalOpen(true)}
+                  className="mx-3"
+                  src="./assets/images/Group 8779.png"
+                  alt=""
+                />
+              </div>
+            )}
           </div>
           <div className="row">
             <div className="col-lg-7">
               <ListGroup horizontal>
-                <ListGroup.Item>
-                  All <Badge bg="info">9</Badge>
+                <ListGroup.Item
+                  className={`${
+                    currentPage == "internal" ? "bg-info text-white" : ""
+                  } px-5 fw-bold`}
+                  onClick={() => setCurrentPage("internal")}
+                >
+                  Internal
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  Current <Badge bg="info">9</Badge>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  Usual <Badge bg="info">9</Badge>
+                <ListGroup.Item
+                  className={`${
+                    currentPage == "external" ? "bg-info text-white" : ""
+                  } px-5 fw-bold`}
+                  onClick={() => setCurrentPage("external")}
+                >
+                  External
                 </ListGroup.Item>
               </ListGroup>
             </div>
@@ -309,68 +729,135 @@ const UserIncoming = () => {
             </div>
           </div>
           {loading && <PlaceHolder />}
-          <Table responsive="md" bordered hover variant="white">
-            <thead>
-              <tr>
-                <th>DocID</th>
-                <th>File Name</th>
-                <th>Sender</th>
-                <th>Required Action</th>
-                <th>Date </th>
-                <th>Prioritization</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {messages.map((message) => {
-                return (
-                  <tr key={message.code}>
-                    <td>
-                      <div className="flex">
-                        <FaFile />
-                        {message.code}
-                      </div>
-                    </td>
-                    <td>{message.fileName}</td>
-                    <td>
-                      {getUser(message.sender).fullName} -{" "}
-                      <b> {getUser(message.sender).position}</b>
-                    </td>
-                    <td>{message.action}</td>
-                    {message.date.toDate && (
-                      <td>{moment(message.date.toDate()).format("LL")}</td>
-                    )}{" "}
-                    <td className="flex">
-                      {" "}
-                      <Badge
-                        bg={
-                          message.prioritization == "urgent" ? "danger" : "info"
-                        }
-                        className="text-white p-2"
-                      >
-                        {toTitleCase(message.prioritization)}
-                      </Badge>{" "}
-                    </td>
-                    <td>
-                      <Badge
-                        bg={message.status == "Approved" ? "primary" : "danger"}
-                        className="text-white p-2"
-                      >
-                        {message.status}
-                      </Badge>
-                    </td>
-                    <td className="flex">
-                      <DropdownAction message={message} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+
+          {currentPage == "internal" ? (
+            <Table responsive="md" bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>File Name</th>
+                  <th>Sender</th>
+                  <th>Required Action</th>
+                  <th>Date </th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {messages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.fileName}</td>
+
+                      <td>
+                        {getUser(message.sender).fullName} -
+                        <b> {getUser(message.sender).position}</b>
+                      </td>
+                      <td>{message.action}</td>
+
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                      )}
+                      <td className="flex">
+                        {" "}
+                        <Badge
+                          bg={
+                            message.prioritization == "urgent"
+                              ? "danger"
+                              : "info"
+                          }
+                          className="text-white p-2"
+                        >
+                          {toTitleCase(message.prioritization)}
+                        </Badge>{" "}
+                      </td>
+                      <td>
+                        <Badge
+                          bg={
+                            message.status == "Approved" ? "primary" : "danger"
+                          }
+                          className="text-white p-2"
+                        >
+                          {message.status}
+                        </Badge>
+                      </td>
+                      <td className="flex">
+                        <DropdownAction message={message} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          ) : (
+            <Table responsive="md" bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>File Name</th>
+                  <th>Sender</th>
+                  <th>Required Action</th>
+                  <th>Date </th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {externalMessages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.fileName}</td>
+
+                      <td>{message.sender} -</td>
+                      <td>{message.action}</td>
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                      )}
+
+                      <td className="flex">
+                        {" "}
+                        <Badge
+                          bg={
+                            message.prioritization == "urgent"
+                              ? "danger"
+                              : "info"
+                          }
+                          className="text-white p-2"
+                        >
+                          {toTitleCase(message.prioritization)}
+                        </Badge>{" "}
+                      </td>
+                      <td>
+                        <Badge bg="warning" className="text-black p-2">
+                          {message.status}
+                        </Badge>
+                      </td>
+                      <td className="flex">
+                        <DropdownActionExternal message={message} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          )}
         </div>
       </div>
-    </LayoutUser>
+    </UserLayout>
   );
 };
 

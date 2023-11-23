@@ -603,7 +603,10 @@ const incoming = () => {
     onSnapshot(incomingExternalRef, (snapshot) => {
       const messages = [];
       snapshot.docs.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+        const message = { ...doc.data(), id: doc.id };
+        if (message.reciever === auth.currentUser.uid) {
+          messages.push(message);
+        }
       });
       setExternalMessages(messages);
     });
@@ -757,7 +760,10 @@ const incoming = () => {
                         <b> {getUser(message.sender).position}</b>
                       </td>
                       <td>{message.action}</td>
-                      <td>{moment(message.date.toDate()).format("LL")}</td>
+
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                      )}
                       <td className="flex">
                         {" "}
                         <Badge
@@ -817,7 +823,10 @@ const incoming = () => {
 
                       <td>{message.sender} -</td>
                       <td>{message.action}</td>
-                      <td>{moment(message.date.toDate()).format("LL")}</td>
+
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                      )}
                       <td className="flex">
                         {" "}
                         <Badge
