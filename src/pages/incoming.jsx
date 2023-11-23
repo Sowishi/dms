@@ -41,7 +41,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
-const outgoingCollectionRef = collection(db, "incoming");
+const messagesCollectionRef = collection(db, "messages");
 
 function UrgentModal(props) {
   const urgentFiles = props.urgentFiles;
@@ -118,9 +118,8 @@ function OffCanvasExample(props) {
 
 const incoming = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [allSender, setAllSender] = useState([]);
-  const [allReciever, setAllReciever] = useState([]);
-  const [outgoingMesssages, setOutgoingMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [users, setUsers] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
   const [urgent, setUrgent] = useState(false);
@@ -184,19 +183,11 @@ const incoming = () => {
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
-    const sender = output.filter((user) => {
-      if (user.role == "user") {
-        return user;
-      }
-    });
-    const reciever = output.filter((user) => {
-      if (user.role == "admin") {
-        return user;
-      }
-    });
+
+    setUsers(output);
 
     onSnapshot(
-      outgoingCollectionRef,
+      messagesCollectionRef,
       (querySnapshot) => {
         const messages = [];
         const urgents = [];
@@ -216,20 +207,18 @@ const incoming = () => {
           setUrgent(true);
         }
         setUrgentFiles(urgents);
-        setOutgoingMessages(messages);
+        setMessages(messages);
       },
       (error) => {
         console.error("Error listening to collection:", error);
       }
     );
 
-    setAllSender(sender);
-    setAllReciever(reciever);
     setLoading(false);
   };
 
   const getUser = (id) => {
-    const user = allSender.filter((user) => {
+    const user = users.filter((user) => {
       if (user.id === id) {
         return user;
       }
@@ -268,7 +257,7 @@ const incoming = () => {
         />
       )}
 
-      {outgoingMesssages && (
+      {messages && (
         <UrgentModal
           show={urgent}
           onHide={() => setUrgent(false)}
@@ -334,7 +323,7 @@ const incoming = () => {
               </tr>
             </thead>
             <tbody>
-              {outgoingMesssages.map((message) => {
+              {messages.map((message) => {
                 return (
                   <tr key={message.code}>
                     <td>

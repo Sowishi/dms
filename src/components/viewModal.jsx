@@ -62,11 +62,7 @@ function ViewModal(props) {
 
   const handleAction = async (type) => {
     try {
-      const messageRef = doc(
-        db,
-        props.user ? "outgoing" : "incoming",
-        currentMessage.id
-      );
+      const messageRef = doc(db, "messages", currentMessage.id);
       await setDoc(
         messageRef,
         {

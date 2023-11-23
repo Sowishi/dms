@@ -190,7 +190,7 @@ const Dashboard = () => {
         return message;
       }
     });
-    return output;
+    return output.length;
   };
 
   useEffect(() => {
@@ -294,7 +294,7 @@ const Dashboard = () => {
           {loading && <PlaceHolder />}
 
           {messages && (
-            <Table responsive="md" bordered hover variant="white">
+            <Table responsive="md" bordered variant="white">
               <thead>
                 <tr>
                   <th>DocID</th>
