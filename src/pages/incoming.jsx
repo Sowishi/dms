@@ -195,12 +195,14 @@ const incoming = () => {
             message.reciever == auth.currentUser.uid ||
             message.reciever == message.sender
           ) {
-            messages.push(message);
-            if (
-              message.prioritization == "urgent" &&
-              message.status == "Pending"
-            ) {
-              urgents.push(message);
+            if (message.reciever !== auth.currentUser.uid) {
+              message.push(message);
+              if (
+                message.prioritization == "urgent" &&
+                message.status == "Pending"
+              ) {
+                urgents.push(message);
+              }
             }
           }
         });

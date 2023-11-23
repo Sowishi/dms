@@ -160,7 +160,7 @@ const Outgoing = () => {
       try {
         const dataObject = {
           code: code || null,
-          sender: auth.currentUser.uid || null,
+          sender: props.currentUser.uid || null,
           reciever: reciever || null,
           subject: subject || null,
           description: description || null,
@@ -177,6 +177,7 @@ const Outgoing = () => {
           fileName: file.name,
           status: "Pending",
           createdAt: serverTimestamp(),
+          isSendToALl: props.currentUser.uid === reciever,
         };
 
         addDoc(messagesCollectionRef, dataObject).then(() => {
@@ -295,7 +296,7 @@ const Outgoing = () => {
                         className={`${
                           user.role == "admin" ? "bg-info text-white" : ""
                         }`}
-                        key={user.userID}
+                        key={user.id}
                         value={user.id}
                       >
                         {user.fullName}
@@ -657,8 +658,14 @@ const Outgoing = () => {
                     <td>{message.fileName}</td>
 
                     <td>
-                      {getUser(message.reciever).fullName} -
-                      <b> {getUser(message.reciever).position}</b>
+                      {message.sender == message.reciever ? (
+                        "Send to all"
+                      ) : (
+                        <>
+                          {getUser(message.reciever).fullName} -
+                          <b> {getUser(message.reciever).position}</b>
+                        </>
+                      )}
                     </td>
                     <td>{message.action}</td>
                     <td>{message.date}</td>

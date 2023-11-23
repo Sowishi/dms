@@ -289,7 +289,13 @@ const UserOutgoing = () => {
                 users.map((user) => {
                   if (user.id != auth.currentUser.uid) {
                     return (
-                      <option key={user.userID} value={user.id}>
+                      <option
+                        className={`${
+                          user.role == "admin" ? "bg-info text-white" : ""
+                        }`}
+                        key={user.id}
+                        value={user.id}
+                      >
                         {user.fullName}
                       </option>
                     );
