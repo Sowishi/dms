@@ -21,6 +21,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -36,7 +37,7 @@ import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
 
 const userCollectionRef = collection(db, "users");
-const outgoingCollectionRef = collection(db, "outgoing");
+const messagesCollectionRef = collection(db, "messages");
 
 function OffCanvasExample(props) {
   const { currentMessage } = props;
@@ -60,8 +61,7 @@ function OffCanvasExample(props) {
 
 const Outgoing = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [allSender, setAllSender] = useState([]);
-  const [allReciever, setAllReciever] = useState([]);
+  const [users, setUsers] = useState([]);
   const [outgoingMesssages, setOutgoingMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [showRouting, setShowRouting] = useState(false);
@@ -70,7 +70,6 @@ const Outgoing = () => {
 
   function MyVerticallyCenteredModal(props) {
     const [code, setCode] = useState("");
-    const [sender, setSender] = useState("");
     const [reciever, setReciever] = useState("");
     const [subject, setSubject] = useState("");
     const [description, setDescription] = useState("");
@@ -96,7 +95,6 @@ const Outgoing = () => {
     const validateForm = () => {
       if (
         code &&
-        sender &&
         reciever &&
         subject &&
         description &&
@@ -162,7 +160,7 @@ const Outgoing = () => {
       try {
         const dataObject = {
           code: code || null,
-          sender: sender || null,
+          sender: auth.currentUser.uid || null,
           reciever: reciever || null,
           subject: subject || null,
           description: description || null,
@@ -178,10 +176,10 @@ const Outgoing = () => {
           fileUrl: fileUrl || null,
           fileName: file.name,
           status: "Pending",
+          createdAt: serverTimestamp(),
         };
 
-        const messagesRef = collection(db, "outgoing");
-        addDoc(messagesRef, dataObject).then((snapshot) => {
+        addDoc(messagesCollectionRef, dataObject).then((snapshot) => {
           toast.success("Your message is succesfully sent!");
           setModalShow(false);
         });
@@ -261,20 +259,16 @@ const Outgoing = () => {
             </Form.Group>
             <Form.Label>Sender</Form.Label>
 
-            <Form.Select
-              onChange={(e) => setSender(e.target.value)}
-              className="mb-3"
-            >
-              <option key={0} value={0}>
-                Please select a sender
-              </option>
-              {allSender &&
-                allSender.map((sender) => {
-                  return (
-                    <option key={sender.userID} value={sender.id}>
-                      {sender.fullName}
-                    </option>
-                  );
+            <Form.Select className="mb-3">
+              {users &&
+                users.map((user) => {
+                  if (user.id == auth.currentUser.uid) {
+                    return (
+                      <option key={user.userID} value={user.id}>
+                        {user.fullName}{" "}
+                      </option>
+                    );
+                  }
                 })}
             </Form.Select>
             <Form.Label>Reciever</Form.Label>
@@ -286,13 +280,20 @@ const Outgoing = () => {
               <option key={0} value={0}>
                 Please select a reciever
               </option>
-              {allReciever &&
-                allReciever.map((reciever) => {
-                  return (
-                    <option key={reciever.userID} value={reciever.id}>
-                      {reciever.fullName}
-                    </option>
-                  );
+              {users &&
+                users.map((user) => {
+                  if (user.id !== auth.currentUser.uid) {
+                    return (
+                      <option key={user.userID} value={user.id}>
+                        {user.fullName}
+
+                        <span className="fw-bold">
+                          {" "}
+                          {user.role == "admin" ? "Admin" : ""}
+                        </span>
+                      </option>
+                    );
+                  }
                 })}
             </Form.Select>
             <Form.Group
@@ -503,23 +504,18 @@ const Outgoing = () => {
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
-    const sender = output.filter((user) => {
-      if (user.role == "admin") {
-        return user;
-      }
-    });
-    const reciever = output.filter((user) => {
-      if (user.role == "user") {
-        return user;
-      }
-    });
+
+    setUsers(output);
 
     onSnapshot(
-      outgoingCollectionRef,
+      messagesCollectionRef,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
-          messages.push({ ...doc.data(), id: doc.id });
+          const message = { ...doc.data(), id: doc.id };
+          if (message.sender == auth.currentUser.uid) {
+            messages.push(message);
+          }
         });
         setOutgoingMessages(messages);
       },
@@ -528,13 +524,11 @@ const Outgoing = () => {
       }
     );
 
-    setAllSender(sender);
-    setAllReciever(reciever);
     setLoading(false);
   };
 
   const getUser = (id) => {
-    const user = allReciever.filter((user) => {
+    const user = users.filter((user) => {
       if (user.id === id) {
         return user;
       }
