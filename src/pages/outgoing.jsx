@@ -68,7 +68,7 @@ const Outgoing = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function MyVerticallyCenteredModal(props) {
+  function ComposeModal(props) {
     const [code, setCode] = useState("");
     const [reciever, setReciever] = useState("");
     const [subject, setSubject] = useState("");
@@ -573,7 +573,7 @@ const Outgoing = () => {
       )}
 
       {auth.currentUser && (
-        <MyVerticallyCenteredModal
+        <ComposeModal
           show={modalShow}
           onHide={() => setModalShow(false)}
           currentUser={auth.currentUser}

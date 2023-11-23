@@ -293,6 +293,7 @@ const Dashboard = () => {
                   <th>Sender</th>
                   <th>Reciever</th>
                   <th>Date </th>
+                  <th>Subject</th>
                   <th>Prioritization</th>
                   <th>Status</th>
                   <th>Action</th>
@@ -326,6 +327,7 @@ const Dashboard = () => {
                       {message.date.toDate && (
                         <td>{moment(message.date.toDate()).format("LL")}</td>
                       )}{" "}
+                      <td>{message.subject}</td>
                       <td className="flex">
                         {" "}
                         <Badge
