@@ -534,7 +534,7 @@ const UserIncoming = () => {
     };
 
     const handleDelete = () => {
-      const docRef = doc(db, "incoming", message.id);
+      const docRef = doc(db, "incoming-external", message.id);
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
@@ -547,6 +547,9 @@ const UserIncoming = () => {
         <Dropdown.Menu>
           <Dropdown.Item onClick={downloadFIle}>
             Download <FaDownload />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={handleDelete}>
+            Delete <FaTrash />
           </Dropdown.Item>
 
           {/* <Dropdown.Item
