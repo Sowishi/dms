@@ -15,10 +15,13 @@ import {
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { BarLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const Files = () => {
   const [storages, setStorages] = useState([]);
   const [currentFolder, setCurrentFolder] = useState("files");
+  const [loading, setLoading] = useState(false);
 
   const fetchData = () => {
     setCurrentFolder("files");
@@ -102,6 +105,7 @@ const Files = () => {
     const handleShow = () => setShow(true);
 
     const createFile = () => {
+      setLoading(true);
       if (file) {
         const storageRef = ref(storage, `uploads/${file.name}`);
         uploadBytes(storageRef, file).then((snapshot) => {
@@ -124,6 +128,7 @@ const Files = () => {
                   }
                 );
                 handleClose();
+                setLoading(false);
               }
             })
             .catch((error) => {
@@ -132,6 +137,7 @@ const Files = () => {
         });
       } else {
         toast.error("There's no file!");
+        setLoading(false);
       }
     };
 
@@ -152,6 +158,7 @@ const Files = () => {
               placeholder="Folder Name"
             />{" "}
           </Modal.Body>
+
           <Modal.Footer>
             <Button onClick={createFile}>Upload File</Button>
           </Modal.Footer>
@@ -197,9 +204,10 @@ const Files = () => {
 
     return (
       <Dropdown>
-        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-          <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
-        </Dropdown.Toggle>
+        <Dropdown.Toggle
+          variant="secondary"
+          id="dropdown-basic"
+        ></Dropdown.Toggle>
 
         <Dropdown.Menu>
           <Dropdown.Item onClick={handleDelete}>Delete</Dropdown.Item>
@@ -245,6 +253,13 @@ const Files = () => {
           </div>
         </div>
 
+        {loading && (
+          <div className="flex flex-column">
+            <h3>Uploading file...</h3>
+            <BarLoader />
+          </div>
+        )}
+
         <div className="row mt-5">
           {storage &&
             storages.map((storage) => {
@@ -259,14 +274,10 @@ const Files = () => {
                           fetchFolder(storage.name);
                         }}
                         size={70}
-                      />
-                      <div className="row">
-                        <div className="col-6 flex">
-                          <div>{storage.name}</div>
-                        </div>
-                        <div className="col-6">
-                          <DropdownAction storage={storage} />
-                        </div>
+                      />{" "}
+                      <div className="flex justify-content-around">
+                        <div className="mx-3">{storage.name}</div>
+                        <DropdownAction storage={storage} />
                       </div>
                     </div>
                   ) : (
@@ -280,16 +291,9 @@ const Files = () => {
                           onClick={() => downloadFile(storage.fileURL)}
                           size={70}
                         />
-                        <div className="row">
-                          <div className="col-lg-9 flex">
-                            <div className="text-nowrap">
-                              {" "}
-                              {storage.fileName}
-                            </div>
-                          </div>
-                          <div className="col-lg-3">
-                            <DropdownAction storage={storage} />
-                          </div>
+                        <div className="flex justify-content-around">
+                          <div className="mx-3">{storage.fileName}</div>
+                          <DropdownAction storage={storage} />
                         </div>
                       </div>
                     </>
@@ -297,32 +301,6 @@ const Files = () => {
                 </>
               );
             })}
-          {/* {storages &&
-            storages.map((storage) => {
-              return (
-                <>
-                  {storage.isFolder ? (
-                    <div
-                      key={storage.id}
-                      className="col-sm-3 flex flex-column"
-                      onClick={() => currentFolder(storage.name)}
-                    >
-                      <FaFolder size={70} />
-                      {storage.name}
-                    </div>
-                  ) : (
-                    <div
-                      key={storage.id}
-                      className="col-sm-3 flex flex-column"
-                      onClick={() => downloadFile(storage.fileURL)}
-                    >
-                      <FaFile size={70} />
-                      {storage.fileName}
-                    </div>
-                  )}
-                </>
-              );
-            })} */}
         </div>
       </div>
     </Layout>
