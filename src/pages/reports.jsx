@@ -40,11 +40,48 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
 import moment from "moment";
-import { usePDF } from "react-to-pdf";
+import { Margin, Resolution, usePDF } from "react-to-pdf";
 
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const incomingExternalRef = collection(db, "incoming-external");
+
+const currentDate = new Date();
+const options = {
+  // default is `save`
+  method: "open",
+  // default is Resolution.MEDIUM = 3, which should be enough, higher values
+  // increases the image quality but also the size of the PDF, so be careful
+  // using values higher than 10 when having multiple pages generated, it
+  // might cause the page to crash or hang.
+  resolution: Resolution.HIGH,
+  page: {
+    // margin is in MM, default is Margin.NONE = 0
+    margin: Margin.SMALL,
+    // default is 'A4'
+    format: "letter",
+    // default is 'portrait'
+    orientation: "landscape",
+  },
+  canvas: {
+    // default is 'image/jpeg' for better size performance
+    mimeType: "image/png",
+    qualityRatio: 1,
+  },
+  // Customize any value passed to the jsPDF instance and html2canvas
+  // function. You probably will not need this and things can break,
+  // so use with caution.
+  overrides: {
+    // see https://artskydj.github.io/jsPDF/docs/jsPDF.html for more options
+    pdf: {
+      compress: true,
+    },
+    // see https://html2canvas.hertzen.com/configuration for more options
+    canvas: {
+      useCORS: true,
+    },
+  },
+};
 
 const Reports = () => {
   const [users, setUsers] = useState([]);
@@ -54,7 +91,10 @@ const Reports = () => {
   const [currentPage, setCurrentPage] = useState("internal");
   const [currentFilter, setCurrentFilter] = useState(null);
 
-  const { toPDF, targetRef } = usePDF({ filename: "reports.pdf" });
+  const { toPDF, targetRef } = usePDF({
+    filename: "reports.pdf",
+    options: options,
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -294,6 +334,9 @@ const Reports = () => {
         </div>
 
         <div ref={targetRef} className="dashboard-content mx-3 mt-3">
+          <h2 className="text-center fw-bold mb-3">
+            Document Results {currentDate.toDateString()}
+          </h2>
           {loading && <PlaceHolder />}
           {currentFilter && (
             <div className="col-12">
