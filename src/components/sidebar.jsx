@@ -106,7 +106,7 @@ const Sidebar = () => {
                 <FaPeopleCarry size={"20px"} />
                 <p className="mb-0 mx-2">Office Management</p>
               </Link>
-              <Link
+              {/* <Link
                 to={"/recycle-bin"}
                 className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
                   location == "/recycle-bin" ? "active" : ""
@@ -114,7 +114,7 @@ const Sidebar = () => {
               >
                 <FaTrash size={"20px"} />
                 <p className="mb-0 mx-2">Recycle BIn</p>
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

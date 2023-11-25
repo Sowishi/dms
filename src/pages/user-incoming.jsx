@@ -27,6 +27,7 @@ import {
   doc,
   getDoc,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -489,6 +490,18 @@ const UserIncoming = () => {
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
+    const handleSeen = async () => {
+      const docRef = doc(db, "routing", message.id, message.id, message.id);
+      const res = await getDoc(docRef);
+      if (!res.exists()) {
+        setDoc(docRef, {
+          createdAt: serverTimestamp(),
+          message: message,
+          status: "Seen",
+        });
+      }
+    };
+
     return (
       <Dropdown>
         <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -500,6 +513,7 @@ const UserIncoming = () => {
             onClick={() => {
               setModalShow(true);
               setCurrentMessage(message);
+              handleSeen();
             }}
           >
             View Detail <FaEye />

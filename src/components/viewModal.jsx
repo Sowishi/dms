@@ -91,6 +91,20 @@ function ViewModal(props) {
     const user = props.getUser(currentMessage.sender);
     const office = getOffice(user.office);
 
+    if (type == "Recieved") {
+      addDoc(collection(db, "routing", currentMessage.id, currentMessage.id), {
+        createdAt: serverTimestamp(),
+        message: currentMessage,
+        status: "Recieved",
+      });
+    } else {
+      addDoc(collection(db, "routing", currentMessage.id, currentMessage.id), {
+        createdAt: serverTimestamp(),
+        message: currentMessage,
+        status: "Rejected",
+      });
+    }
+
     try {
       const messageRef = doc(db, "messages", currentMessage.id);
       await setDoc(
@@ -110,7 +124,8 @@ function ViewModal(props) {
           isFolder: false,
           createdAt: serverTimestamp(),
         });
-        toast.success("Successfully Recieved!");
+        toast.success(`Successfully ${type}`);
+
         return;
       }
       if (type == "Recieved") {

@@ -22,6 +22,7 @@ import {
   doc,
   getDoc,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -177,7 +178,12 @@ const Outgoing = () => {
           isSendToALl: props.currentUser.uid === reciever,
         };
 
-        addDoc(messagesCollectionRef, dataObject).then(() => {
+        addDoc(messagesCollectionRef, dataObject).then((document) => {
+          addDoc(collection(db, "routing", document.id, document.id), {
+            createdAt: serverTimestamp(),
+            message: dataObject,
+            status: "Created",
+          });
           toast.success("Your message is succesfully sent!");
           setModalShow(false);
         });
