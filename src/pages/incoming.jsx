@@ -760,8 +760,20 @@ const incoming = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
-
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setModalShow(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>
                         {getUser(message.sender).fullName} -
                         <b> {getUser(message.sender).position}</b>
@@ -824,50 +836,51 @@ const incoming = () => {
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
-                {externalMessages.map((message) => {
-                  return (
-                    <tr key={message.code}>
-                      <td>
-                        <div className="flex">
-                          <FaFile />
-                          {message.code}
-                        </div>
-                      </td>
-                      <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
+              {externalMessages && (
+                <tbody>
+                  {externalMessages.map((message) => {
+                    return (
+                      <tr key={message.code}>
+                        <td>
+                          <div className="flex">
+                            <FaFile />
+                            {message.code}
+                          </div>
+                        </td>
+                        <td>{message.subject}</td>
+                        <td>{message.fileName}</td>
+                        <td>{message.sender} -</td>
+                        <td>{message.action}</td>
 
-                      <td>{message.sender} -</td>
-                      <td>{message.action}</td>
-
-                      {message.date && (
-                        <td>{moment(message.date.toDate()).format("LLL")}</td>
-                      )}
-                      <td className="flex">
-                        {" "}
-                        <Badge
-                          bg={
-                            message.prioritization == "urgent"
-                              ? "danger"
-                              : "info"
-                          }
-                          className="text-white p-2"
-                        >
-                          {toTitleCase(message.prioritization)}
-                        </Badge>{" "}
-                      </td>
-                      <td>
-                        <Badge bg="warning" className="text-black p-2">
-                          {message.status}
-                        </Badge>
-                      </td>
-                      <td className="flex">
-                        <DropdownActionExternal message={message} />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
+                        {message.date && (
+                          <td>{moment(message.date.toDate()).format("LLL")}</td>
+                        )}
+                        <td className="flex">
+                          {" "}
+                          <Badge
+                            bg={
+                              message.prioritization == "urgent"
+                                ? "danger"
+                                : "info"
+                            }
+                            className="text-white p-2"
+                          >
+                            {toTitleCase(message.prioritization)}
+                          </Badge>{" "}
+                        </td>
+                        <td>
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        </td>
+                        <td className="flex">
+                          <DropdownActionExternal message={message} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              )}
             </Table>
           )}
         </div>

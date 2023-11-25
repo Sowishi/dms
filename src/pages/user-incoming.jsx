@@ -763,8 +763,20 @@ const UserIncoming = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
-
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setModalShow(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>
                         {getUser(message.sender).fullName} -
                         <b> {getUser(message.sender).position}</b>

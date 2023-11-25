@@ -341,8 +341,20 @@ const Reports = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
-
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>
                         {getUser(message.sender).fullName} -
                         <b> {getUser(message.sender).position}</b>
@@ -393,6 +405,7 @@ const Reports = () => {
               <thead>
                 <tr>
                   <th>DocID</th>
+                  <th>Subject</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Required Action</th>
@@ -411,8 +424,21 @@ const Reports = () => {
                           {message.code}
                         </div>
                       </td>
-                      <td>{message.fileName}</td>
-
+                      <td>{message.subject}</td>
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>{message.sender} -</td>
                       <td>{message.action}</td>
 

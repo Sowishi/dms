@@ -331,7 +331,12 @@ const Dashboard = () => {
                           setShowViewModal(true);
                         }}
                       >
-                        <div className="link">{message.fileName}</div>
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
                       </td>
                       <td>
                         {getUserData(message.sender).fullName} -{" "}
