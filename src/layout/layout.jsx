@@ -283,10 +283,7 @@ const Layout = ({ children }) => {
               </p>
             )}{" "}
             <Dropdown>
-              <Dropdown.Toggle
-                variant="success"
-                id="dropdown-basic"
-              ></Dropdown.Toggle>
+              <Dropdown.Toggle id="dropdown-basic"></Dropdown.Toggle>
 
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => setShowUserModal(true)}>

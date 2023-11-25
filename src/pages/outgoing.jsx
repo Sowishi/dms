@@ -733,12 +733,21 @@ const Outgoing = () => {
                       </Badge>{" "}
                     </td>
                     <td>
-                      <Badge
-                        bg={message.status == "Recieved" ? "primary" : "danger"}
-                        className="text-white p-2"
-                      >
-                        {message.status}
-                      </Badge>
+                      {message.status === "Recieved" && (
+                        <Badge bg="success" className="text-white p-2">
+                          {message.status}
+                        </Badge>
+                      )}
+                      {message.status === "Pending" && (
+                        <Badge bg="info" className="text-white p-2">
+                          {message.status}
+                        </Badge>
+                      )}
+                      {message.status === "Rejected" && (
+                        <Badge bg="danger" className="text-white p-2">
+                          {message.status}
+                        </Badge>
+                      )}
                     </td>
                     <td className="flex">
                       <DropdownAction message={message} />
