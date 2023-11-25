@@ -287,7 +287,7 @@ const Dashboard = () => {
           {loading && <PlaceHolder />}
 
           {messages && (
-            <Table responsive="md" bordered variant="white">
+            <Table responsive="md" variant="white">
               <thead>
                 <tr>
                   <th>DocID</th>
