@@ -10,14 +10,13 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDPjYQ_6b6efKbsnfUXS-VeElHM3vTsXe8",
-  authDomain: "docsmanagementsystem-c4fee.firebaseapp.com",
-  projectId: "docsmanagementsystem-c4fee",
-  storageBucket: "docsmanagementsystem-c4fee.appspot.com",
-  messagingSenderId: "783331167134",
-  appId: "1:783331167134:web:951a6afd9d9ebba5bfa48f",
+  apiKey: "AIzaSyBlxWJMxbvfVJl7FGk6KPcTpO_bWedB2hc",
+  authDomain: "dms-backup-89e7f.firebaseapp.com",
+  projectId: "dms-backup-89e7f",
+  storageBucket: "dms-backup-89e7f.appspot.com",
+  messagingSenderId: "604947325852",
+  appId: "1:604947325852:web:2aaa139529b88fd9085e59",
 };
-
 // Initialize Firebas
 const app = initializeApp(firebaseConfig);
 
