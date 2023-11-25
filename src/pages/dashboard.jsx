@@ -169,7 +169,7 @@ const Dashboard = () => {
 
   const allApprove = () => {
     const output = messages.filter((message) => {
-      if (message.status == "Approved") {
+      if (message.status == "Recieved") {
         return message;
       }
     });
@@ -265,7 +265,7 @@ const Dashboard = () => {
                   All <Badge bg="primary">{messages.length}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  Approved <Badge bg="primary">{allApprove()}</Badge>
+                  Recieved <Badge bg="primary">{allApprove()}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
@@ -346,7 +346,7 @@ const Dashboard = () => {
                       <td>
                         <Badge
                           bg={
-                            message.status == "Approved" ? "primary" : "danger"
+                            message.status == "Recieved" ? "primary" : "danger"
                           }
                           className="text-white p-2"
                         >

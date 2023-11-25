@@ -789,7 +789,7 @@ const UserIncoming = () => {
                       <td>
                         <Badge
                           bg={
-                            message.status == "Approved" ? "primary" : "danger"
+                            message.status == "Recieved" ? "primary" : "danger"
                           }
                           className="text-white p-2"
                         >
