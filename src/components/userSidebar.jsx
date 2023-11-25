@@ -39,7 +39,7 @@ const UserSidebar = () => {
               <Link
                 to={"/user-files"}
                 className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                  location == "/files" ? "active" : ""
+                  location == "/user-files" ? "active" : ""
                 }`}
               >
                 <FaFile size={"20px"} />
@@ -47,7 +47,7 @@ const UserSidebar = () => {
               </Link>
               <Link
                 className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                  location == "/reports" ? "active" : ""
+                  location == "/user-reports" ? "active" : ""
                 }`}
                 to={"/user-reports"}
               >
@@ -57,7 +57,7 @@ const UserSidebar = () => {
               <Link
                 to={"/user-outgoing"}
                 className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                  location == "/outgoing" ? "active" : ""
+                  location == "/user-outgoing" ? "active" : ""
                 }`}
               >
                 <FaFolder size={"20px"} />
@@ -66,7 +66,7 @@ const UserSidebar = () => {
               <Link
                 to={"/user-incoming"}
                 className={`flex my-2 nav-link w-100 justify-content-start p-1 py-2 ${
-                  location == "/incoming" ? "active" : ""
+                  location == "/user-incoming" ? "active" : ""
                 }`}
               >
                 <FaFolder size={"20px"} />

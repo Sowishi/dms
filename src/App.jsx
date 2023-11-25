@@ -35,6 +35,7 @@ import UserMiddleware from "./pages/userMiddleware";
 import Office from "./pages/office";
 import UserFiles from "./pages/user-files";
 import axios from "axios";
+import UserReports from "./pages/user-reports";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -257,6 +258,14 @@ function App() {
               element={
                 <UserMiddleware admin={admin}>
                   <UserOutgoing />
+                </UserMiddleware>
+              }
+            />
+            <Route
+              path="/user-reports"
+              element={
+                <UserMiddleware admin={admin}>
+                  <UserReports />
                 </UserMiddleware>
               }
             />
