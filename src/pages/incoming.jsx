@@ -571,9 +571,10 @@ const incoming = () => {
     });
 
     setUsers(output);
+    const q = query(messagesCollectionRef, orderBy("createdAt", "desc"));
 
     onSnapshot(
-      messagesCollectionRef,
+      q,
       (querySnapshot) => {
         const messages = [];
         const urgents = [];
@@ -602,7 +603,8 @@ const incoming = () => {
         console.error("Error listening to collection:", error);
       }
     );
-    onSnapshot(incomingExternalRef, (snapshot) => {
+    const q2 = query(incomingExternalRef, orderBy("createdAt", "desc"));
+    onSnapshot(q2, (snapshot) => {
       const messages = [];
       snapshot.docs.forEach((doc) => {
         const message = { ...doc.data(), id: doc.id };
@@ -766,7 +768,7 @@ const incoming = () => {
                       <td>{message.action}</td>
 
                       {message.date && (
-                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
                       <td className="flex">
                         {" "}
@@ -831,7 +833,7 @@ const incoming = () => {
                       <td>{message.action}</td>
 
                       {message.date && (
-                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
                       <td className="flex">
                         {" "}

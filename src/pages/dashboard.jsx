@@ -21,6 +21,8 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  orderBy,
+  query,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { Dropdown } from "react-bootstrap";
@@ -130,8 +132,10 @@ const Dashboard = () => {
 
     setUsers(output);
 
+    const q = query(messagesCollectionRef, orderBy("createdAt", "desc"));
+
     onSnapshot(
-      messagesCollectionRef,
+      q,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
@@ -324,7 +328,7 @@ const Dashboard = () => {
                         )}
                       </td>
                       {message.date.toDate && (
-                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}{" "}
                       <td className="flex">
                         {" "}

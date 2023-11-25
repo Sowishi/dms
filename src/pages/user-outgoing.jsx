@@ -553,9 +553,10 @@ const UserOutgoing = () => {
     });
 
     setUsers(output);
+    const q = query(messagesCollectionRef, orderBy("createdAt", "desc"));
 
     onSnapshot(
-      messagesCollectionRef,
+      q,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
@@ -704,7 +705,7 @@ const UserOutgoing = () => {
                     </td>
                     <td>{message.action}</td>
                     {message.date && (
-                      <td>{moment(message.date.toDate()).format("LL")}</td>
+                      <td>{moment(message.date.toDate()).format("LLL")}</td>
                     )}{" "}
                     <td className="flex">
                       {" "}

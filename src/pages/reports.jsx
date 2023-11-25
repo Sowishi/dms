@@ -174,7 +174,6 @@ const Reports = () => {
         documentFlow: documentFlow,
         sender: sender,
         reciever,
-        reciever,
       };
       props.updateFilter(filter);
       props.handleCloseTools();
