@@ -8,6 +8,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   serverTimestamp,
   setDoc,
@@ -89,6 +90,7 @@ function ViewModal(props) {
   const handleAction = async (type) => {
     const user = props.getUser(currentMessage.sender);
     const office = getOffice(user.office);
+
     try {
       const messageRef = doc(db, "messages", currentMessage.id);
       await setDoc(
@@ -99,6 +101,18 @@ function ViewModal(props) {
         },
         { merge: true }
       );
+
+      if (!office) {
+        addDoc(collection(db, "storage", auth.currentUser.uid, "files"), {
+          fileName: currentMessage.fileName,
+          fileURL: currentMessage.fileUrl,
+          owner: auth.currentUser.uid,
+          isFolder: false,
+          createdAt: serverTimestamp(),
+        });
+        toast.success("Successfully Recieved!");
+        return;
+      }
       if (type == "Recieved") {
         const folderData = {
           owner: auth.currentUser.uid,
@@ -107,10 +121,18 @@ function ViewModal(props) {
           createdAt: serverTimestamp(),
         };
 
-        addDoc(
-          collection(db, "storage", auth.currentUser.uid, "files"),
-          folderData
+        const folderDoc = doc(
+          db,
+          "storage",
+          auth.currentUser.uid,
+          "files",
+          office.officeName
         );
+
+        const folderExist = await getDoc(folderDoc);
+        if (!folderExist.exists()) {
+          await setDoc(folderDoc, folderData);
+        }
 
         addDoc(
           collection(db, "storage", auth.currentUser.uid, office.officeName),
