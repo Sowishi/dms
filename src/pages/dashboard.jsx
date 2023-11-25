@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [sms, setsms] = useState(null);
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -117,6 +118,11 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     setLoading(true);
+
+    getDoc(doc(db, "sms", "sms")).then((doc) => {
+      console.log(doc.data());
+    });
+
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };

@@ -129,6 +129,7 @@ const UserOutgoing = () => {
   const [showRouting, setShowRouting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [enableSMS, setEnableSMS] = useState(false);
 
   function ComposeModal(props) {
     const [code, setCode] = useState("");
@@ -317,7 +318,9 @@ const UserOutgoing = () => {
     };
 
     const handleUpload = async () => {
-      handleSendSMS();
+      if (enableSMS) {
+        handleSendSMS();
+      }
       setLoading(true);
       if (file) {
         const storageRef = ref(storage, `uploads/${file.name}`);
@@ -614,6 +617,12 @@ const UserOutgoing = () => {
 
   const fetchData = async () => {
     setLoading(true);
+
+    getDoc(doc(db, "sms", "sms")).then((doc) => {
+      const output = doc.data();
+      setEnableSMS(output.enable);
+    });
+
     const snapshot = await getDocs(userCollectionRef);
     const output = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
