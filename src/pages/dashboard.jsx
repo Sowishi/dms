@@ -324,7 +324,15 @@ const Dashboard = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <div className="link">{message.fileName}</div>
+                      </td>
                       <td>
                         {getUserData(message.sender).fullName} -{" "}
                         <b> {getUserData(message.sender).position}</b>
