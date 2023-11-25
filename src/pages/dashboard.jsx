@@ -287,11 +287,11 @@ const Dashboard = () => {
               <thead>
                 <tr>
                   <th>DocID</th>
+                  <th>Subject</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Reciever</th>
                   <th>Date </th>
-                  <th>Subject</th>
                   <th>Prioritization</th>
                   <th>Status</th>
                   <th>Action</th>
@@ -307,6 +307,7 @@ const Dashboard = () => {
                           {message.code}
                         </div>
                       </td>
+                      <td>{message.subject}</td>
                       <td>{message.fileName}</td>
                       <td>
                         {getUserData(message.sender).fullName} -{" "}
@@ -325,7 +326,6 @@ const Dashboard = () => {
                       {message.date.toDate && (
                         <td>{moment(message.date.toDate()).format("LL")}</td>
                       )}{" "}
-                      <td>{message.subject}</td>
                       <td className="flex">
                         {" "}
                         <Badge

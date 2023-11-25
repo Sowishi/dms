@@ -321,6 +321,7 @@ const Reports = () => {
               <thead>
                 <tr>
                   <th>DocID</th>
+                  <th>Subject</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Subject</th>
@@ -340,6 +341,7 @@ const Reports = () => {
                           {message.code}
                         </div>
                       </td>
+                      <td>{message.subject}</td>
                       <td>{message.fileName}</td>
 
                       <td>

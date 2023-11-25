@@ -811,6 +811,7 @@ const UserIncoming = () => {
               <thead>
                 <tr>
                   <th>DocID</th>
+                  <th>Subject</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Required Action</th>
@@ -830,6 +831,7 @@ const UserIncoming = () => {
                           {message.code}
                         </div>
                       </td>
+                      <td>{message.subject}</td>
                       <td>{message.fileName}</td>
 
                       <td>
@@ -877,6 +879,7 @@ const UserIncoming = () => {
               <thead>
                 <tr>
                   <th>DocID</th>
+                  <th>Subject</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Required Action</th>
@@ -896,6 +899,7 @@ const UserIncoming = () => {
                           {message.code}
                         </div>
                       </td>
+                      <td>{message.subject}</td>
                       <td>{message.fileName}</td>
 
                       <td>{message.sender} -</td>

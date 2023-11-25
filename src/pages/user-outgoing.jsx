@@ -752,6 +752,7 @@ const UserOutgoing = () => {
             <thead>
               <tr>
                 <th>DocID</th>
+                <th>Subject</th>
                 <th>File Name</th>
                 <th>Reciever</th>
                 <th>Required Action</th>
@@ -771,6 +772,7 @@ const UserOutgoing = () => {
                         {message.code}
                       </div>
                     </td>
+                    <td>{message.subject}</td>
                     <td>{message.fileName}</td>
                     <td>
                       {getUser(message.reciever).fullName} -{" "}
