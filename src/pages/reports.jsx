@@ -206,7 +206,6 @@ const Reports = () => {
               />
             </Form.Group>
             <Form.Label>Document Flow</Form.Label>
-
             <Form.Select
               onChange={(e) => setDocumentFlow(e.target.value)}
               aria-label="Default select example"
@@ -234,8 +233,16 @@ const Reports = () => {
                 </Form.Select>
               </>
             )}
-
-            <Button onClick={handleFilter}>Filter Report</Button>
+            <div className="row mt-5">
+              <div className="col-6">
+                <Button variant="warning" onClick={() => toPDF()}>
+                  <p className="fw-bold text-black  mb-0">Export to PDF</p>
+                </Button>
+              </div>
+              <div className="col-6">
+                <Button onClick={handleFilter}>Generate Report</Button>
+              </div>
+            </div>
           </Offcanvas.Body>
         </Offcanvas>
       </>
@@ -268,25 +275,9 @@ const Reports = () => {
               ></div>
             </div>
           </div>
-          <div className="col-lg-4 flex justify-content-around">
-            <Button variant="warning" onClick={() => toPDF()}>
-              <h6 className="fw-bold text-black px-3 mb-0 py-1">
-                Export to PDF
-              </h6>
-            </Button>
-            <Button
-              variant="danger"
-              onClick={() => {
-                setCurrentFilter(null);
-                fetchData();
-              }}
-            >
-              <h6 className="fw-bold text-white px-3 mb-0 py-1">Clear</h6>
-            </Button>
+          <div className="col-lg-5 flex">
             <Button variant="primary mb-2" onClick={() => setShowTools(true)}>
-              <h6 className="fw-bold text-white px-3 mb-0 py-1">
-                Report Tools
-              </h6>
+              <p className="fw-bold text-white  mb-0">Report Tools</p>
             </Button>{" "}
           </div>
           {loading && (
