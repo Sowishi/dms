@@ -40,6 +40,7 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
 import moment from "moment";
+import axios from "axios";
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 
@@ -214,6 +215,52 @@ const Outgoing = () => {
       );
     }
 
+    const handleSendSMS = async () => {
+      const textReciever = getUser(reciever);
+      const textSender = getUser(props.currentUser.uid);
+
+      const message = `You have received a new message from ${textSender.fullName} with a subject: ${subject}. Please log in to your account to view and respond to the message.`;
+
+      try {
+        const username = "Sowishi";
+        const password = "sdfsdfjsdlkfjsdjfsld3533535GKJlgfgjdlf@";
+        const credentials = `${username}:${password}`;
+        const encodedCredentials = `Basic ${btoa(credentials)}`;
+        const axiosSettings = {
+          url: "https://j3q9x4.api.infobip.com/sms/2/text/advanced",
+          method: "POST",
+          timeout: 0,
+          headers: {
+            Authorization: encodedCredentials,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          data: {
+            messages: [
+              {
+                destinations: [
+                  {
+                    to: `+63${textReciever.phone}`,
+                  },
+                ],
+                from: "Document Management System",
+                text: message,
+              },
+            ],
+          },
+        };
+        axios(axiosSettings)
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.error("Request failed", error);
+          });
+      } catch (error) {
+        toast.error(error.toString());
+      }
+    };
+
     const handleSubmit = (fileUrl) => {
       try {
         const dataObject = {
@@ -268,6 +315,7 @@ const Outgoing = () => {
     };
 
     const handleUpload = async () => {
+      handleSendSMS();
       setLoading(true);
       if (file) {
         const storageRef = ref(storage, `uploads/${file.name}`);

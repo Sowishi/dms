@@ -34,6 +34,7 @@ import Middleware from "./pages/middleware";
 import UserMiddleware from "./pages/userMiddleware";
 import Office from "./pages/office";
 import UserFiles from "./pages/user-files";
+import axios from "axios";
 
 function App() {
   const [user, setUser] = useState(null);

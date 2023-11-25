@@ -104,14 +104,6 @@ const Dashboard = () => {
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
           </Dropdown.Item>
-          <Dropdown.Item
-            onClick={() => {
-              setCurrentMessage(message);
-              setShowRouting(true);
-            }}
-          >
-            View Routing <FaMap />
-          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout/layout";
-import { Button, Dropdown, Modal, Table, Form } from "react-bootstrap";
+import {
+  Button,
+  Dropdown,
+  Modal,
+  Table,
+  Form,
+  InputGroup,
+} from "react-bootstrap";
 import {
   FaDownload,
   FaEye,
@@ -129,12 +136,14 @@ const CreateUser = () => {
           </div>
           <div className="wrapper">
             <label htmlFor="contactNumber">Contact Number</label>
-            <Form.Control
-              type="text"
-              id="contactNumber"
-              className="form-control bg-secondary"
-              onChange={(e) => setContactNumber(e.target.value)}
-            />
+
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="basic-addon1">+63</InputGroup.Text>
+              <Form.Control
+                className="form-control bg-secondary"
+                onChange={(e) => setContactNumber(e.target.value)}
+              />
+            </InputGroup>
           </div>
           <div className="wrapper">
             <label htmlFor="password">Password</label>
@@ -254,6 +263,7 @@ const CreateUser = () => {
               <th>User ID</th>
               <th>Full Name</th>
               <th>Email</th>
+              <th>Phone</th>
               <th>Position</th>
               <th>Office</th>
               <th>Gender</th>
@@ -271,6 +281,8 @@ const CreateUser = () => {
                   <td>{message.fullName}</td>
 
                   <td>{message.email}</td>
+                  <td>{message.phone}</td>
+
                   <td>{message.position ? message.position : "N/A"}</td>
                   {offices.length >= 1 && (
                     <td>
