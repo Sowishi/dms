@@ -4,8 +4,16 @@ import Modal from "react-bootstrap/Modal";
 import { FaBook, FaEye, FaUser } from "react-icons/fa";
 import Badge from "react-bootstrap/Badge";
 import { ModalBody } from "react-bootstrap";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase";
 import { toast } from "react-toastify";
 import moment from "moment";
 
@@ -44,6 +52,7 @@ function ViewModal(props) {
   const [sender, setSender] = useState("");
   const [reciever, setReciever] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [offices, setOffices] = useState([]);
 
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {
@@ -51,6 +60,22 @@ function ViewModal(props) {
     });
   }
 
+  getDocs(collection(db, "offices")).then((res) => {
+    const offices = [];
+    res.docs.forEach((doc) => {
+      offices.push({ ...doc.data(), id: doc.id });
+    });
+    setOffices(offices);
+  });
+
+  const getOffice = (id) => {
+    const output = offices.filter((office) => {
+      if (office.id == id) {
+        return office;
+      }
+    });
+    return output[0];
+  };
   useEffect(() => {
     if (props.dashboard) {
       const senderUser = props.getUser(currentMessage.sender);
@@ -62,6 +87,8 @@ function ViewModal(props) {
   }, []);
 
   const handleAction = async (type) => {
+    const user = props.getUser(currentMessage.sender);
+    const office = getOffice(user.office);
     try {
       const messageRef = doc(db, "messages", currentMessage.id);
       await setDoc(
@@ -72,6 +99,30 @@ function ViewModal(props) {
         },
         { merge: true }
       );
+      if (type == "Recieved") {
+        const folderData = {
+          owner: auth.currentUser.uid,
+          isFolder: true,
+          name: office.officeName,
+          createdAt: serverTimestamp(),
+        };
+
+        addDoc(
+          collection(db, "storage", auth.currentUser.uid, "files"),
+          folderData
+        );
+
+        addDoc(
+          collection(db, "storage", auth.currentUser.uid, office.officeName),
+          {
+            fileName: currentMessage.fileName,
+            fileURL: currentMessage.fileUrl,
+            owner: auth.currentUser.uid,
+            isFolder: false,
+            createdAt: serverTimestamp(),
+          }
+        );
+      }
       toast.success(`Successfully ${type}`);
     } catch (error) {
       toast.error(error.message);
@@ -254,11 +305,11 @@ function ViewModal(props) {
               </div>
               <div className="col-lg-6 flex">
                 <Button
-                  onClick={() => handleAction("Approved")}
+                  onClick={() => handleAction("Recieved")}
                   className="w-100"
                   variant="primary"
                 >
-                  Approved
+                  Recieved
                 </Button>
               </div>
             </div>

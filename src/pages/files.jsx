@@ -8,6 +8,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -22,9 +23,19 @@ const Files = () => {
   const [storages, setStorages] = useState([]);
   const [currentFolder, setCurrentFolder] = useState("files");
   const [loading, setLoading] = useState(false);
+  const [offices, setOffices] = useState([]);
 
   const fetchData = () => {
     setCurrentFolder("files");
+
+    getDocs(collection(db, "offices")).then((res) => {
+      const offices = [];
+      res.docs.forEach((doc) => {
+        offices.push({ ...doc.data(), id: doc.id });
+      });
+      setOffices(offices);
+    });
+
     const q = query(
       collection(db, "storage", auth.currentUser.uid, "files"),
       orderBy("createdAt", "desc")
@@ -192,14 +203,29 @@ const Files = () => {
     };
 
     const handleDelete = async () => {
-      const docMessage = doc(
-        db,
-        "storage",
-        auth.currentUser.uid,
-        "files",
-        storage.id
-      );
-      deleteDoc(docMessage).then(() => toast.success("Successfully Deleted!"));
+      if (currentFolder !== "files") {
+        const docMessage = doc(
+          db,
+          "storage",
+          auth.currentUser.uid,
+          currentFolder,
+          storage.id
+        );
+        deleteDoc(docMessage).then(() =>
+          toast.success("Successfully Deleted!")
+        );
+      } else {
+        const docMessage = doc(
+          db,
+          "storage",
+          auth.currentUser.uid,
+          "files",
+          storage.id
+        );
+        deleteDoc(docMessage).then(() =>
+          toast.success("Successfully Deleted!")
+        );
+      }
     };
 
     return (
