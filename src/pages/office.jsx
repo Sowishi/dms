@@ -165,7 +165,7 @@ const Office = () => {
         </div>
       </div>
 
-      <Table responsive="md" bordered hover variant="info">
+      <Table responsive="md" bordered hover variant="white">
         <thead>
           <tr>
             <th>Office ID</th>
@@ -189,8 +189,8 @@ const Office = () => {
                   <Badge
                     className={
                       message.status == "Active"
-                        ? "bg-primary p-2"
-                        : "bg-danger p-2"
+                        ? "bg-success p-2 flex"
+                        : "bg-danger p-2 flex"
                     }
                   >
                     {message.status}

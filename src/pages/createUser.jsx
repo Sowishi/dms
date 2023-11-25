@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout/layout";
-import {
-  Button,
-  Dropdown,
-  Modal,
-  Table,
-  Form,
-  InputGroup,
-} from "react-bootstrap";
+import { Button, Dropdown, Modal, Table, Form } from "react-bootstrap";
 import {
   FaDownload,
   FaEye,
@@ -136,14 +129,12 @@ const CreateUser = () => {
           </div>
           <div className="wrapper">
             <label htmlFor="contactNumber">Contact Number</label>
-
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">+63</InputGroup.Text>
-              <Form.Control
-                className="form-control bg-secondary"
-                onChange={(e) => setContactNumber(e.target.value)}
-              />
-            </InputGroup>
+            <Form.Control
+              type="text"
+              id="contactNumber"
+              className="form-control bg-secondary"
+              onChange={(e) => setContactNumber(e.target.value)}
+            />
           </div>
           <div className="wrapper">
             <label htmlFor="password">Password</label>
@@ -214,7 +205,10 @@ const CreateUser = () => {
     onSnapshot(officeCollection, (snapshot) => {
       const output = [];
       snapshot.docs.forEach((doc) => {
-        output.push({ ...doc.data(), id: doc.id });
+        const office = { ...doc.data(), id: doc.id };
+        if (office.status == "Active") {
+          output.push(office);
+        }
       });
       setOffices(output);
     });
@@ -257,13 +251,12 @@ const CreateUser = () => {
       </div>
 
       {users && (
-        <Table responsive="md" bordered hover variant="info">
+        <Table responsive="md" bordered hover variant="white">
           <thead>
             <tr>
               <th>User ID</th>
               <th>Full Name</th>
               <th>Email</th>
-              <th>Phone</th>
               <th>Position</th>
               <th>Office</th>
               <th>Gender</th>
@@ -281,8 +274,6 @@ const CreateUser = () => {
                   <td>{message.fullName}</td>
 
                   <td>{message.email}</td>
-                  <td>{message.phone}</td>
-
                   <td>{message.position ? message.position : "N/A"}</td>
                   {offices.length >= 1 && (
                     <td>

@@ -65,6 +65,7 @@ const Dashboard = () => {
   const [currentMessage, setCurrentMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sms, setsms] = useState(null);
+  const [offices, setOffices] = useState([]);
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -148,6 +149,17 @@ const Dashboard = () => {
       }
     );
 
+    onSnapshot(collection(db, "offices"), (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        const office = { ...doc.data(), id: doc.id };
+        if (office.status == "Active") {
+          output.push(office);
+        }
+      });
+      setOffices(output);
+    });
+
     setLoading(false);
   };
 
@@ -222,7 +234,7 @@ const Dashboard = () => {
                   <img src="./assets/images/ri_home-office-line.png" alt="" />
                   <div className="wrapper flex flex-column">
                     <p className="mb-0">Offices</p>
-                    <Badge bg="primary">9</Badge>
+                    {offices && <Badge bg="primary">{offices.length}</Badge>}
                   </div>
                 </div>
                 <div className="wrapper flex mx-3">
