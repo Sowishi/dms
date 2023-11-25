@@ -83,9 +83,11 @@ function Routing(props) {
               return (
                 <div className="div">
                   <div className="row">
-                    <div className="col-5 py-4 d-flex justify-content-start alig-items-start">
-                      {moment(route.createdAt.toDate()).format("LLL")}
-                    </div>
+                    {route.createdAt && (
+                      <div className="col-5 py-4 d-flex justify-content-start alig-items-start">
+                        {moment(route.createdAt.toDate()).format("LLL")}
+                      </div>
+                    )}
                     <div className="col-2 flex flex-column">
                       <div
                         className="div "
@@ -96,13 +98,13 @@ function Routing(props) {
                         }}
                       ></div>
                       {route.status == "Recieved" && (
-                        <FaFile size={30} className="mt-1" />
+                        <FaFile size={30} className="my-1" />
                       )}
                       {route.status == "Seen" && (
-                        <FaEye size={30} className="mt-1" />
+                        <FaEye size={30} className="my-1" />
                       )}
                       {route.status == "Created" && (
-                        <FaCheck size={30} className="mt-1" />
+                        <FaCheck size={30} className="my-1" />
                       )}
                     </div>
                     <div className="col-5 py-4 flex">
