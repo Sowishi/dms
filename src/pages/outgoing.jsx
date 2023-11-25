@@ -61,7 +61,11 @@ function Routing(props) {
     });
   };
 
-  getRouting(currentMessage);
+  useEffect(() => {
+    getRouting(currentMessage);
+  }, [currentMessage]);
+
+  console.log(routing);
 
   return (
     <>
