@@ -44,6 +44,7 @@ import axios from "axios";
 import Routing from "../components/routing";
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
+const outgoingExternal = collection(db, "outgoing-external");
 
 const Outgoing = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -54,6 +55,8 @@ const Outgoing = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [enableSMS, setEnableSMS] = useState(false);
+  const [currentPage, setCurrentPage] = useState("internal");
+  const [externalMessages, setExternalMessages] = useState([]);
 
   function ComposeModal(props) {
     const [code, setCode] = useState("");
@@ -205,20 +208,27 @@ const Outgoing = () => {
           attachmentDetail: attachmentDetail || null,
           fileUrl: fileUrl || null,
           fileName: file.name,
-          status: "Pending",
+          status: currentPage == "internal" ? "Pending" : "Recieved",
           createdAt: serverTimestamp(),
           isSendToALl: props.currentUser.uid === reciever,
         };
 
-        addDoc(messagesCollectionRef, dataObject).then((document) => {
-          addDoc(collection(db, "routing", document.id, document.id), {
-            createdAt: serverTimestamp(),
-            message: dataObject,
-            status: "Created",
+        if (currentPage == "internal") {
+          addDoc(messagesCollectionRef, dataObject).then((document) => {
+            addDoc(collection(db, "routing", document.id, document.id), {
+              createdAt: serverTimestamp(),
+              message: dataObject,
+              status: "Created",
+            });
+            toast.success("Your message is succesfully sent!");
+            setModalShow(false);
           });
-          toast.success("Your message is succesfully sent!");
-          setModalShow(false);
-        });
+        } else {
+          addDoc(outgoingExternal, dataObject).then(() => {
+            toast.success("Your message is succesfully sent!");
+            setModalShow(false);
+          });
+        }
       } catch (error) {
         toast.error(error.message);
       }
@@ -312,37 +322,46 @@ const Outgoing = () => {
             </Form.Select>
             <Form.Label>Reciever</Form.Label>
 
-            <Form.Select
-              onChange={(e) => setReciever(e.target.value)}
-              className="mb-3"
-            >
-              <option key={0} value={0}>
-                Please select a reciever
-              </option>
-              <option
-                className="bg-primary text-white"
-                key={0}
-                value={props.currentUser.uid}
+            {currentPage == "internal" && (
+              <Form.Select
+                onChange={(e) => setReciever(e.target.value)}
+                className="mb-3"
               >
-                Send to all
-              </option>
-              {users &&
-                users.map((user) => {
-                  if (user.id !== props.currentUser.uid) {
-                    return (
-                      <option
-                        className={`${
-                          user.role == "admin" ? "bg-info text-white" : ""
-                        }`}
-                        key={user.id}
-                        value={user.id}
-                      >
-                        {user.fullName}
-                      </option>
-                    );
-                  }
-                })}
-            </Form.Select>
+                <option key={0} value={0}>
+                  Please select a reciever
+                </option>
+                <option
+                  className="bg-primary text-white"
+                  key={0}
+                  value={props.currentUser.uid}
+                >
+                  Send to all
+                </option>
+                {users &&
+                  users.map((user) => {
+                    if (user.id !== props.currentUser.uid) {
+                      return (
+                        <option
+                          className={`${
+                            user.role == "admin" ? "bg-info text-white" : ""
+                          }`}
+                          key={user.id}
+                          value={user.id}
+                        >
+                          {user.fullName}
+                        </option>
+                      );
+                    }
+                  })}
+              </Form.Select>
+            )}
+            {currentPage == "external" && (
+              <Form.Control
+                type="text"
+                onChange={(e) => setReciever(e.target.value)}
+              />
+            )}
+
             <Form.Group
               onChange={(e) => setSubject(e.target.value)}
               className="mb-3"
@@ -544,6 +563,50 @@ const Outgoing = () => {
     );
   }
 
+  function DropdownActionExternal({ message }) {
+    const downloadFIle = () => {
+      const fileUrl = message.fileUrl;
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank";
+      link.download = "downloaded_file";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const handleDelete = () => {
+      const docRef = doc(db, "outgoing-external", message.id);
+      deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+    };
+
+    return (
+      <Dropdown>
+        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+          <img src="./assets/images/pepicons-pencil_dots-y.png" alt="" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={handleDelete}>
+            Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item onClick={downloadFIle}>
+            Download <FaDownload />
+          </Dropdown.Item>
+
+          {/* <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
+          </Dropdown.Item> */}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  }
+
   const fetchData = async () => {
     setLoading(true);
 
@@ -576,6 +639,18 @@ const Outgoing = () => {
         console.error("Error listening to collection:", error);
       }
     );
+
+    const q2 = query(outgoingExternal, orderBy("createdAt", "desc"));
+    onSnapshot(q2, (snapshot) => {
+      const messages = [];
+      snapshot.docs.forEach((doc) => {
+        const message = { ...doc.data(), id: doc.id };
+        if (message.sender === auth.currentUser.uid) {
+          messages.push(message);
+        }
+      });
+      setExternalMessages(messages);
+    });
 
     setLoading(false);
   };
@@ -656,14 +731,21 @@ const Outgoing = () => {
           <div className="row">
             <div className="col-lg-7">
               <ListGroup horizontal>
-                <ListGroup.Item>
-                  All <Badge bg="info">9</Badge>
+                <ListGroup.Item
+                  className={`${
+                    currentPage == "internal" ? "bg-info text-white" : ""
+                  } px-5 fw-bold`}
+                  onClick={() => setCurrentPage("internal")}
+                >
+                  Internal
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  Current <Badge bg="info">9</Badge>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  Usual <Badge bg="info">9</Badge>
+                <ListGroup.Item
+                  className={`${
+                    currentPage == "external" ? "bg-info text-white" : ""
+                  } px-5 fw-bold`}
+                  onClick={() => setCurrentPage("external")}
+                >
+                  External
                 </ListGroup.Item>
               </ListGroup>
             </div>
@@ -680,96 +762,161 @@ const Outgoing = () => {
           </div>
           {loading && <PlaceHolder />}
 
-          <Table responsive="md" bordered hover variant="white">
-            <thead>
-              <tr>
-                <th>DocID</th>
-                <th>Subject</th>
-                <th>File Name</th>
-                <th>Reciever</th>
-                <th>Required Action</th>
-                <th>Date </th>
-                <th>Prioritization</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {messages.map((message) => {
-                return (
-                  <tr key={message.code}>
-                    <td>
-                      <div className="flex">
-                        <FaFile />
-                        {message.code}
-                      </div>
-                    </td>
-                    <td>{message.subject}</td>
-                    <td
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setCurrentMessage(message);
-                        setShowViewModal(true);
-                      }}
-                    >
-                      <div
-                        style={{ textDecoration: "underline" }}
-                        className="text-info fw-bold"
+          {currentPage == "internal" ? (
+            <Table responsive="md" bordered hover variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>Subject</th>
+                  <th>File Name</th>
+                  <th>Reciever</th>
+                  <th>Required Action</th>
+                  <th>Date </th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {messages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.subject}</td>
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
                       >
-                        {message.fileName}
-                      </div>
-                    </td>
-                    <td>
-                      {message.sender == message.reciever ? (
-                        "Send to all"
-                      ) : (
-                        <>
-                          {getUser(message.reciever).fullName} -
-                          <b> {getUser(message.reciever).position}</b>
-                        </>
-                      )}
-                    </td>
-                    <td>{message.action}</td>
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
+                      <td>
+                        {message.sender == message.reciever ? (
+                          "Send to all"
+                        ) : (
+                          <>
+                            {getUser(message.reciever).fullName} -
+                            <b> {getUser(message.reciever).position}</b>
+                          </>
+                        )}
+                      </td>
+                      <td>{message.action}</td>
 
-                    {message.date && (
-                      <td>{moment(message.date.toDate()).format("LLL")}</td>
-                    )}
-                    <td className="flex">
-                      {" "}
-                      <Badge
-                        bg={
-                          message.prioritization == "urgent" ? "danger" : "info"
-                        }
-                        className="text-white p-2"
-                      >
-                        {toTitleCase(message.prioritization)}
-                      </Badge>{" "}
-                    </td>
-                    <td>
-                      {message.status === "Recieved" && (
-                        <Badge bg="success" className="text-white p-2">
-                          {message.status}
-                        </Badge>
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
-                      {message.status === "Pending" && (
-                        <Badge bg="info" className="text-white p-2">
-                          {message.status}
-                        </Badge>
-                      )}
-                      {message.status === "Rejected" && (
-                        <Badge bg="danger" className="text-white p-2">
-                          {message.status}
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="flex">
-                      <DropdownAction message={message} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+                      <td className="flex">
+                        {" "}
+                        <Badge
+                          bg={
+                            message.prioritization == "urgent"
+                              ? "danger"
+                              : "info"
+                          }
+                          className="text-white p-2"
+                        >
+                          {toTitleCase(message.prioritization)}
+                        </Badge>{" "}
+                      </td>
+                      <td>
+                        {message.status === "Recieved" && (
+                          <Badge bg="success" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Pending" && (
+                          <Badge bg="info" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Rejected" && (
+                          <Badge bg="danger" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                      </td>
+                      <td className="flex">
+                        <DropdownAction message={message} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          ) : (
+            <Table responsive="md" bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>Subject</th>
+                  <th>File Name</th>
+                  <th>Sender</th>
+                  <th>Required Action</th>
+                  <th>Date </th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              {externalMessages && (
+                <tbody>
+                  {externalMessages.map((message) => {
+                    return (
+                      <tr key={message.code}>
+                        <td>
+                          <div className="flex">
+                            <FaFile />
+                            {message.code}
+                          </div>
+                        </td>
+                        <td>{message.subject}</td>
+                        <td>{message.fileName}</td>
+                        <td>{message.reciever} -</td>
+                        <td>{message.action}</td>
+
+                        {message.date && (
+                          <td>{moment(message.date.toDate()).format("LLL")}</td>
+                        )}
+                        <td className="flex">
+                          {" "}
+                          <Badge
+                            bg={
+                              message.prioritization == "urgent"
+                                ? "danger"
+                                : "info"
+                            }
+                            className="text-white p-2"
+                          >
+                            {toTitleCase(message.prioritization)}
+                          </Badge>{" "}
+                        </td>
+                        <td>
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        </td>
+                        <td className="flex">
+                          <DropdownActionExternal message={message} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              )}
+            </Table>
+          )}
         </div>
       </div>
     </Layout>
