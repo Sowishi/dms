@@ -199,7 +199,12 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    setModalShow(true);
+    const modalShownBefore = localStorage.getItem("modalShownBefore");
+    if (!modalShownBefore) {
+      setModalShow(true);
+      localStorage.setItem("modalShownBefore", true);
+    }
+
     getUser();
     fetchData();
   }, []);
