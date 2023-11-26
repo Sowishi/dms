@@ -210,7 +210,7 @@ const LayoutUser = ({ children }) => {
                 alt=""
               />
             )}
-            {!user.profile && (
+            {user && !user.profile && (
               <img
                 style={{ width: "120px", borderRadius: "100%" }}
                 src="./assets/images/logo.png"
@@ -327,7 +327,7 @@ const LayoutUser = ({ children }) => {
                 alt=""
               />
             )}
-            {!user.profile && (
+            {user && !user.profile && (
               <img
                 style={{ width: "40px", borderRadius: "100%" }}
                 src="./assets/images/logo.png"
