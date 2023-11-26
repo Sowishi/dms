@@ -210,6 +210,13 @@ const Layout = ({ children }) => {
                 alt=""
               />
             )}
+            {!user.profile && (
+              <img
+                style={{ width: "120px", borderRadius: "100%" }}
+                src="./assets/images/logo.png"
+                alt=""
+              />
+            )}
             <h2 className="fw-bold my-3">{user.fullName}</h2>
             <h5 className="text-info">
               {user.position ? user.position : "Not Specified"}
@@ -316,6 +323,13 @@ const Layout = ({ children }) => {
               <img
                 style={{ width: "40px", borderRadius: "100%" }}
                 src={user.profile}
+                alt=""
+              />
+            )}
+            {!user.profile && (
+              <img
+                style={{ width: "40px", borderRadius: "100%" }}
+                src="./assets/images/logo.png"
                 alt=""
               />
             )}
