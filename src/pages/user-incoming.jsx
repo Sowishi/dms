@@ -606,7 +606,7 @@ const UserIncoming = () => {
       }
     );
 
-    const q2 = query(messagesCollectionRef, orderBy("createdAt", "desc"));
+    const q2 = query(incomingExternalRef, orderBy("createdAt", "desc"));
 
     onSnapshot(q2, (snapshot) => {
       const messages = [];
