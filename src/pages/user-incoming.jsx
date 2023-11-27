@@ -573,6 +573,7 @@ const UserIncoming = () => {
     });
 
     setUsers(output);
+
     const q = query(messagesCollectionRef, orderBy("createdAt", "desc"));
 
     onSnapshot(

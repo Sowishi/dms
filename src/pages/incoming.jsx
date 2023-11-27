@@ -117,6 +117,7 @@ const incoming = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState("internal");
   const [composeModalOpen, setComposeModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   function ComposeModal(props) {
     const [code, setCode] = useState("");
@@ -638,6 +639,32 @@ const incoming = () => {
     fetchData();
   }, []);
 
+  const filteredMessages = messages.filter((message) => {
+    const sender = getUser(message.sender);
+    const reciever = getUser(message.reciever);
+    if (
+      message.code.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.fileName.toLowerCase().startsWith(search.toLowerCase()) ||
+      sender.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
+      reciever.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.subject.toLowerCase().startsWith(search.toLocaleLowerCase())
+    ) {
+      return message;
+    }
+  });
+
+  const filteredExternalMessages = externalMessages.filter((message) => {
+    const reciever = getUser(message.reciever);
+    if (
+      message.code.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.fileName.toLowerCase().startsWith(search.toLowerCase()) ||
+      reciever.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.subject.toLowerCase().startsWith(search.toLocaleLowerCase())
+    ) {
+      return message;
+    }
+  });
+
   return (
     <Layout>
       {currentMessage && (
@@ -724,6 +751,7 @@ const incoming = () => {
             <div className="col-lg-5">
               <div className="search flex w-100 ">
                 <input
+                  onChange={(e) => setSearch(e.target.value)}
                   type="text"
                   placeholder="Search docID, name, etc..."
                   className="form form-control w-75 bg-secondary mx-2"
@@ -750,7 +778,7 @@ const incoming = () => {
                 </tr>
               </thead>
               <tbody>
-                {messages.map((message) => {
+                {filteredMessages.map((message) => {
                   return (
                     <tr key={message.code}>
                       <td>
@@ -838,7 +866,7 @@ const incoming = () => {
               </thead>
               {externalMessages && (
                 <tbody>
-                  {externalMessages.map((message) => {
+                  {filteredExternalMessages.map((message) => {
                     return (
                       <tr key={message.code}>
                         <td>
