@@ -292,7 +292,7 @@ const Outgoing = () => {
           getDownloadURL(storageRef)
             .then((url) => {
               if (url) {
-                if (enableSMS) {
+                if (enableSMS && currentPage == "internal") {
                   // handleSendSMS();
                   sendEmail(url);
                 }
