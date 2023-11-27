@@ -183,10 +183,10 @@ const Dashboard = () => {
     const sender = getUserData(message.sender);
     const reciever = getUserData(message.reciever);
     if (
-      message.code.startsWith(search) ||
-      message.fileName.startsWith(search) ||
-      sender.fullName.startsWith(search) ||
-      reciever.fullName.startsWith(search)
+      message.code.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.fileName.toLowerCase().startsWith(search.toLowerCase()) ||
+      sender.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
+      reciever.fullName.toLowerCase().startsWith(search.toLowerCase())
     ) {
       return message;
     }
