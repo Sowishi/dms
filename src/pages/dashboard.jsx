@@ -186,7 +186,8 @@ const Dashboard = () => {
       message.code.toLowerCase().startsWith(search.toLowerCase()) ||
       message.fileName.toLowerCase().startsWith(search.toLowerCase()) ||
       sender.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
-      reciever.fullName.toLowerCase().startsWith(search.toLowerCase())
+      reciever.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
+      message.subject.toLowerCase().startsWith(search.toLocaleLowerCase())
     ) {
       return message;
     }
