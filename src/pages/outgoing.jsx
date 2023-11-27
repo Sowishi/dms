@@ -42,6 +42,8 @@ import PlaceHolder from "../components/placeholder";
 import moment from "moment";
 import axios from "axios";
 import Routing from "../components/routing";
+import emailjs from "emailjs-com";
+
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const outgoingExternal = collection(db, "outgoing-external");
@@ -189,6 +191,37 @@ const Outgoing = () => {
       }
     };
 
+    const sendEmail = () => {
+      const emailReciever = getUser(reciever);
+      const emailSender = getUser(props.currentUser.uid);
+      console.log(emailReciever, emailSender);
+
+      const templateParams = {
+        sender: emailSender.fullName,
+        reciever: emailReciever.fullName,
+        subject: subject,
+        prioritization: prioritization,
+        date: moment(serverTimestamp()).format("LLL"),
+        sender_email: emailSender.email,
+        sender_position: emailSender.position,
+        to_email: emailReciever.email,
+      };
+
+      emailjs
+        .send(
+          "document_management_syst", // Replace with your EmailJS service ID
+          "template_u2b7th8", // Replace with your EmailJS template ID
+          templateParams,
+          "CC6NDqZK6hJlZZd_X" // Replace with your EmailJS user ID
+        )
+        .then((result) => {
+          console.log(result.text);
+        })
+        .catch((error) => {
+          console.error("Error sending email:", error);
+        });
+    };
+
     const handleSubmit = (fileUrl) => {
       try {
         const dataObject = {
@@ -251,7 +284,8 @@ const Outgoing = () => {
 
     const handleUpload = async () => {
       if (enableSMS) {
-        handleSendSMS();
+        // handleSendSMS();
+        sendEmail();
       }
       setLoading(true);
       if (file) {
