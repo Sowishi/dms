@@ -191,7 +191,7 @@ const Outgoing = () => {
       }
     };
 
-    const sendEmail = () => {
+    const sendEmail = (docLink) => {
       const emailReciever = getUser(reciever);
       const emailSender = getUser(props.currentUser.uid);
       console.log(emailReciever, emailSender);
@@ -201,10 +201,11 @@ const Outgoing = () => {
         reciever: emailReciever.fullName,
         subject: subject,
         prioritization: prioritization,
-        date: moment(serverTimestamp()).format("LLL"),
+        date: moment(serverTimestamp()).format("LL"),
         sender_email: emailSender.email,
         sender_position: emailSender.position,
         to_email: emailReciever.email,
+        document_link: docLink,
       };
 
       emailjs
@@ -283,10 +284,6 @@ const Outgoing = () => {
     };
 
     const handleUpload = async () => {
-      if (enableSMS) {
-        // handleSendSMS();
-        sendEmail();
-      }
       setLoading(true);
       if (file) {
         const storageRef = ref(storage, `uploads/${file.name}`);
@@ -294,6 +291,10 @@ const Outgoing = () => {
           getDownloadURL(storageRef)
             .then((url) => {
               if (url) {
+                if (enableSMS) {
+                  // handleSendSMS();
+                  sendEmail(url);
+                }
                 handleSubmit(url);
               }
             })
