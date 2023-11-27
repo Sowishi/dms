@@ -41,6 +41,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [sms, setsms] = useState(null);
   const [offices, setOffices] = useState([]);
+  const [search, setSearch] = useState("");
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -178,6 +179,19 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  const filteredMessages = messages.filter((message) => {
+    const sender = getUserData(message.sender);
+    const reciever = getUserData(message.reciever);
+    if (
+      message.code.startsWith(search) ||
+      message.fileName.startsWith(search) ||
+      sender.fullName.startsWith(search) ||
+      reciever.fullName.startsWith(search)
+    ) {
+      return message;
+    }
+  });
+
   return (
     <Layout>
       <div className="dashboard">
@@ -253,6 +267,7 @@ const Dashboard = () => {
             <div className="col-lg-6 flex my-2 my-lg-0">
               <div className="search flex w-100 ">
                 <input
+                  onChange={(e) => setSearch(e.target.value)}
                   type="text"
                   placeholder="Search docID, name, etc..."
                   className="form form-control w-75 bg-secondary mx-2"
@@ -280,7 +295,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {messages.map((message) => {
+                {filteredMessages.map((message) => {
                   return (
                     <tr key={message.code}>
                       <td>
