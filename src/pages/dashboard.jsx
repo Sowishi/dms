@@ -32,32 +32,7 @@ import Placeholder from "react-bootstrap/Placeholder";
 import PlaceHolder from "../components/placeholder";
 import moment from "moment";
 
-function MyVerticallyCenteredModal(props) {
-  return (
-    <Modal
-      {...props}
-      size="md"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton className="bg-primary">
-        <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="text-center">
-        <img src="./assets/images/game-icons_confirmed.png" alt="" />
-
-        <h2 className="fw-bold">Welcome Back!</h2>
-        <h5>Hello, {props.user.fullName}</h5>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
-
 const Dashboard = () => {
-  const [modalShow, setModalShow] = useState(false);
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -199,12 +174,6 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const modalShownBefore = localStorage.getItem("modalShownBefore");
-    if (!modalShownBefore) {
-      setModalShow(true);
-      localStorage.setItem("modalShownBefore", true);
-    }
-
     getUser();
     fetchData();
   }, []);
@@ -212,14 +181,6 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="dashboard">
-        {user && (
-          <MyVerticallyCenteredModal
-            show={modalShow}
-            onHide={() => setModalShow(false)}
-            user={user}
-          />
-        )}
-
         {currentMessage && (
           <ViewModal
             getUser={getUserData}

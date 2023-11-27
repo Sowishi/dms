@@ -1,4 +1,4 @@
-import { Container, Spinner } from "react-bootstrap";
+import { Button, Container, Modal, Spinner } from "react-bootstrap";
 import Sidebar from "./components/sidebar";
 import Layout from "./layout/layout";
 import {
@@ -39,8 +39,10 @@ import UserReports from "./pages/user-reports";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [appLoading, setAppLoading] = useState(false);
   const [admin, setAdmin] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   const LoginComponent = () => {
     let navigate = useNavigate();
@@ -57,10 +59,12 @@ function App() {
           if (data.role == "admin") {
             setAdmin(true);
             navigate("/dashboard");
+            setModalShow(true);
           }
           if (data.role == "user") {
             setAdmin(false);
             navigate("/user-incoming");
+            setModalShow(true);
           }
         }
       });
@@ -162,6 +166,37 @@ function App() {
     );
   };
 
+  function WelcomeModal(props) {
+    return (
+      <Modal
+        {...props}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="bg-primary">
+          <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <img src="./assets/images/game-icons_confirmed.png" alt="" />
+
+          <h2 className="fw-bold">Welcome Back!</h2>
+
+          {props.user && <h5>{props.user.fullName}</h5>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={props.onHide}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
+  const getUserData = async (id) => {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const snapshot = await getDoc(userRef);
+    setUserData(snapshot.data());
+  };
+
   useEffect(() => {
     setAppLoading(true);
 
@@ -174,8 +209,22 @@ function App() {
     }, 2000);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      getUserData();
+    }
+  }, [user]);
+
   return (
     <>
+      {user && (
+        <WelcomeModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          user={userData}
+        />
+      )}
+
       {!appLoading ? (
         <Router>
           <Routes>
