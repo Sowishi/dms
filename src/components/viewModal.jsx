@@ -183,7 +183,7 @@ function ViewModal(props) {
       updateDoc(messageRef, {
         fileUrl: url,
         fileName: file.name,
-        status: "Pending",
+        status: "Recieved",
       });
       props.closeModal();
     }
