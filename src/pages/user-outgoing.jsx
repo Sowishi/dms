@@ -35,7 +35,6 @@ import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import Layout from "../layout/layout";
 import LayoutUser from "../layout/layoutUser";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
@@ -43,10 +42,11 @@ import PlaceHolder from "../components/placeholder";
 import moment from "moment";
 import axios from "axios";
 import Routing from "../components/routing";
+import emailjs from "emailjs-com";
+
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const outgoingExternal = collection(db, "outgoing-external");
-import emailjs from "emailjs-com";
 
 const UserOutgoing = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -96,8 +96,7 @@ const UserOutgoing = () => {
         action &&
         deliverType &&
         documentFlow &&
-        attachmentDetail &&
-        file
+        attachmentDetail
       ) {
         return true;
       } else {
@@ -225,6 +224,14 @@ const UserOutgoing = () => {
     };
 
     const handleSubmit = (fileUrl) => {
+      let documentState = "Pending";
+      if (currentPage == "external") {
+        documentState = "Recieved";
+      }
+      if (!file) {
+        documentState = "In Progress";
+      }
+
       try {
         const dataObject = {
           code: code || null,
@@ -241,9 +248,9 @@ const UserOutgoing = () => {
           deliverType: deliverType || null,
           documentFlow: documentFlow || null,
           attachmentDetail: attachmentDetail || null,
-          fileUrl: fileUrl || null,
-          fileName: file.name,
-          status: currentPage == "internal" ? "Pending" : "Recieved",
+          fileUrl: fileUrl || "N/A",
+          fileName: file.name || "N/A",
+          status: documentState,
           createdAt: serverTimestamp(),
           isSendToALl: props.currentUser.uid === reciever,
         };
@@ -292,7 +299,7 @@ const UserOutgoing = () => {
           getDownloadURL(storageRef)
             .then((url) => {
               if (url) {
-                if (enableSMS) {
+                if (enableSMS && currentPage == "internal") {
                   // handleSendSMS();
                   sendEmail(url);
                 }
@@ -304,7 +311,7 @@ const UserOutgoing = () => {
             });
         });
       } else {
-        console.warn("No file selected for upload");
+        handleSubmit();
       }
     };
 
@@ -366,13 +373,7 @@ const UserOutgoing = () => {
                 <option key={0} value={0}>
                   Please select a reciever
                 </option>
-                {/* <option
-                  className="bg-primary text-white"
-                  key={0}
-                  value={props.currentUser.uid}
-                >
-                  Send to all
-                </option> */}
+
                 {users &&
                   users.map((user) => {
                     if (user.id !== props.currentUser.uid) {
@@ -623,6 +624,14 @@ const UserOutgoing = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
+          <Dropdown.Item
+            onClick={() => {
+              setShowViewModal(true);
+              setCurrentMessage(message);
+            }}
+          >
+            View Detail <FaEye />
+          </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
           </Dropdown.Item>
@@ -753,8 +762,10 @@ const UserOutgoing = () => {
           getUser={getUser}
           outgoing={true}
           currentMessage={currentMessage}
+          resetCurrentMessage={() => setCurrentMessage(null)}
           closeModal={() => setShowViewModal(false)}
           showModal={showViewModal}
+          currentPage={currentPage}
         />
       )}
 
@@ -909,6 +920,11 @@ const UserOutgoing = () => {
                             {message.status}
                           </Badge>
                         )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
                       </td>
                       <td className="flex">
                         <DropdownAction message={message} />
@@ -966,9 +982,26 @@ const UserOutgoing = () => {
                           </Badge>{" "}
                         </td>
                         <td>
-                          <Badge bg="warning" className="text-black p-2">
-                            {message.status}
-                          </Badge>
+                          {message.status === "Recieved" && (
+                            <Badge bg="success" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Pending" && (
+                            <Badge bg="info" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Rejected" && (
+                            <Badge bg="danger" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "In Progress" && (
+                            <Badge bg="warning" className="text-black p-2">
+                              {message.status}
+                            </Badge>
+                          )}
                         </td>
                         <td className="flex">
                           <DropdownActionExternal message={message} />

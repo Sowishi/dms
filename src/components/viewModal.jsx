@@ -357,6 +357,7 @@ function ViewModal(props) {
                   <div className="wrapper w-75">
                     <label htmlFor="">Add file</label>
                     <input
+                      accept=".pdf"
                       onChange={(e) => setFile(e.target.files[0])}
                       type="file"
                       className="form-control"
