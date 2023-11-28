@@ -42,6 +42,7 @@ const Dashboard = () => {
   const [sms, setsms] = useState(null);
   const [offices, setOffices] = useState([]);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -155,7 +156,7 @@ const Dashboard = () => {
     });
   }
 
-  const allApprove = () => {
+  const allRecieved = () => {
     const output = messages.filter((message) => {
       if (message.status == "Recieved") {
         return message;
@@ -189,6 +190,15 @@ const Dashboard = () => {
       reciever.fullName.toLowerCase().startsWith(search.toLowerCase()) ||
       message.subject.toLowerCase().startsWith(search.toLocaleLowerCase())
     ) {
+      return message;
+    }
+  });
+
+  const filteredMessagesFinal = filteredMessages.filter((message) => {
+    if (filter == "all") {
+      return message;
+    }
+    if (message.status.toLowerCase() == filter.toLocaleLowerCase()) {
       return message;
     }
   });
@@ -254,13 +264,22 @@ const Dashboard = () => {
           <div className="row">
             <div className="col-lg-6 d-flex my-2 my-lg-0">
               <ListGroup horizontal>
-                <ListGroup.Item>
+                <ListGroup.Item
+                  className={`${filter == "all" ? "bg-secondary" : ""}`}
+                  onClick={() => setFilter("all")}
+                >
                   All <Badge bg="primary">{messages.length}</Badge>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  Recieved <Badge bg="primary">{allApprove()}</Badge>
+                <ListGroup.Item
+                  className={`${filter == "recieved" ? "bg-secondary" : ""}`}
+                  onClick={() => setFilter("recieved")}
+                >
+                  Recieved <Badge bg="primary">{allRecieved()}</Badge>
                 </ListGroup.Item>
-                <ListGroup.Item>
+                <ListGroup.Item
+                  className={`${filter == "rejected" ? "bg-secondary" : ""}`}
+                  onClick={() => setFilter("rejected")}
+                >
                   Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
                 </ListGroup.Item>
               </ListGroup>
@@ -296,7 +315,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredMessages.map((message) => {
+                {filteredMessagesFinal.map((message) => {
                   return (
                     <tr key={message.code}>
                       <td>
