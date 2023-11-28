@@ -1,6 +1,13 @@
 import { FaEye, FaFile, FaFolder } from "react-icons/fa";
 import Layout from "../layout/layout";
-import { Breadcrumb, Button, Dropdown, Modal } from "react-bootstrap";
+import {
+  Breadcrumb,
+  Button,
+  Dropdown,
+  ListGroup,
+  Modal,
+  Table,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { Form } from "react-router-dom";
 import {
@@ -18,12 +25,14 @@ import { auth, db, storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { BarLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import moment from "moment";
 
 const Files = () => {
   const [storages, setStorages] = useState([]);
   const [currentFolder, setCurrentFolder] = useState("files");
   const [loading, setLoading] = useState(false);
   const [offices, setOffices] = useState([]);
+  const [view, setView] = useState("grid");
 
   const fetchData = () => {
     setCurrentFolder("files");
@@ -252,7 +261,7 @@ const Files = () => {
     <Layout>
       <div className="files-wrapper">
         <div className="row">
-          <div className="col-lg-8">
+          <div className="col-lg-6">
             <div className="wrapper">
               <h2 className="fw-bold my-3 mx-2">
                 Files Storage
@@ -264,9 +273,23 @@ const Files = () => {
               ></div>
             </div>
           </div>
-          <div className="col-lg-4 flex">
+          <div className="col-lg-6 flex">
             <AddFolder />
             <AddFile />
+            <ListGroup horizontal>
+              <ListGroup.Item
+                className={`${view == "grid" ? "bg-secondary" : ""}`}
+                onClick={() => setView("grid")}
+              >
+                Grid VIew
+              </ListGroup.Item>
+              <ListGroup.Item
+                className={`${view == "list" ? "bg-secondary" : ""}`}
+                onClick={() => setView("list")}
+              >
+                List View
+              </ListGroup.Item>
+            </ListGroup>
           </div>
           <div className="col-12 mx-3">
             <Breadcrumb>
@@ -286,48 +309,86 @@ const Files = () => {
           </div>
         )}
 
-        <div className="row mt-5">
-          {storage &&
-            storages.map((storage) => {
-              return (
-                <>
-                  {storage.isFolder ? (
-                    <div className="col-6 col-md-4 col-lg-3 flex flex-column">
-                      <FaFolder
-                        color="gray"
-                        onClick={() => {
-                          setCurrentFolder(storage.name);
-                          fetchFolder(storage.name);
-                        }}
-                        size={70}
-                      />{" "}
-                      <div className="flex justify-content-around">
-                        <div className="mx-3">{storage.name}</div>
-                        <DropdownAction storage={storage} />
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div
-                        key={storage.id}
-                        className="col-6 col-md-4 col-lg-3 flex flex-column"
-                      >
-                        <FaFile
+        {view == "grid" ? (
+          <div className="row mt-5">
+            {storage &&
+              storages.map((storage) => {
+                return (
+                  <>
+                    {storage.isFolder ? (
+                      <div className="col-6 col-md-4 col-lg-3 flex flex-column">
+                        <FaFolder
                           color="gray"
-                          onClick={() => downloadFile(storage.fileURL)}
+                          onClick={() => {
+                            setCurrentFolder(storage.name);
+                            fetchFolder(storage.name);
+                          }}
                           size={70}
-                        />
+                        />{" "}
                         <div className="flex justify-content-around">
-                          <div className="mx-3">{storage.fileName}</div>
+                          <div className="mx-3">{storage.name}</div>
                           <DropdownAction storage={storage} />
                         </div>
                       </div>
-                    </>
-                  )}
-                </>
-              );
-            })}
-        </div>
+                    ) : (
+                      <>
+                        <div
+                          key={storage.id}
+                          className="col-6 col-md-4 col-lg-3 flex flex-column"
+                        >
+                          <FaFile
+                            color="gray"
+                            onClick={() => downloadFile(storage.fileURL)}
+                            size={70}
+                          />
+                          <div className="flex justify-content-around">
+                            <div className="mx-3">{storage.fileName}</div>
+                            <DropdownAction storage={storage} />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                );
+              })}
+          </div>
+        ) : (
+          <Table responsive="md" variant="white">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {storages.map((storage) => {
+                return (
+                  <tr
+                    onClick={() => {
+                      setCurrentFolder(storage.name);
+                      fetchFolder(storage.name);
+                      if (storage.fileName) {
+                        downloadFile(storage.fileURL);
+                      }
+                    }}
+                  >
+                    <td>{storage.name || storage.fileName}</td>
+                    {storage.createdAt && (
+                      <td>
+                        {moment(storage.createdAt.toDate()).format("LLL")}
+                      </td>
+                    )}
+                    <td>
+                      {" "}
+                      <DropdownAction storage={storage} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        )}
       </div>
     </Layout>
   );
