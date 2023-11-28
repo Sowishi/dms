@@ -394,6 +394,11 @@ const Reports = () => {
                             {message.status}
                           </Badge>
                         )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
                       </td>
                     </tr>
                   );
@@ -459,9 +464,26 @@ const Reports = () => {
                         </Badge>{" "}
                       </td>
                       <td>
-                        <Badge bg="warning" className="text-black p-2">
-                          {message.status}
-                        </Badge>
+                        {message.status === "Recieved" && (
+                          <Badge bg="success" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Pending" && (
+                          <Badge bg="info" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Rejected" && (
+                          <Badge bg="danger" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
                       </td>
                     </tr>
                   );

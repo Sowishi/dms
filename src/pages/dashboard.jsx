@@ -366,6 +366,11 @@ const Dashboard = () => {
                             {message.status}
                           </Badge>
                         )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
                       </td>
                       <td className="flex">
                         <DropdownAction message={message} />
