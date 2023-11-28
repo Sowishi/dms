@@ -96,8 +96,7 @@ const Outgoing = () => {
         action &&
         deliverType &&
         documentFlow &&
-        attachmentDetail &&
-        file
+        attachmentDetail
       ) {
         return true;
       } else {
@@ -225,6 +224,14 @@ const Outgoing = () => {
     };
 
     const handleSubmit = (fileUrl) => {
+      let documentState = "Pending";
+      if (currentPage == "external") {
+        documentState = "Recieved";
+      }
+      if (!file) {
+        documentState = "In Progress";
+      }
+
       try {
         const dataObject = {
           code: code || null,
@@ -241,9 +248,9 @@ const Outgoing = () => {
           deliverType: deliverType || null,
           documentFlow: documentFlow || null,
           attachmentDetail: attachmentDetail || null,
-          fileUrl: fileUrl || null,
-          fileName: file.name,
-          status: currentPage == "internal" ? "Pending" : "Recieved",
+          fileUrl: fileUrl || "N/A",
+          fileName: file.name || "N/A",
+          status: documentState,
           createdAt: serverTimestamp(),
           isSendToALl: props.currentUser.uid === reciever,
         };
@@ -304,7 +311,7 @@ const Outgoing = () => {
             });
         });
       } else {
-        console.warn("No file selected for upload");
+        handleSubmit();
       }
     };
 
@@ -623,6 +630,14 @@ const Outgoing = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
+          <Dropdown.Item
+            onClick={() => {
+              setShowViewModal(true);
+              setCurrentMessage(message);
+            }}
+          >
+            View Detail <FaEye />
+          </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
           </Dropdown.Item>
@@ -753,8 +768,10 @@ const Outgoing = () => {
           getUser={getUser}
           outgoing={true}
           currentMessage={currentMessage}
+          resetCurrentMessage={() => setCurrentMessage(null)}
           closeModal={() => setShowViewModal(false)}
           showModal={showViewModal}
+          currentPage={currentPage}
         />
       )}
 
@@ -909,6 +926,11 @@ const Outgoing = () => {
                             {message.status}
                           </Badge>
                         )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
                       </td>
                       <td className="flex">
                         <DropdownAction message={message} />
@@ -966,9 +988,26 @@ const Outgoing = () => {
                           </Badge>{" "}
                         </td>
                         <td>
-                          <Badge bg="warning" className="text-black p-2">
-                            {message.status}
-                          </Badge>
+                          {message.status === "Recieved" && (
+                            <Badge bg="success" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Pending" && (
+                            <Badge bg="info" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Rejected" && (
+                            <Badge bg="danger" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "In Progress" && (
+                            <Badge bg="warning" className="text-black p-2">
+                              {message.status}
+                            </Badge>
+                          )}
                         </td>
                         <td className="flex">
                           <DropdownActionExternal message={message} />

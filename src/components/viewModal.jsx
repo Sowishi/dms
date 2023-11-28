@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { FaBook, FaEye, FaUser } from "react-icons/fa";
 import Badge from "react-bootstrap/Badge";
-import { ModalBody } from "react-bootstrap";
+import { ModalBody, Spinner } from "react-bootstrap";
 import {
   addDoc,
   collection,
@@ -14,9 +14,10 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "../../firebase";
+import { auth, db, storage } from "../../firebase";
 import { toast } from "react-toastify";
 import moment from "moment";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 function ViewFile(props) {
   const [show, setShow] = useState(false);
@@ -54,20 +55,14 @@ function ViewModal(props) {
   const [reciever, setReciever] = useState("");
   const [remarks, setRemarks] = useState("");
   const [offices, setOffices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
 
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
-
-  getDocs(collection(db, "offices")).then((res) => {
-    const offices = [];
-    res.docs.forEach((doc) => {
-      offices.push({ ...doc.data(), id: doc.id });
-    });
-    setOffices(offices);
-  });
 
   const getOffice = (id) => {
     const output = offices.filter((office) => {
@@ -78,6 +73,13 @@ function ViewModal(props) {
     return output[0];
   };
   useEffect(() => {
+    getDocs(collection(db, "offices")).then((res) => {
+      const offices = [];
+      res.docs.forEach((doc) => {
+        offices.push({ ...doc.data(), id: doc.id });
+      });
+      setOffices(offices);
+    });
     if (props.dashboard) {
       const senderUser = props.getUser(currentMessage.sender);
       const recieverUser = props.getUser(currentMessage.reciever);
@@ -166,6 +168,49 @@ function ViewModal(props) {
     }
   };
 
+  const handleSubmit = (url) => {
+    if (props.currentPage == "internal") {
+      const messageRef = doc(db, "messages", currentMessage.id);
+      updateDoc(messageRef, {
+        fileUrl: url,
+        fileName: file.name,
+        status: "Pending",
+      });
+      props.closeModal();
+      props.resetCurrentMessage();
+    } else {
+      const messageRef = doc(db, "outgoing-external", currentMessage.id);
+      updateDoc(messageRef, {
+        fileUrl: url,
+        fileName: file.name,
+        status: "Pending",
+      });
+      props.closeModal();
+    }
+  };
+
+  const handleUpload = async () => {
+    setLoading(true);
+    if (file) {
+      const storageRef = ref(storage, `uploads/${file.name}`);
+      uploadBytes(storageRef, file).then((snapshot) => {
+        getDownloadURL(storageRef)
+          .then((url) => {
+            if (url) {
+              handleSubmit(url);
+              setLoading(false);
+            }
+          })
+          .catch((error) => {
+            console.error("Error getting download URL:", error);
+          });
+      });
+    } else {
+      toast.error("No files");
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -181,26 +226,28 @@ function ViewModal(props) {
         <Modal.Body>
           <div className="row">
             <div className="col-lg-6">
-              {!props.dashboard && (
-                <h5 className="fw-bold">
-                  <FaUser /> {props.outgoing ? "Reciever" : "Sender"} -{" "}
-                  {
-                    props.getUser(
-                      props.outgoing
-                        ? currentMessage.reciever
-                        : currentMessage.sender
-                    ).fullName
-                  }
-                  {" - "}
-                  {
-                    props.getUser(
-                      props.outgoing
-                        ? currentMessage.reciever
-                        : currentMessage.sender
-                    ).position
-                  }
-                </h5>
-              )}
+              {!props.dashboard &&
+                props.currentPage == "internal" &&
+                currentMessage && (
+                  <h5 className="fw-bold">
+                    <FaUser /> {props.outgoing ? "Reciever" : "Sender"} -{" "}
+                    {
+                      props.getUser(
+                        props.outgoing
+                          ? currentMessage.reciever
+                          : currentMessage.sender
+                      ).fullName
+                    }
+                    {" - "}
+                    {
+                      props.getUser(
+                        props.outgoing
+                          ? currentMessage.reciever
+                          : currentMessage.sender
+                      ).position
+                    }
+                  </h5>
+                )}
               {props.dashboard && sender && reciever && (
                 <>
                   <h5 className="fw-bold">
@@ -291,17 +338,43 @@ function ViewModal(props) {
               </h5>
             </div>
             <div className="row mt-3">
-              <div className="col-12">
-                <div className="form-wrapper flex">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={currentMessage.fileName}
-                  />
+              {currentMessage.status !== "In Progress" && (
+                <div className="col-12">
+                  <div className="form-wrapper flex">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={currentMessage.fileName}
+                    />
 
-                  <ViewFile file={currentMessage.fileUrl} />
+                    <ViewFile file={currentMessage.fileUrl} />
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {currentMessage.status == "In Progress" && (
+                <div className="col-12 my-3 flex justify-content-start align-items-center">
+                  <div className="wrapper w-75">
+                    <label htmlFor="">Add file</label>
+                    <input
+                      onChange={(e) => setFile(e.target.files[0])}
+                      type="file"
+                      className="form-control"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleUpload}
+                    className="btn btn-primary  mb-0 mx-3"
+                  >
+                    {loading ? (
+                      <Spinner animation="border" variant="secondary" />
+                    ) : (
+                      "Upload File"
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <div className="action mt-3">
