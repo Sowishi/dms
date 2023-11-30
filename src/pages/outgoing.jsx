@@ -60,7 +60,32 @@ const Outgoing = () => {
   const [currentPage, setCurrentPage] = useState("internal");
   const [externalMessages, setExternalMessages] = useState([]);
   const [search, setSearch] = useState("");
-
+  const [deleteModal, setDeleteModal] = useState(false);
+  function DeleteModal() {
+    const handleDelete = () => {
+      const docMessage = doc(db, "messages", currentMessage.id);
+      deleteDoc(docMessage).then(() => toast.success("Successfully Deleted!"));
+      setDeleteModal(false);
+    };
+    return (
+      <>
+        <Modal show={deleteModal} onHide={() => setDeleteModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to continue?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
   function ComposeModal(props) {
     const [code, setCode] = useState("");
     const [reciever, setReciever] = useState("");
@@ -564,12 +589,14 @@ const Outgoing = () => {
     };
 
     const handleDelete = () => {
-      try {
-        const docRef = doc(db, "messages", message.id);
-        deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
-      } catch (error) {
-        toast.error(error.message);
-      }
+      setCurrentMessage(message);
+      setDeleteModal(true);
+      // try {
+      //   const docRef = doc(db, "messages", message.id);
+      //   deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+      // } catch (error) {
+      //   toast.error(error.message);
+      // }
     };
 
     return (
@@ -782,6 +809,8 @@ const Outgoing = () => {
           currentUser={auth.currentUser}
         />
       )}
+
+      <DeleteModal />
 
       <div className="dashboard">
         <div className="row">

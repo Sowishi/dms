@@ -43,6 +43,7 @@ const Dashboard = () => {
   const [offices, setOffices] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -60,8 +61,8 @@ const Dashboard = () => {
     };
 
     const handleDelete = async () => {
-      const docMessage = doc(db, "messages", message.id);
-      deleteDoc(docMessage).then(() => toast.success("Successfully Deleted!"));
+      setCurrentMessage(message);
+      setDeleteModal(true);
     };
 
     return (
@@ -175,6 +176,32 @@ const Dashboard = () => {
     return output.length;
   };
 
+  function DeleteModal() {
+    const handleDelete = () => {
+      const docMessage = doc(db, "messages", currentMessage.id);
+      deleteDoc(docMessage).then(() => toast.success("Successfully Deleted!"));
+      setDeleteModal(false);
+    };
+    return (
+      <>
+        <Modal show={deleteModal} onHide={() => setDeleteModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to continue?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setDeleteModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
   useEffect(() => {
     getUser();
     fetchData();
@@ -216,6 +243,8 @@ const Dashboard = () => {
             showModal={showViewModal}
           />
         )}
+
+        <DeleteModal />
 
         <div className="dashboard-header ">
           <div className="row">
