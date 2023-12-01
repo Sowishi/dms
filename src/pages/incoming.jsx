@@ -64,6 +64,32 @@ const incoming = () => {
   const [currentPage, setCurrentPage] = useState("internal");
   const [composeModalOpen, setComposeModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("a-z");
+
+  const sortData = () => {
+    const sortedData = [...messages].sort((a, b) => {
+      if (sort === "a-z") {
+        return a.subject.localeCompare(b.subject);
+      } else {
+        return b.subject.localeCompare(a.subject);
+      }
+    });
+
+    const sortedDataExternal = [...externalMessages].sort((a, b) => {
+      if (sort === "a-z") {
+        return a.subject.localeCompare(b.subject);
+      } else {
+        return b.subject.localeCompare(a.subject);
+      }
+    });
+
+    setMessages(sortedData);
+    setExternalMessages(sortedDataExternal);
+  };
+
+  useEffect(() => {
+    sortData();
+  }, [sort]);
 
   function UrgentModal(props) {
     const urgentFiles = props.urgentFiles;
@@ -760,6 +786,18 @@ const incoming = () => {
                 >
                   External
                 </ListGroup.Item>
+                <Button
+                  className="mx-3"
+                  onClick={() => {
+                    if (sort == "a-z") {
+                      setSort("z-a");
+                    } else {
+                      setSort("a-z");
+                    }
+                  }}
+                >
+                  Sort {sort}
+                </Button>
               </ListGroup>
             </div>
             <div className="col-lg-5">

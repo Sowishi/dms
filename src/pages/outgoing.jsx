@@ -63,6 +63,32 @@ const Outgoing = () => {
   const [search, setSearch] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [offices, setOffices] = useState([]);
+  const [sort, setSort] = useState("a-z");
+
+  const sortData = () => {
+    const sortedData = [...messages].sort((a, b) => {
+      if (sort === "a-z") {
+        return a.subject.localeCompare(b.subject);
+      } else {
+        return b.subject.localeCompare(a.subject);
+      }
+    });
+
+    const sortedDataExternal = [...externalMessages].sort((a, b) => {
+      if (sort === "a-z") {
+        return a.subject.localeCompare(b.subject);
+      } else {
+        return b.subject.localeCompare(a.subject);
+      }
+    });
+
+    setMessages(sortedData);
+    setExternalMessages(sortedDataExternal);
+  };
+
+  useEffect(() => {
+    sortData();
+  }, [sort]);
 
   const getOfficeStatus = (id) => {
     const office = offices.filter((office) => {
@@ -883,6 +909,18 @@ const Outgoing = () => {
                 >
                   External
                 </ListGroup.Item>
+                <Button
+                  className="mx-3"
+                  onClick={() => {
+                    if (sort == "a-z") {
+                      setSort("z-a");
+                    } else {
+                      setSort("a-z");
+                    }
+                  }}
+                >
+                  Sort {sort}
+                </Button>
               </ListGroup>
             </div>
             <div className="col-lg-5">

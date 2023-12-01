@@ -46,9 +46,26 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("all");
   const [deleteModal, setDeleteModal] = useState(false);
   const [showRouting, setShowRouting] = useState(false);
+  const [sort, setSort] = useState("a-z");
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
+
+  const sortData = () => {
+    const sortedData = [...messages].sort((a, b) => {
+      if (sort === "a-z") {
+        return a.subject.localeCompare(b.subject);
+      } else {
+        return b.subject.localeCompare(a.subject);
+      }
+    });
+
+    setMessages(sortedData);
+  };
+
+  useEffect(() => {
+    sortData();
+  }, [sort]);
 
   function DropdownAction({ message }) {
     const downloadFIle = () => {
@@ -332,6 +349,18 @@ const Dashboard = () => {
                   Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
                 </ListGroup.Item>
               </ListGroup>
+              <Button
+                className="mx-3"
+                onClick={() => {
+                  if (sort == "a-z") {
+                    setSort("z-a");
+                  } else {
+                    setSort("a-z");
+                  }
+                }}
+              >
+                Sort {sort}
+              </Button>
             </div>
             <div className="col-lg-6 flex my-2 my-lg-0">
               <div className="search flex w-100 ">
