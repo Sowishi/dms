@@ -220,7 +220,7 @@ const CreateUser = () => {
         return office;
       }
     });
-    return office[0];
+    return office[0] == undefined ? "Inactive Office" : office[0].officeName;
   };
 
   useEffect(() => {
@@ -275,13 +275,7 @@ const CreateUser = () => {
 
                   <td>{message.email}</td>
                   <td>{message.position ? message.position : "N/A"}</td>
-                  {offices.length >= 1 && (
-                    <td>
-                      {message.office
-                        ? getOffice(message.office).officeName
-                        : "N/A"}
-                    </td>
-                  )}
+                  {offices.length >= 1 && <td>{getOffice(message.office)}</td>}
 
                   <td>{message.gender ? message.gender : "N/A"}</td>
                   <td>{message.role}</td>

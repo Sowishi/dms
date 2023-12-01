@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import Layout from "../layout/layout";
-import { Button, Dropdown, Modal, Table, Form, Badge } from "react-bootstrap";
+import {
+  Button,
+  Dropdown,
+  Modal,
+  Table,
+  Form,
+  Badge,
+  ListGroup,
+} from "react-bootstrap";
 import { FaDownload, FaEye, FaFile, FaSuitcase, FaTrash } from "react-icons/fa";
 import {
   addDoc,
@@ -8,6 +16,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
@@ -137,6 +146,15 @@ const Office = () => {
     });
   };
 
+  const handleAction = (office, status) => {
+    try {
+      const officeRef = doc(db, "offices", office.id);
+      updateDoc(officeRef, {
+        status: status,
+      });
+    } catch (error) {}
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -186,7 +204,37 @@ const Office = () => {
 
                 <td>{message.officeCode}</td>
                 <td>
-                  <Badge
+                  <div className="flex">
+                    <ListGroup horizontal>
+                      <ListGroup.Item>
+                        <Button
+                          onClick={() => handleAction(message, "Active")}
+                          className={`${
+                            message.status == "Active"
+                              ? "bg-success text-white"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          Active
+                        </Button>
+                      </ListGroup.Item>
+                      <ListGroup.Item>
+                        {" "}
+                        <Button
+                          onClick={() => handleAction(message, "Inactive")}
+                          className={`${
+                            message.status == "Inactive"
+                              ? "bg-danger text-white"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          Inactive
+                        </Button>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  </div>
+
+                  {/* <Badge
                     className={
                       message.status == "Active"
                         ? "bg-success p-2 flex"
@@ -194,7 +242,7 @@ const Office = () => {
                     }
                   >
                     {message.status}
-                  </Badge>
+                  </Badge> */}
                 </td>
 
                 <td className="flex">
