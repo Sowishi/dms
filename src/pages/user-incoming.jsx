@@ -184,7 +184,7 @@ const UserIncoming = () => {
         classification &&
         subClassification &&
         action &&
-        deliverType &&
+        // deliverType &&
         documentFlow &&
         attachmentDetail &&
         file
@@ -250,7 +250,7 @@ const UserIncoming = () => {
           subClassification: subClassification || null,
           action: action || null,
           dueDate: dueDate || null,
-          deliverType: deliverType || null,
+          // deliverType: deliverType || null,
           documentFlow: documentFlow || null,
           attachmentDetail: attachmentDetail || null,
           fileUrl: fileUrl || null,
@@ -421,7 +421,7 @@ const UserIncoming = () => {
                   type="date"
                 />
               </div>
-              <div className="col-lg-6">
+              {/* <div className="col-lg-6">
                 <Form.Label>Deliver Type</Form.Label>
 
                 <Form.Select
@@ -433,7 +433,7 @@ const UserIncoming = () => {
                   <option value="Hand-over">Hand-over</option>
                   <option value="Combination">Combination</option>
                 </Form.Select>
-              </div>
+              </div> */}
               <div className="col-lg-6">
                 <Form.Label>Document Flow</Form.Label>
 
