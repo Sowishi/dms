@@ -47,6 +47,7 @@ import emailjs from "emailjs-com";
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const outgoingExternal = collection(db, "outgoing-external");
+const officeCollection = collection(db, "offices");
 
 const UserOutgoing = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -61,6 +62,16 @@ const UserOutgoing = () => {
   const [externalMessages, setExternalMessages] = useState([]);
   const [search, setSearch] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
+  const [offices, setOffices] = useState([]);
+
+  const getOfficeStatus = (id) => {
+    const office = offices.filter((office) => {
+      if (office.id == id) {
+        return office;
+      }
+    });
+    return office[0] == undefined ? "Unknown" : office[0].status;
+  };
 
   function DeleteModal() {
     const handleDelete = () => {
@@ -402,7 +413,10 @@ const UserOutgoing = () => {
 
                 {users &&
                   users.map((user) => {
-                    if (user.id !== props.currentUser.uid) {
+                    if (
+                      user.id !== props.currentUser.uid &&
+                      getOfficeStatus(user.office) == "Active"
+                    ) {
                       return (
                         <option
                           className={`${
@@ -679,6 +693,16 @@ const UserOutgoing = () => {
 
   const fetchData = async () => {
     setLoading(true);
+
+    //Offices
+
+    onSnapshot(officeCollection, (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        output.push({ ...doc.data(), id: doc.id });
+      });
+      setOffices(output);
+    });
 
     getDoc(doc(db, "sms", "sms")).then((doc) => {
       const output = doc.data();
