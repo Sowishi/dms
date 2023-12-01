@@ -539,8 +539,11 @@ const UserOutgoing = () => {
                   className="mb-3"
                 >
                   <option>Please select an option</option>
-                  <option value="Internal">Internal</option>
-                  <option value="External">External</option>
+                  {currentPage == "internal" ? (
+                    <option value="Internal">Internal</option>
+                  ) : (
+                    <option value="External">External</option>
+                  )}
                 </Form.Select>
               </div>
             </div>
