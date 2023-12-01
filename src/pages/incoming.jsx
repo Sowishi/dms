@@ -75,6 +75,7 @@ function UrgentModal(props) {
             <thead>
               <tr>
                 <th>DocID</th>
+                <th>Subject</th>
                 <th>File Name</th>
                 <th>Deadline</th>
               </tr>
@@ -89,6 +90,7 @@ function UrgentModal(props) {
                         {message.code}
                       </div>
                     </td>
+                    <td>{message.subject}</td>
                     <td>{message.fileName.substring(0, 20) + ".pdf"}</td>
                     <td>{message.dueDate}</td>
                   </tr>
