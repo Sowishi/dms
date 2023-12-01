@@ -316,7 +316,6 @@ const UserIncoming = () => {
             >
               <Form.Control
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
                 type="text"
                 placeholder="Document Code"
               />
