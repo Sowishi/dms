@@ -51,12 +51,46 @@ function ViewFile(props) {
 function ViewModal(props) {
   const { currentMessage } = props;
 
+  const isDisable =
+    currentMessage.status == "Pending" ||
+    currentMessage.status == "In Progress";
+
   const [sender, setSender] = useState("");
   const [reciever, setReciever] = useState("");
   const [remarks, setRemarks] = useState("");
   const [offices, setOffices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [confirmation, setConfirmation] = useState(false);
+  const [action, setAction] = useState(null);
+
+  function Confirmation() {
+    return (
+      <>
+        <Modal show={confirmation} onHide={() => setConfirmation(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{action} Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to continue?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setConfirmation(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                handleAction(action);
+                setConfirmation(false);
+                props.closeModal();
+              }}
+            >
+              Confirm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
 
   function toTitleCase(str) {
     return str.replace(/\w\S*/g, function (txt) {
@@ -213,6 +247,7 @@ function ViewModal(props) {
 
   return (
     <>
+      <Confirmation />
       <Modal
         size="xl"
         aria-labelledby="contained-modal-title-vcenter"
@@ -407,7 +442,11 @@ function ViewModal(props) {
             <div className="row w-100">
               <div className="col-lg-6 flex">
                 <Button
-                  onClick={() => handleAction("Rejected")}
+                  disabled={!isDisable}
+                  onClick={() => {
+                    setAction("Rejected");
+                    setConfirmation(true);
+                  }}
                   className="w-100 text-white"
                   variant="danger"
                 >
@@ -416,7 +455,11 @@ function ViewModal(props) {
               </div>
               <div className="col-lg-6 flex">
                 <Button
-                  onClick={() => handleAction("Recieved")}
+                  disabled={!isDisable}
+                  onClick={() => {
+                    setAction("Recieved");
+                    setConfirmation(true);
+                  }}
                   className="w-100"
                   variant="primary"
                 >
