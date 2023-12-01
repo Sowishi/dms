@@ -220,7 +220,7 @@ const Reports = () => {
                   className="mb-3"
                 >
                   <option value="">Please select an option</option>
-
+                  <option value="">All Users</option>;
                   {users &&
                     users.map((user) => {
                       return (
