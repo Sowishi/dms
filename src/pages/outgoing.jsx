@@ -926,43 +926,49 @@ const Outgoing = () => {
                       {message.date && (
                         <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
-                      <td className="flex">
-                        {" "}
-                        <Badge
-                          bg={
-                            message.prioritization == "urgent"
-                              ? "danger"
-                              : "info"
-                          }
-                          className="text-white p-2"
-                        >
-                          {toTitleCase(message.prioritization)}
-                        </Badge>{" "}
+                      <td>
+                        <div className="flex">
+                          {" "}
+                          <Badge
+                            bg={
+                              message.prioritization == "urgent"
+                                ? "danger"
+                                : "info"
+                            }
+                            className="text-white p-2"
+                          >
+                            {toTitleCase(message.prioritization)}
+                          </Badge>{" "}
+                        </div>
                       </td>
                       <td>
-                        {message.status === "Recieved" && (
-                          <Badge bg="success" className="text-white p-2">
-                            {message.status}
-                          </Badge>
-                        )}
-                        {message.status === "Pending" && (
-                          <Badge bg="info" className="text-white p-2">
-                            {message.status}
-                          </Badge>
-                        )}
-                        {message.status === "Rejected" && (
-                          <Badge bg="danger" className="text-white p-2">
-                            {message.status}
-                          </Badge>
-                        )}
-                        {message.status === "In Progress" && (
-                          <Badge bg="warning" className="text-black p-2">
-                            {message.status}
-                          </Badge>
-                        )}
+                        <div className="flex">
+                          {message.status === "Recieved" && (
+                            <Badge bg="success" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Pending" && (
+                            <Badge bg="info" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "Rejected" && (
+                            <Badge bg="danger" className="text-white p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                          {message.status === "In Progress" && (
+                            <Badge bg="warning" className="text-black p-2">
+                              {message.status}
+                            </Badge>
+                          )}
+                        </div>
                       </td>
-                      <td className="flex">
-                        <DropdownAction message={message} />
+                      <td>
+                        <div className="flex">
+                          <DropdownAction message={message} />
+                        </div>
                       </td>
                     </tr>
                   );
@@ -1003,43 +1009,49 @@ const Outgoing = () => {
                         {message.date && (
                           <td>{moment(message.date.toDate()).format("LLL")}</td>
                         )}
-                        <td className="flex">
-                          {" "}
-                          <Badge
-                            bg={
-                              message.prioritization == "urgent"
-                                ? "danger"
-                                : "info"
-                            }
-                            className="text-white p-2"
-                          >
-                            {toTitleCase(message.prioritization)}
-                          </Badge>{" "}
+                        <td>
+                          <div className="flex">
+                            {" "}
+                            <Badge
+                              bg={
+                                message.prioritization == "urgent"
+                                  ? "danger"
+                                  : "info"
+                              }
+                              className="text-white p-2"
+                            >
+                              {toTitleCase(message.prioritization)}
+                            </Badge>{" "}
+                          </div>
                         </td>
                         <td>
-                          {message.status === "Recieved" && (
-                            <Badge bg="success" className="text-white p-2">
-                              {message.status}
-                            </Badge>
-                          )}
-                          {message.status === "Pending" && (
-                            <Badge bg="info" className="text-white p-2">
-                              {message.status}
-                            </Badge>
-                          )}
-                          {message.status === "Rejected" && (
-                            <Badge bg="danger" className="text-white p-2">
-                              {message.status}
-                            </Badge>
-                          )}
-                          {message.status === "In Progress" && (
-                            <Badge bg="warning" className="text-black p-2">
-                              {message.status}
-                            </Badge>
-                          )}
+                          <div className="flex">
+                            {message.status === "Recieved" && (
+                              <Badge bg="success" className="text-white p-2">
+                                {message.status}
+                              </Badge>
+                            )}
+                            {message.status === "Pending" && (
+                              <Badge bg="info" className="text-white p-2">
+                                {message.status}
+                              </Badge>
+                            )}
+                            {message.status === "Rejected" && (
+                              <Badge bg="danger" className="text-white p-2">
+                                {message.status}
+                              </Badge>
+                            )}
+                            {message.status === "In Progress" && (
+                              <Badge bg="warning" className="text-black p-2">
+                                {message.status}
+                              </Badge>
+                            )}
+                          </div>
                         </td>
-                        <td className="flex">
-                          <DropdownActionExternal message={message} />
+                        <td>
+                          <div className="flex">
+                            <DropdownActionExternal message={message} />
+                          </div>
                         </td>
                       </tr>
                     );
