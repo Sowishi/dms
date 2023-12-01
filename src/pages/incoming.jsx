@@ -51,62 +51,6 @@ const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const incomingExternalRef = collection(db, "incoming-external");
 
-function UrgentModal(props) {
-  const urgentFiles = props.urgentFiles;
-  return (
-    <Modal
-      {...props}
-      size="md"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton className="bg-danger">
-        <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="text-center">
-        <FaBell size={50} color={"gray"} />
-        <h3 className="fw-bold">You have an urgent message!</h3>
-        <p className="fw-italic">
-          The documents below needs your imediate response, please send a
-          response before the deadline
-        </p>
-        {urgentFiles && (
-          <Table bordered variant="white">
-            <thead>
-              <tr>
-                <th>DocID</th>
-                <th>Subject</th>
-                <th>File Name</th>
-                <th>Deadline</th>
-              </tr>
-            </thead>
-            <tbody>
-              {urgentFiles.map((message) => {
-                return (
-                  <tr key={message.code}>
-                    <td>
-                      <div className="flex">
-                        <FaFile />
-                        {message.code}
-                      </div>
-                    </td>
-                    <td>{message.subject}</td>
-                    <td>{message.fileName.substring(0, 20) + ".pdf"}</td>
-                    <td>{message.dueDate}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
-
 const incoming = () => {
   const [modalShow, setModalShow] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -120,6 +64,75 @@ const incoming = () => {
   const [currentPage, setCurrentPage] = useState("internal");
   const [composeModalOpen, setComposeModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+
+  function UrgentModal(props) {
+    const urgentFiles = props.urgentFiles;
+    return (
+      <Modal
+        {...props}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="bg-danger">
+          <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <FaBell size={50} color={"gray"} />
+          <h3 className="fw-bold">You have an urgent message!</h3>
+          <p className="fw-italic">
+            The documents below needs your imediate response, please send a
+            response before the deadline
+          </p>
+          {urgentFiles && (
+            <Table bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>Subject</th>
+                  <th>File Name</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody>
+                {urgentFiles.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.subject}</td>
+                      <td
+                        style={{
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                        className="text-info fw-bold"
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setModalShow(true);
+                          setUrgent(false);
+                        }}
+                      >
+                        {message.fileName.substring(0, 20) + ".pdf"}
+                      </td>
+                      <td>{message.dueDate}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={props.onHide}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   function ComposeModal(props) {
     const [code, setCode] = useState("");
