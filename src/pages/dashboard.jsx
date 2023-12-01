@@ -31,6 +31,7 @@ import { toast } from "react-toastify";
 import Placeholder from "react-bootstrap/Placeholder";
 import PlaceHolder from "../components/placeholder";
 import moment from "moment";
+import Routing from "../components/routing";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [deleteModal, setDeleteModal] = useState(false);
+  const [showRouting, setShowRouting] = useState(false);
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
@@ -85,6 +87,14 @@ const Dashboard = () => {
           </Dropdown.Item>
           <Dropdown.Item onClick={handleDelete}>
             Delete <FaTrash />
+          </Dropdown.Item>
+          <Dropdown.Item
+            onClick={() => {
+              setCurrentMessage(message);
+              setShowRouting(true);
+            }}
+          >
+            View Routing <FaMap />
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -241,6 +251,16 @@ const Dashboard = () => {
             currentMessage={currentMessage}
             closeModal={() => setShowViewModal(false)}
             showModal={showViewModal}
+          />
+        )}
+
+        {currentMessage && (
+          <Routing
+            currentMessage={currentMessage}
+            showRouting={showRouting}
+            handleCloseRouting={() => setShowRouting(false)}
+            placement={"end"}
+            name={"end"}
           />
         )}
 
