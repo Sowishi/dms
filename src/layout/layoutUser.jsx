@@ -77,6 +77,7 @@ const LayoutUser = ({ children }) => {
         setDoc(userDoc, data, { merge: true }).then((res) => {
           toast.success("Successfully Updated");
           props.onHide();
+          window.location.reload();
         });
       };
 
