@@ -79,7 +79,7 @@ const CreateUser = () => {
           password: password,
           position: position,
           office: office,
-          role: role,
+          role: "user",
         };
 
         const result = await createUserWithEmailAndPassword(
@@ -145,7 +145,7 @@ const CreateUser = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="wrapper">
+          {/* <div className="wrapper">
             <label htmlFor="officeStatus">Role</label>
             <Form.Select
               id="officeStatus"
@@ -156,7 +156,7 @@ const CreateUser = () => {
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </Form.Select>{" "}
-          </div>
+          </div> */}
           <div className="wrapper">
             <label htmlFor="position">Position</label>
             <Form.Control
