@@ -148,7 +148,7 @@ const incoming = () => {
                           textDecoration: "underline",
                           cursor: "pointer",
                         }}
-                        className="text-info fw-bold"
+                        className="text-dark fw-bold"
                         onClick={() => {
                           setCurrentMessage(message);
                           setModalShow(true);
@@ -850,7 +850,7 @@ const incoming = () => {
                       >
                         <div
                           style={{ textDecoration: "underline" }}
-                          className="text-info fw-bold"
+                          className="text-dark fw-bold"
                         >
                           {message.fileName}
                         </div>
