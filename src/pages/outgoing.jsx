@@ -892,7 +892,7 @@ const Outgoing = () => {
         </div>
         <div className="dashboard-content mx-3 mt-3">
           <div className="row">
-            <div className="col-lg-7">
+            <div className="col-lg-5">
               <ListGroup horizontal>
                 <ListGroup.Item
                   className={`${
@@ -910,19 +910,21 @@ const Outgoing = () => {
                 >
                   External
                 </ListGroup.Item>
-                <Button
-                  className="mx-3"
-                  onClick={() => {
-                    if (sort == "a-z") {
-                      setSort("z-a");
-                    } else {
-                      setSort("a-z");
-                    }
-                  }}
-                >
-                  Sort {sort}
-                </Button>
               </ListGroup>
+            </div>
+            <div className="col-lg-2">
+              <Button
+                className="mx-0 mx-lg-3 my-3"
+                onClick={() => {
+                  if (sort == "a-z") {
+                    setSort("z-a");
+                  } else {
+                    setSort("a-z");
+                  }
+                }}
+              >
+                Sort {sort}
+              </Button>
             </div>
             <div className="col-lg-5">
               <div className="search flex w-100 ">

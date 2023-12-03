@@ -423,7 +423,7 @@ const Dashboard = () => {
           </div>
 
           <div className="row">
-            <div className="col-lg-6 d-flex my-2 my-lg-0">
+            <div className="col-lg-3 d-flex my-2 my-lg-0">
               <ListGroup horizontal>
                 <ListGroup.Item
                   className={`${filter == "all" ? "bg-secondary" : ""}`}
@@ -444,8 +444,10 @@ const Dashboard = () => {
                   Rejected <Badge bg="danger">{allRejected()}</Badge>{" "}
                 </ListGroup.Item>
               </ListGroup>
+            </div>
+            <div className="col-lg-3">
               <Button
-                className="mx-3"
+                className="mx-0 mx-lg-3"
                 onClick={() => {
                   if (sort == "a-z") {
                     setSort("z-a");
