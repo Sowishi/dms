@@ -368,12 +368,18 @@ const Files = () => {
                     onClick={() => {
                       setCurrentFolder(storage.name);
                       fetchFolder(storage.name);
-                      if (storage.fileName) {
-                        downloadFile(storage.fileURL);
-                      }
                     }}
                   >
-                    <td>{storage.name || storage.fileName}</td>
+                    <td
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        if (!storage.isFolder) {
+                          downloadFile(storage.fileURL);
+                        }
+                      }}
+                    >
+                      {storage.name || storage.fileName}
+                    </td>
                     {storage.createdAt && (
                       <td>
                         {moment(storage.createdAt.toDate()).format("LLL")}
