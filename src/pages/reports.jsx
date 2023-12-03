@@ -59,7 +59,7 @@ const Reports = () => {
   const [currentFilter, setCurrentFilter] = useState(null);
 
   const { toPDF, targetRef } = usePDF({
-    filename: "reports.pdf" + currentDate.toString(),
+    filename: "reports.pdf",
   });
 
   const fetchData = async () => {

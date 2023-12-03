@@ -26,6 +26,7 @@ import {
   query,
   where,
   or,
+  orderBy,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -35,7 +36,7 @@ import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import LayoutUser from "../layout/layoutUser";
+import Layout from "../layout/layout";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import ViewModal from "../components/viewModal";
 import PlaceHolder from "../components/placeholder";
@@ -58,7 +59,7 @@ const UserReports = () => {
   const [currentFilter, setCurrentFilter] = useState(null);
 
   const { toPDF, targetRef } = usePDF({
-    filename: "reports.pdf" + currentDate.toString(),
+    filename: "reports.pdf",
   });
 
   const fetchData = async () => {
@@ -99,7 +100,7 @@ const UserReports = () => {
         return user;
       }
     });
-    return user[0];
+    return user[0] ? user[0] : { fullName: "Deleted User" };
   };
 
   function toTitleCase(str) {
@@ -248,7 +249,7 @@ const UserReports = () => {
                   className="mb-3"
                 >
                   <option value="">Please select an option</option>
-
+                  <option value="">All Users</option>;
                   {users &&
                     users.map((user) => {
                       return (
@@ -281,7 +282,7 @@ const UserReports = () => {
   }, []);
 
   return (
-    <LayoutUser>
+    <Layout>
       <ReportToolsSidebar
         showTools={showTools}
         currentFilter={currentFilter}
@@ -370,15 +371,28 @@ const UserReports = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.documentFlow}</td>
-                      <td>{message.fileName}</td>
-
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-dark fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>
                         {getUser(message.sender).fullName} -
                         <b> {getUser(message.sender).position}</b>
                       </td>
 
                       <td>{message.subject}</td>
+                      <td>{message.documentFlow}</td>
+
                       <td>{message.action}</td>
                       {message.date && (
                         <td>{moment(message.date.toDate()).format("LLL")}</td>
@@ -395,6 +409,95 @@ const UserReports = () => {
                         >
                           {toTitleCase(message.prioritization)}
                         </Badge>{" "}
+                      </td>
+                      <td>
+                        {message.status === "Received" && (
+                          <Badge bg="success" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Pending" && (
+                          <Badge bg="info" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "Rejected" && (
+                          <Badge bg="danger" className="text-white p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                        {message.status === "In Progress" && (
+                          <Badge bg="warning" className="text-black p-2">
+                            {message.status}
+                          </Badge>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          ) : (
+            <Table responsive="md" bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>Subject</th>
+                  <th>Document Flow</th>
+                  <th>File Name</th>
+                  <th>Sender</th>
+                  <th>Required Action</th>
+                  <th>Date </th>
+                  <th>Prioritization</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {messages.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.subject}</td>
+                      <td>{message.documentFlow}</td>
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
+                      <td>{message.sender} -</td>
+                      <td>{message.action}</td>
+
+                      {message.date && (
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
+                      )}
+                      <td>
+                        <div className="flex">
+                          {" "}
+                          <Badge
+                            bg={
+                              message.prioritization == "urgent"
+                                ? "danger"
+                                : "info"
+                            }
+                            className="text-white p-2"
+                          >
+                            {toTitleCase(message.prioritization)}
+                          </Badge>{" "}
+                        </div>
                       </td>
                       <td>
                         <div className="flex">
@@ -425,66 +528,10 @@ const UserReports = () => {
                 })}
               </tbody>
             </Table>
-          ) : (
-            <Table responsive="md" bordered variant="white">
-              <thead>
-                <tr>
-                  <th>DocID</th>
-                  <th>File Name</th>
-                  <th>Subject</th>
-                  <th>Document Flow</th>
-                  <th>Sender</th>
-                  <th>Required Action</th>
-                  <th>Date </th>
-                  <th>Prioritization</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {messages.map((message) => {
-                  return (
-                    <tr key={message.code}>
-                      <td>
-                        <div className="flex">
-                          <FaFile />
-                          {message.code}
-                        </div>
-                      </td>
-                      <td>{message.fileName}</td>
-                      <td>{message.subject}</td>
-                      <td>{message.documentFlow}</td>
-                      <td>{message.sender} -</td>
-                      <td>{message.action}</td>
-                      {message.date && (
-                        <td>{moment(message.date.toDate()).format("LLL")}</td>
-                      )}
-                      <td className="flex">
-                        {" "}
-                        <Badge
-                          bg={
-                            message.prioritization == "urgent"
-                              ? "danger"
-                              : "info"
-                          }
-                          className="text-white p-2"
-                        >
-                          {toTitleCase(message.prioritization)}
-                        </Badge>{" "}
-                      </td>
-                      <td>
-                        <Badge bg="warning" className="text-black p-2">
-                          {message.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
           )}
         </div>
       </div>
-    </LayoutUser>
+    </Layout>
   );
 };
 
