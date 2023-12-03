@@ -963,7 +963,7 @@ const UserOutgoing = () => {
                       >
                         <div
                           style={{ textDecoration: "underline" }}
-                          className="text-info fw-bold"
+                          className="text-dark fw-bold"
                         >
                           {message.fileName}
                         </div>
@@ -1068,7 +1068,7 @@ const UserOutgoing = () => {
                         >
                           <div
                             style={{ textDecoration: "underline" }}
-                            className="text-info fw-bold"
+                            className="text-dark fw-bold"
                           >
                             {message.fileName}
                           </div>

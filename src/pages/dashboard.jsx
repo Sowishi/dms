@@ -102,7 +102,7 @@ const Dashboard = () => {
                           textDecoration: "underline",
                           cursor: "pointer",
                         }}
-                        className="text-info fw-bold"
+                        className="text-dark fw-bold"
                         onClick={() => {
                           setCurrentMessage(message);
                           setShowViewModal(true);
@@ -508,7 +508,7 @@ const Dashboard = () => {
                       >
                         <div
                           style={{ textDecoration: "underline" }}
-                          className="text-info fw-bold"
+                          className="text-dark fw-bold"
                         >
                           {message.fileName}
                         </div>
