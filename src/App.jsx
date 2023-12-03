@@ -87,7 +87,7 @@ function App() {
           <div className="login-content d-flex justify-content-center align-items-center flex-column">
             <img width={"80px"} src="./assets/images/logo.png" alt="" />
             <h2 className="fw-bold">DMS-LGU</h2>
-            <p>Document Management System</p>
+            <p>DMS</p>
             <div className="wrapper flex ">
               <FaUser className="m-3" />
               <input
