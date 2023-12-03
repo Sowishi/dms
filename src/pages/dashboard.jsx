@@ -66,7 +66,10 @@ const Dashboard = () => {
         <Modal.Header closeButton className="bg-danger">
           <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-center">
+        <Modal.Body
+          className="text-center"
+          style={{ height: "300px", overflow: "scroll" }}
+        >
           <FaBell size={50} color={"gray"} />
           <h3 className="fw-bold">Urgent Messages!</h3>
           <p className="fw-italic">

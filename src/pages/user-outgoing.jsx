@@ -821,6 +821,8 @@ const UserOutgoing = () => {
     }
   });
 
+  console.log(enableSMS);
+
   return (
     <LayoutUser>
       {currentMessage && (

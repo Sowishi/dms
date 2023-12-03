@@ -735,16 +735,15 @@ const Outgoing = () => {
     //Offices
 
     onSnapshot(officeCollection, (snapshot) => {
-      const output = [];
+      const offices = [];
       snapshot.docs.forEach((doc) => {
-        output.push({ ...doc.data(), id: doc.id });
+        offices.push({ ...doc.data(), id: doc.id });
       });
-      setOffices(output);
+      setOffices(offices);
     });
 
     getDoc(doc(db, "sms", "sms")).then((doc) => {
-      const output = doc.data();
-      setEnableSMS(output.enable);
+      setEnableSMS(doc.data().enable);
     });
 
     const snapshot = await getDocs(userCollectionRef);
@@ -831,6 +830,8 @@ const Outgoing = () => {
       return message;
     }
   });
+
+  console.log(enableSMS);
 
   return (
     <Layout>
