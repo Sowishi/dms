@@ -943,8 +943,21 @@ const UserIncoming = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
-                      <td>{message.fileName}</td>
-
+                      <td
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setModalShow(true);
+                          handleSeen(message);
+                        }}
+                      >
+                        <div
+                          style={{ textDecoration: "underline" }}
+                          className="text-info fw-bold"
+                        >
+                          {message.fileName}
+                        </div>
+                      </td>
                       <td>{message.sender} -</td>
                       <td>{message.action}</td>
                       {message.date && (

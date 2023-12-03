@@ -1068,10 +1068,22 @@ const Outgoing = () => {
                           </div>
                         </td>
                         <td>{message.subject}</td>
-                        <td>{message.fileName}</td>
+                        <td
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            setCurrentMessage(message);
+                            setShowViewModal(true);
+                          }}
+                        >
+                          <div
+                            style={{ textDecoration: "underline" }}
+                            className="text-info fw-bold"
+                          >
+                            {message.fileName}
+                          </div>
+                        </td>{" "}
                         <td>{message.reciever} -</td>
                         <td>{message.action}</td>
-
                         {message.date && (
                           <td>{moment(message.date.toDate()).format("LLL")}</td>
                         )}

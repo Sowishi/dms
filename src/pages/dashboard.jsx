@@ -476,6 +476,7 @@ const Dashboard = () => {
                   <th>DocID</th>
                   <th>Subject</th>
                   <th>File Name</th>
+                  <th>Document Flow</th>
                   <th>Sender</th>
                   <th>Reciever</th>
                   <th>Date </th>
@@ -509,6 +510,7 @@ const Dashboard = () => {
                           {message.fileName}
                         </div>
                       </td>
+                      <td>{message.documentFlow}</td>
                       <td>
                         {getUserData(message.sender).fullName} -{" "}
                         <b> {getUserData(message.sender).position}</b>
