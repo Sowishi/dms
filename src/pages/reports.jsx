@@ -26,6 +26,7 @@ import {
   query,
   where,
   or,
+  orderBy,
 } from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -45,6 +46,7 @@ import { Margin, Resolution, usePDF } from "react-to-pdf";
 const userCollectionRef = collection(db, "users");
 const messagesCollectionRef = collection(db, "messages");
 const incomingExternalRef = collection(db, "incoming-external");
+const outgoingExternalRef = collection(db, "outgoing-external");
 
 const currentDate = new Date();
 
@@ -69,8 +71,10 @@ const Reports = () => {
 
     setUsers(output);
 
+    const q = query(messagesCollectionRef, orderBy("createdAt", "desc"));
+
     onSnapshot(
-      messagesCollectionRef,
+      q,
       (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
@@ -153,7 +157,29 @@ const Reports = () => {
       );
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+        const message = { ...doc.data(), id: doc.id };
+        if (
+          message.reciever == auth.currentUser.uid ||
+          message.sender == auth.currentUser.uid
+        ) {
+          messages.push(message);
+        }
+      });
+
+      const q2 = query(
+        outgoingExternalRef,
+        where("date", ">=", startTimestamp),
+        where("date", "<=", endTimestamp)
+      );
+      const querySnapshot2 = await getDocs(q2);
+      querySnapshot2.forEach((doc) => {
+        const message = { ...doc.data(), id: doc.id };
+        if (
+          message.reciever == auth.currentUser.uid ||
+          message.sender == auth.currentUser.uid
+        ) {
+          messages.push(message);
+        }
       });
     }
     setMessages(messages);
@@ -324,6 +350,7 @@ const Reports = () => {
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Subject</th>
+                  <th>Document Flow</th>
                   <th>Action</th>
                   <th>Date </th>
                   <th>Prioritization</th>
@@ -361,9 +388,11 @@ const Reports = () => {
                       </td>
 
                       <td>{message.subject}</td>
+                      <td>{message.documentFlow}</td>
+
                       <td>{message.action}</td>
                       {message.date && (
-                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
                       <td className="flex">
                         {" "}
@@ -411,6 +440,7 @@ const Reports = () => {
                 <tr>
                   <th>DocID</th>
                   <th>Subject</th>
+                  <th>Document Flow</th>
                   <th>File Name</th>
                   <th>Sender</th>
                   <th>Required Action</th>
@@ -430,6 +460,7 @@ const Reports = () => {
                         </div>
                       </td>
                       <td>{message.subject}</td>
+                      <td>{message.documentFlow}</td>
                       <td
                         style={{ cursor: "pointer" }}
                         onClick={() => {
@@ -448,7 +479,7 @@ const Reports = () => {
                       <td>{message.action}</td>
 
                       {message.date && (
-                        <td>{moment(message.date.toDate()).format("LL")}</td>
+                        <td>{moment(message.date.toDate()).format("LLL")}</td>
                       )}
                       <td>
                         <div className="flex">
