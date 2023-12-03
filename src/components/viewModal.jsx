@@ -209,6 +209,7 @@ function ViewModal(props) {
         fileUrl: url,
         fileName: file.name,
         status: "Pending",
+        remarks: remarks,
       });
       props.closeModal();
       props.resetCurrentMessage();
@@ -416,29 +417,41 @@ function ViewModal(props) {
                   </div>
                 )}
               {currentMessage.status == "Rejected" &&
-                auth.currentUser.uid == currentMessage.sender && (
-                  <div className="col-12 my-3 flex justify-content-start align-items-center">
-                    <div className="wrapper w-75">
-                      <label htmlFor="">Add file</label>
+                auth.currentUser.uid == currentMessage.sender &&
+                !props.dashboard && (
+                  <>
+                    <div className="col-12 my-3 flex justify-content-start align-items-center">
+                      <div className="wrapper w-75">
+                        <label htmlFor="">Add file</label>
+                        <input
+                          accept=".pdf"
+                          onChange={(e) => setFile(e.target.files[0])}
+                          type="file"
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <label htmlFor="">Add remarks</label>
                       <input
-                        accept=".pdf"
-                        onChange={(e) => setFile(e.target.files[0])}
-                        type="file"
+                        onChange={(e) => setRemarks(e.target.value)}
+                        type="text"
                         className="form-control"
                       />
+                    </div>{" "}
+                    <div className="col-12 d-flex justify-content-end align-items-center my-2">
+                      <button
+                        onClick={handleUpload}
+                        className="btn btn-primary  mb-0 mx-3"
+                      >
+                        {loading ? (
+                          <Spinner animation="border" variant="secondary" />
+                        ) : (
+                          "Resend File"
+                        )}
+                      </button>
                     </div>
-
-                    <button
-                      onClick={handleUpload}
-                      className="btn btn-primary  mb-0 mx-3"
-                    >
-                      {loading ? (
-                        <Spinner animation="border" variant="secondary" />
-                      ) : (
-                        "Upload File"
-                      )}
-                    </button>
-                  </div>
+                  </>
                 )}
             </div>
           </div>
@@ -453,12 +466,26 @@ function ViewModal(props) {
             )}
 
             <div className="content">
+              {currentMessage.reciever == auth.currentUser.uid && (
+                <div className="col-12 d-flex w-100 justify-content-center align-items-center">
+                  <div className="wrapper w-100">
+                    <label htmlFor="">Add remarks</label>
+                    <input
+                      onChange={(e) => setRemarks(e.target.value)}
+                      type="text"
+                      className="form-control"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="form-wrapper">
-                <label htmlFor="">Remarks</label>
+                <label htmlFor="">Document Remarks</label>
                 <textarea
-                  value={currentMessage.remarks}
+                  disabled
                   onChange={(e) => setRemarks(e.target.value)}
-                  rows={5}
+                  value={currentMessage.remarks}
+                  rows={4}
                   type="text"
                   className="form-control"
                 />
