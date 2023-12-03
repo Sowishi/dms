@@ -257,6 +257,7 @@ const CreateUser = () => {
               <th>User ID</th>
               <th>Full Name</th>
               <th>Email</th>
+              <th>Phone</th>
               <th>Position</th>
               <th>Office</th>
               <th>Gender</th>
@@ -274,6 +275,7 @@ const CreateUser = () => {
                   <td>{message.fullName}</td>
 
                   <td>{message.email}</td>
+                  <td>{message.phone}</td>
                   <td>{message.position ? message.position : "N/A"}</td>
                   {offices.length >= 1 && <td>{getOffice(message.office)}</td>}
 
