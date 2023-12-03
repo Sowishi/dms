@@ -364,15 +364,12 @@ const Files = () => {
             <tbody>
               {storages.map((storage) => {
                 return (
-                  <tr
-                    onClick={() => {
-                      setCurrentFolder(storage.name);
-                      fetchFolder(storage.name);
-                    }}
-                  >
+                  <tr>
                     <td
                       style={{ cursor: "pointer" }}
                       onClick={() => {
+                        setCurrentFolder(storage.name);
+                        fetchFolder(storage.name);
                         if (!storage.isFolder) {
                           downloadFile(storage.fileURL);
                         }

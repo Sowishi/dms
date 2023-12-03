@@ -263,7 +263,7 @@ const Dashboard = () => {
       }
     });
 
-    return user[0];
+    return user[0] ? user[0] : { fullName: "Deleted User" };
   };
 
   function toTitleCase(str) {

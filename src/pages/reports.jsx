@@ -59,7 +59,7 @@ const Reports = () => {
   const [currentFilter, setCurrentFilter] = useState(null);
 
   const { toPDF, targetRef } = usePDF({
-    filename: "reports.pdf",
+    filename: "reports.pdf" + currentDate.toString(),
   });
 
   const fetchData = async () => {
@@ -97,7 +97,7 @@ const Reports = () => {
         return user;
       }
     });
-    return user[0];
+    return user[0] ? user[0] : { fullName: "Deleted User" };
   };
 
   function toTitleCase(str) {

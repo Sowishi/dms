@@ -28,9 +28,9 @@ import {
 function DropdownAction({ message }) {
   const handleDelete = () => {
     try {
-      // const docRef = doc(db, "users", message.id);
-      // deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
-      toast.info("You can't delete this user as of now, temporary unavailable");
+      const docRef = doc(db, "users", message.id);
+      deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
+      // toast.info("You can't delete this user as of now, temporary unavailable");
     } catch (error) {
       toast.error(error.message);
     }
