@@ -272,7 +272,7 @@ const Layout = ({ children }) => {
       <>
         <Offcanvas show={props.show} onHide={props.handleClose}>
           <Offcanvas.Body>
-            <Sidebar />
+            <Sidebar onHide={props.handleClose} />
           </Offcanvas.Body>
         </Offcanvas>
       </>

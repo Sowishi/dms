@@ -387,30 +387,31 @@ function ViewModal(props) {
                 </div>
               )}
 
-              {currentMessage.status == "In Progress" && (
-                <div className="col-12 my-3 flex justify-content-start align-items-center">
-                  <div className="wrapper w-75">
-                    <label htmlFor="">Add file</label>
-                    <input
-                      accept=".pdf"
-                      onChange={(e) => setFile(e.target.files[0])}
-                      type="file"
-                      className="form-control"
-                    />
-                  </div>
+              {currentMessage.status == "In Progress" &&
+                auth.currentUser.uid == currentMessage.sender && (
+                  <div className="col-12 my-3 flex justify-content-start align-items-center">
+                    <div className="wrapper w-75">
+                      <label htmlFor="">Add file</label>
+                      <input
+                        accept=".pdf"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        type="file"
+                        className="form-control"
+                      />
+                    </div>
 
-                  <button
-                    onClick={handleUpload}
-                    className="btn btn-primary  mb-0 mx-3"
-                  >
-                    {loading ? (
-                      <Spinner animation="border" variant="secondary" />
-                    ) : (
-                      "Upload File"
-                    )}
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={handleUpload}
+                      className="btn btn-primary  mb-0 mx-3"
+                    >
+                      {loading ? (
+                        <Spinner animation="border" variant="secondary" />
+                      ) : (
+                        "Upload File"
+                      )}
+                    </button>
+                  </div>
+                )}
               {currentMessage.status == "Rejected" &&
                 auth.currentUser.uid == currentMessage.sender && (
                   <div className="col-12 my-3 flex justify-content-start align-items-center">

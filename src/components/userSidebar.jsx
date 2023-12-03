@@ -8,10 +8,11 @@ import {
   FaUser,
   FaPeopleCarry,
   FaTrash,
+  FaTimes,
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
-const UserSidebar = () => {
+const UserSidebar = ({ onHide }) => {
   const location = useLocation().pathname;
   const [sidebarShow, setSidebarShow] = useState(true);
 
@@ -27,6 +28,9 @@ const UserSidebar = () => {
           />
         )}
         <div className={`sidebar vh-100 ${sidebarShow ? "" : "inactive"}`}>
+          <div className="w-100 d-flex justify-content-end aling-items-center">
+            <FaTimes onClick={onHide} size={"25"} />
+          </div>
           <div className="sidebar-header d-flex justify-content-center align-items-center flex-column">
             <div className="brand w-100 flex">
               <img width={"100px"} src="./assets/images/logo.png" alt="" />

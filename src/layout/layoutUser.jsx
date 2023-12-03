@@ -273,7 +273,7 @@ const LayoutUser = ({ children }) => {
       <>
         <Offcanvas show={props.show} onHide={props.handleClose}>
           <Offcanvas.Body>
-            <UserSidebar />
+            <UserSidebar onHide={props.handleClose} />
           </Offcanvas.Body>
         </Offcanvas>
       </>
