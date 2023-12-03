@@ -66,6 +66,18 @@ const incoming = () => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("a-z");
 
+  const handleSeen = async (message) => {
+    const docRef = doc(db, "routing", message.id, message.id, message.id);
+    const res = await getDoc(docRef);
+    if (!res.exists()) {
+      setDoc(docRef, {
+        createdAt: serverTimestamp(),
+        message: message,
+        status: "Seen",
+      });
+    }
+  };
+
   const sortData = () => {
     const sortedData = [...messages].sort((a, b) => {
       if (sort === "a-z") {
@@ -141,6 +153,7 @@ const incoming = () => {
                           setCurrentMessage(message);
                           setModalShow(true);
                           setUrgent(false);
+                          handleSeen(message);
                         }}
                       >
                         {message.fileName.substring(0, 20) + ".pdf"}
@@ -516,18 +529,6 @@ const incoming = () => {
       deleteDoc(docRef).then(() => toast.success("Successfully Deleted!"));
     };
 
-    const handleSeen = async () => {
-      const docRef = doc(db, "routing", message.id, message.id, message.id);
-      const res = await getDoc(docRef);
-      if (!res.exists()) {
-        setDoc(docRef, {
-          createdAt: serverTimestamp(),
-          message: message,
-          status: "Seen",
-        });
-      }
-    };
-
     return (
       <Dropdown>
         <Dropdown.Toggle variant="secondary" id="dropdown-basic">
@@ -539,7 +540,7 @@ const incoming = () => {
             onClick={() => {
               setModalShow(true);
               setCurrentMessage(message);
-              handleSeen();
+              handleSeen(message);
             }}
           >
             View Detail <FaEye />
@@ -845,6 +846,7 @@ const incoming = () => {
                         onClick={() => {
                           setCurrentMessage(message);
                           setModalShow(true);
+                          handleSeen(message);
                         }}
                       >
                         <div
