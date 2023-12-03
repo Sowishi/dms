@@ -64,6 +64,9 @@ const Outgoing = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [offices, setOffices] = useState([]);
   const [sort, setSort] = useState("a-z");
+  const [classificationData, setClassificationData] = useState([]);
+  const [subClassificationData, setSubClassificationData] = useState([]);
+  const [actionData, setActionData] = useState([]);
 
   const sortData = () => {
     const sortedData = [...messages].sort((a, b) => {
@@ -511,11 +514,10 @@ const Outgoing = () => {
                   className="mb-3"
                 >
                   <option>Please select an option</option>
-                  <option value="memorandum">Memorandum</option>
-                  <option value="letter">Letter</option>
-                  <option value="indorsement/transmittal">
-                    Indorsement/Transmittal
-                  </option>
+
+                  {classificationData.map((value) => {
+                    return <option value={value.value}>{value.value}</option>;
+                  })}
                 </Form.Select>
               </div>
               <div className="col-lg-6">
@@ -526,12 +528,9 @@ const Outgoing = () => {
                   className="mb-3"
                 >
                   <option>Please select an option</option>
-                  <option value="compliance">For Compliance</option>
-                  <option value="information">For Information</option>
-                  <option value="inquiry">Inquiry</option>
-                  <option value="invitation">Invitation</option>
-                  <option value="request">Request</option>
-                  <option value="others">Others</option>
+                  {subClassificationData.map((value) => {
+                    return <option value={value.value}>{value.value}</option>;
+                  })}
                 </Form.Select>
               </div>
               <div className="col-lg-6">
@@ -542,18 +541,9 @@ const Outgoing = () => {
                   className="mb-3"
                 >
                   <option>Please select an option</option>
-                  <option value="For Submission of Documents">
-                    For Submission of Documents
-                  </option>
-                  <option value="For Approval/Signature">
-                    For Approval/Signature
-                  </option>
-                  <option value="For Monitoring">For Monitoring</option>
-                  <option value="For Comment/Justification">
-                    For Comment/Justification
-                  </option>
-                  <option value="For Considilation">For Considilation</option>
-                  <option value="For Printing">For Printing</option>
+                  {actionData.map((value) => {
+                    return <option value={value.value}>{value.value}</option>;
+                  })}
                 </Form.Select>
               </div>
               <div className="col-lg-6">
@@ -732,6 +722,28 @@ const Outgoing = () => {
   const fetchData = async () => {
     setLoading(true);
 
+    onSnapshot(collection(db, "classification"), (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        output.push({ ...doc.data(), id: doc.id });
+      });
+      setClassificationData(output);
+    });
+    onSnapshot(collection(db, "sub-classification"), (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        output.push({ ...doc.data(), id: doc.id });
+      });
+      setSubClassificationData(output);
+    });
+    onSnapshot(collection(db, "action"), (snapshot) => {
+      const output = [];
+      snapshot.docs.forEach((doc) => {
+        output.push({ ...doc.data(), id: doc.id });
+      });
+      setActionData(output);
+    });
+
     //Offices
 
     onSnapshot(officeCollection, (snapshot) => {
@@ -830,8 +842,6 @@ const Outgoing = () => {
       return message;
     }
   });
-
-  console.log(enableSMS);
 
   return (
     <Layout>
