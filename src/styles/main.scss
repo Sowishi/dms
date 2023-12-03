@@ -7,6 +7,8 @@ $theme-colors: (
   "success": #085a35,
 );
 
+$info-color: map-get($theme-colors, "info");
+
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 .flex {
@@ -34,10 +36,10 @@ $theme-colors: (
 }
 
 .sidebar-content .navigation a:hover {
-  background-color: #00f0ff;
+  background-color: $info-color;
 }
 .sidebar-content .navigation a.active {
-  background-color: #00f0ff;
+  background-color: $info-color;
 }
 .login-wrapper {
   height: 100vh;
