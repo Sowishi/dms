@@ -120,6 +120,8 @@ function App() {
   };
 
   const ForgotComponent = () => {
+    let navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -128,6 +130,7 @@ function App() {
         setLoading(true);
         await sendPasswordResetEmail(auth, email);
         toast.success("Successfully sent an email for password reset");
+        navigate("/");
       } catch (error) {
         toast.error(error.message);
       }
