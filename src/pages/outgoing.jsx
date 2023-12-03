@@ -290,7 +290,7 @@ const Outgoing = () => {
     const handleSubmit = (fileUrl) => {
       let documentState = "Pending";
       if (currentPage == "external") {
-        documentState = "Recieved";
+        documentState = "Received";
       }
       if (!file) {
         documentState = "In Progress";
@@ -1010,7 +1010,7 @@ const Outgoing = () => {
                       </td>
                       <td>
                         <div className="flex">
-                          {message.status === "Recieved" && (
+                          {message.status === "Received" && (
                             <Badge bg="success" className="text-white p-2">
                               {message.status}
                             </Badge>
@@ -1105,7 +1105,7 @@ const Outgoing = () => {
                         </td>
                         <td>
                           <div className="flex">
-                            {message.status === "Recieved" && (
+                            {message.status === "Received" && (
                               <Badge bg="success" className="text-white p-2">
                                 {message.status}
                               </Badge>

@@ -127,11 +127,11 @@ function ViewModal(props) {
     const user = props.getUser(currentMessage.sender);
     const office = getOffice(user.office);
 
-    if (type == "Recieved") {
+    if (type == "Received") {
       addDoc(collection(db, "routing", currentMessage.id, currentMessage.id), {
         createdAt: serverTimestamp(),
         message: currentMessage,
-        status: "Recieved",
+        status: "Received",
       });
     } else {
       addDoc(collection(db, "routing", currentMessage.id, currentMessage.id), {
@@ -164,7 +164,7 @@ function ViewModal(props) {
 
         return;
       }
-      if (type == "Recieved") {
+      if (type == "Received") {
         const folderData = {
           owner: auth.currentUser.uid,
           isFolder: true,
@@ -218,7 +218,7 @@ function ViewModal(props) {
       updateDoc(messageRef, {
         fileUrl: url,
         fileName: file.name,
-        status: "Recieved",
+        status: "Received",
       });
       props.closeModal();
     }
@@ -513,13 +513,13 @@ function ViewModal(props) {
                 <Button
                   disabled={!isDisable}
                   onClick={() => {
-                    setAction("Recieved");
+                    setAction("Received");
                     setConfirmation(true);
                   }}
                   className="w-100"
                   variant="primary"
                 >
-                  Recieved
+                  Received
                 </Button>
               </div>
             </div>

@@ -60,7 +60,7 @@ const UserDashboard = () => {
               Pending <Badge bg="info">9</Badge>
             </ListGroup.Item>
             <ListGroup.Item>
-              Recieved <Badge bg="info">9</Badge>
+              Received <Badge bg="info">9</Badge>
             </ListGroup.Item>
             <ListGroup.Item>Approve</ListGroup.Item>
             <ListGroup.Item>Rejected</ListGroup.Item>

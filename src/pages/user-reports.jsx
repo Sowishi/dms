@@ -398,7 +398,7 @@ const UserReports = () => {
                       </td>
                       <td>
                         <div className="flex">
-                          {message.status === "Recieved" && (
+                          {message.status === "Received" && (
                             <Badge bg="success" className="text-white p-2">
                               {message.status}
                             </Badge>

@@ -293,7 +293,7 @@ const incoming = () => {
           attachmentDetail: attachmentDetail || null,
           fileUrl: fileUrl || null,
           fileName: file.name,
-          status: "Recieved",
+          status: "Received",
           createdAt: serverTimestamp(),
           isSendToALl: props.currentUser.uid === reciever,
         };
@@ -881,7 +881,7 @@ const incoming = () => {
                       </td>
                       <td>
                         <div className="flex">
-                          {message.status === "Recieved" && (
+                          {message.status === "Received" && (
                             <Badge bg="success" className="text-white p-2">
                               {message.status}
                             </Badge>
@@ -977,7 +977,7 @@ const incoming = () => {
                         </td>
                         <td>
                           <div className="flex">
-                            {message.status === "Recieved" && (
+                            {message.status === "Received" && (
                               <Badge bg="success" className="text-white p-2">
                                 {message.status}
                               </Badge>

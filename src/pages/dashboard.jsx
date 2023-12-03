@@ -272,9 +272,9 @@ const Dashboard = () => {
     });
   }
 
-  const allRecieved = () => {
+  const allReceived = () => {
     const output = messages.filter((message) => {
-      if (message.status == "Recieved") {
+      if (message.status == "Received") {
         return message;
       }
     });
@@ -432,10 +432,10 @@ const Dashboard = () => {
                   All <Badge bg="primary">{messages.length}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item
-                  className={`${filter == "recieved" ? "bg-secondary" : ""}`}
-                  onClick={() => setFilter("recieved")}
+                  className={`${filter == "Received" ? "bg-secondary" : ""}`}
+                  onClick={() => setFilter("Received")}
                 >
-                  Recieved <Badge bg="primary">{allRecieved()}</Badge>
+                  Received <Badge bg="primary">{allReceived()}</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item
                   className={`${filter == "rejected" ? "bg-secondary" : ""}`}
@@ -548,7 +548,7 @@ const Dashboard = () => {
                       </td>
                       <td>
                         <div className="flex">
-                          {message.status === "Recieved" && (
+                          {message.status === "Received" && (
                             <Badge bg="success" className="text-white p-2">
                               {message.status}
                             </Badge>

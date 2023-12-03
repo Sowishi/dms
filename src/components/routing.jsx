@@ -78,7 +78,7 @@ const Routing = (props) => {
                           background: "gray",
                         }}
                       ></div>
-                      {route.status == "Recieved" && (
+                      {route.status == "Received" && (
                         <FaFile color="green" size={30} className="my-1" />
                       )}
                       {route.status == "Seen" && (
@@ -101,7 +101,7 @@ const Routing = (props) => {
                     >
                       <h5
                         className={`fw-bold ${
-                          route.status == "Recieved" ? "text-primary" : ""
+                          route.status == "Received" ? "text-primary" : ""
                         }  ${route.status == "Rejected" ? "text-danger" : ""}`}
                       >
                         {route.status}
@@ -116,9 +116,9 @@ const Routing = (props) => {
                           your document has been seen by the reciever
                         </p>
                       )}
-                      {route.status == "Recieved" && (
+                      {route.status == "Received" && (
                         <p style={{ fontSize: "13px", fontStyle: "italic" }}>
-                          your document has been seen successfully recieved by
+                          your document has been seen successfully Received by
                           the reciever
                         </p>
                       )}
