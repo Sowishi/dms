@@ -68,7 +68,7 @@ const Dashboard = () => {
         </Modal.Header>
         <Modal.Body className="text-center">
           <FaBell size={50} color={"gray"} />
-          <h3 className="fw-bold">You have an urgent message!</h3>
+          <h3 className="fw-bold">Urgent Messages!</h3>
           <p className="fw-italic">
             The documents below needs your imediate response, please send a
             response before the deadline

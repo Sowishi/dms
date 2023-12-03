@@ -326,6 +326,7 @@ function ViewModal(props) {
                 <div className="form-wrapper">
                   <label htmlFor="">Required Action</label>
                   <input
+                    disabled
                     type="text"
                     className="form-control"
                     value={currentMessage.action}
@@ -336,6 +337,7 @@ function ViewModal(props) {
                 <div className="form-wrapper">
                   <label htmlFor="">Delivery Type</label>
                   <input
+                    disabled
                     type="text"
                     className="form-control"
                     value={currentMessage.deliverType}
@@ -346,6 +348,7 @@ function ViewModal(props) {
                 <div className="form-wrapper">
                   <label htmlFor="">Due Date</label>
                   <input
+                    disabled
                     type="text"
                     className="form-control"
                     value={currentMessage.dueDate}
