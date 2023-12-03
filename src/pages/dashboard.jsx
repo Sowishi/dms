@@ -6,6 +6,7 @@ import {
   FaDownload,
   FaMap,
   FaFileArchive,
+  FaBell,
 } from "react-icons/fa";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
@@ -47,9 +48,81 @@ const Dashboard = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [showRouting, setShowRouting] = useState(false);
   const [sort, setSort] = useState("a-z");
+  const [urgent, setUrgent] = useState(false);
+  const [urgentFiles, setUrgentFiles] = useState([]);
 
   const messagesCollectionRef = collection(db, "messages");
   const userCollectionRef = collection(db, "users");
+
+  function UrgentModal(props) {
+    const urgentFiles = props.urgentFiles;
+    return (
+      <Modal
+        {...props}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="bg-danger">
+          <Modal.Title id="contained-modal-title-vcenter"></Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <FaBell size={50} color={"gray"} />
+          <h3 className="fw-bold">You have an urgent message!</h3>
+          <p className="fw-italic">
+            The documents below needs your imediate response, please send a
+            response before the deadline
+          </p>
+          {urgentFiles && (
+            <Table bordered variant="white">
+              <thead>
+                <tr>
+                  <th>DocID</th>
+                  <th>Subject</th>
+                  <th>File Name</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody>
+                {urgentFiles.map((message) => {
+                  return (
+                    <tr key={message.code}>
+                      <td>
+                        <div className="flex">
+                          <FaFile />
+                          {message.code}
+                        </div>
+                      </td>
+                      <td>{message.subject}</td>
+                      <td
+                        style={{
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                        className="text-info fw-bold"
+                        onClick={() => {
+                          setCurrentMessage(message);
+                          setShowViewModal(true);
+                          setUrgent(false);
+                          // handleSeen(message);
+                        }}
+                      >
+                        {message.fileName.substring(0, 20) + ".pdf"}
+                      </td>
+                      <td>{message.dueDate}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={props.onHide}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   const sortData = () => {
     const sortedData = [...messages].sort((a, b) => {
@@ -144,9 +217,21 @@ const Dashboard = () => {
       q,
       (querySnapshot) => {
         const messages = [];
+        const urgents = [];
         querySnapshot.forEach((doc) => {
-          messages.push({ ...doc.data(), id: doc.id });
+          const message = { ...doc.data(), id: doc.id };
+          messages.push(message);
+          if (
+            message.prioritization == "urgent" &&
+            message.status == "Pending"
+          ) {
+            urgents.push(message);
+          }
         });
+        if (urgents.length >= 1) {
+          setUrgent(true);
+        }
+        setUrgentFiles(urgents);
         setMessages(messages);
       },
       (error) => {
@@ -260,6 +345,13 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="dashboard">
+        {messages && (
+          <UrgentModal
+            show={urgent}
+            onHide={() => setUrgent(false)}
+            urgentFiles={urgentFiles}
+          />
+        )}
         {currentMessage && (
           <ViewModal
             getUser={getUserData}
