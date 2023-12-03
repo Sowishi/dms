@@ -274,16 +274,16 @@ const Outgoing = () => {
 
       emailjs
         .send(
-          "document_management_syst", // Replace with your EmailJS service ID
-          "template_u2b7th8", // Replace with your EmailJS template ID
+          "service_aph5krh", // Replace with your EmailJS service ID
+          "template_lbn8eop", // Replace with your EmailJS template ID
           templateParams,
-          "CC6NDqZK6hJlZZd_X" // Replace with your EmailJS user ID
+          "iQ0Bvi_u9sIHLiVBV" // Replace with your EmailJS user ID
         )
         .then((result) => {
-          console.log(result.text);
+          console.log(result.text, "Fdksjflk");
         })
         .catch((error) => {
-          console.error("Error sending email:", error);
+          console.log("Error sending email:", error);
         });
     };
 
